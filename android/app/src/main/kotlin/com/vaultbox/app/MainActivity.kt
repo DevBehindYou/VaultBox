@@ -1,8 +1,6 @@
 package com.vaultbox.app
 
 import android.content.Intent
-import android.os.Handler
-import android.os.Looper
 import com.vaultbox.app.pigeon.AndroidStorageApi
 import com.vaultbox.app.pigeon.ServerControlApi
 import com.vaultbox.app.pigeon.ServerStateListener
@@ -14,6 +12,9 @@ import com.vaultbox.app.storage.ActivityTreePickerLauncher
 import com.vaultbox.app.storage.SafStorageHostApi
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : FlutterActivity() {
     private val treePicker = ActivityTreePickerLauncher()
@@ -32,10 +33,16 @@ class MainActivity : FlutterActivity() {
         // Server host: this (UI) engine controls the service and receives its state.
         ServerControlApi.setUp(messenger, ServerControlHost(applicationContext))
         val dartListener = ServerStateListener(messenger)
-        val mainThread = Handler(Looper.getMainLooper())
         val listener: (ServerStateMessage) -> Unit = { state ->
-            // Pigeon FlutterApi calls must be made on the platform thread.
-            mainThread.post { dartListener.onStateChanged(state) {} }
+            // Pigeon 29 generates FlutterApi calls as `suspend fun`; launch on Main
+            // (the platform thread, which is where they must be made).
+            CoroutineScope(Dispatchers.Main).launch {
+                try {
+                    dartListener.onStateChanged(state)
+                } catch (e: Exception) {
+                    // The UI engine may be gone or mid-teardown; the service must not care.
+                }
+            }
         }
         stateListener?.let { ServerStateStore.removeListener(it) }
         stateListener = listener

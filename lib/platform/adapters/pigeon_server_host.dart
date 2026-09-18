@@ -23,6 +23,8 @@ final class PigeonServerHost implements ServerHost, ServerStateListener {
   }
 
   final ServerControlApi _api;
+  // App-lifetime singleton: lives until the process ends, so it is never closed.
+  // ignore: close_sinks
   final StreamController<ServerState> _changes = StreamController<ServerState>.broadcast();
 
   @override

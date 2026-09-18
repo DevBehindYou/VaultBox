@@ -255,18 +255,24 @@ class AuroraInlineBanner extends StatelessWidget {
           if (technicalDetail != null)
             Theme(
               data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-              child: ExpansionTile(
-                tilePadding: EdgeInsets.zero,
-                title: Text("Technical details", style: AuroraTypography.bodySm),
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: SelectableText(
-                      technicalDetail!,
-                      style: AuroraTypography.labelMonoSm,
+              // ExpansionTile paints on the nearest Material; the card's coloured
+              // DecoratedBox would hide its ink and trips a framework assertion
+              // (found by Home's failed-server widget test). Give it its own.
+              child: Material(
+                type: MaterialType.transparency,
+                child: ExpansionTile(
+                  tilePadding: EdgeInsets.zero,
+                  title: Text("Technical details", style: AuroraTypography.bodySm),
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: SelectableText(
+                        technicalDetail!,
+                        style: AuroraTypography.labelMonoSm,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           if (actionLabel != null && onAction != null)

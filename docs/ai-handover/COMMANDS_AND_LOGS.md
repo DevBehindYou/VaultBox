@@ -12,6 +12,7 @@
 | #4 | 35365194176 | `87673b9` | 3 tests fail (reload semantics, dialog) |
 | #5 | 35366008573 | `89e2b38` | **green**, 100 tests |
 | #6 | 35366984098 | `4bd1af5` | **green**, 108 tests, Kotlin in APK |
+| #7 | 35368040933 | `fc5f2f4` | **green**, 108 tests (docs + `paths-ignore`) |
 
 ## Reading CI (Git Bash)
 ```bash

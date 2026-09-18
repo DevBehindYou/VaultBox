@@ -14,7 +14,7 @@ A secure local-first phone storage server: local file manager first (always work
 - Application launches: **UNKNOWN** — never run on any device
 - Core functionality works: **PARTIAL** — local file manager logic verified with in-memory backends; no real-device or SAF verification; cannot import/open files yet
 - Tests passing: **108 / 108** (CI, Linux)
-- CI/CD working: **YES** (`.github/workflows/ci.yml`; runs #5, #6 green)
+- CI/CD working: **YES** (`.github/workflows/ci.yml`; runs #5, #6, #7 green)
 - Deployment working: **N/A** (nothing deployed)
 
 ## What Was Completed
@@ -25,7 +25,7 @@ A secure local-first phone storage server: local file manager first (always work
 - Reconciled the native SAF bridge with real Pigeon output; added a Dart adapter; +11 regression tests.
 
 ## What Is Currently Being Worked On
-Nothing in flight. Work is on branch `ci/bootstrap` (7 commits, not merged); handover docs uncommitted.
+Nothing in flight. Work is on branch `ci/bootstrap` (8 commits incl. docs, not merged; latest green `fc5f2f4`).
 
 ## Most Important Discoveries
 1. The environment can't host the SDK → **CI is the only compiler**; use the `ci-reports` branch to read results.

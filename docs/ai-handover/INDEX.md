@@ -4,7 +4,7 @@
 VaultBox (Flutter/Android phone-as-NAS) — `github.com/DevBehindYou/VaultBox`
 
 ## Last Updated
-2026-09-18 — Session 1. Latest green commit `4bd1af5` on branch `ci/bootstrap` (CI run 35366984098).
+2026-09-18 — Session 1. Latest green commit `fc5f2f4` on branch `ci/bootstrap` (CI run 35368040933).
 
 ## Handover Purpose
 

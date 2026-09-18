@@ -106,7 +106,7 @@ Run #6: Kotlin compiles into the APK; 8 adapter tests pass. **Never executed on 
 
 ---
 ## Change 11 — Handover documentation
-`docs/ai-handover/*` (this package). Docs-only; still **uncommitted** at the time of writing (see CURRENT_STATE).
+`docs/ai-handover/*` (this package) + `paths-ignore: docs/**, **.md` on `push` in `ci.yml`. Committed as `fc5f2f4`; run #7 green.
 
 ---
 ## Explicitly NOT changed

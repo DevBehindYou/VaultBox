@@ -18,7 +18,7 @@
 10. **Run #5 — first fully green** (100 tests): root causes were the disposed `TextEditingController` (real bug) and the reload race.
 11. **SAF bridge:** read real Pigeon output → `suspend fun`, `Dispatchers.Main`, `FlutterActivity` ≠ `ComponentActivity`, illegal persistable flag in the draft. Rewrote Kotlin + `MainActivity` + Dart adapter (+8 tests).
 12. **Run #6 — green** (108 tests, APK includes Kotlin).
-13. Wrote this handover. (Docs are uncommitted at time of writing.)
+13. Wrote this handover; committed with a workflow `paths-ignore` for docs. **Run #7 (`fc5f2f4`) green.**
 
 ### User corrections preserved
 | # | Correction | Effect |
@@ -34,7 +34,7 @@
 - The plan references a 29-file external doc set not in the repo.
 
 ### Result at end of session
-Green CI on `ci/bootstrap@4bd1af5`; APK artifact available; handover written; **nothing device-verified; not merged to `main`.**
+Green CI on `ci/bootstrap@fc5f2f4`; APK artifact available; handover written; **nothing device-verified; not merged to `main`.**
 
 ### Pending at end of session
 See `PENDING_TASKS.md` (P0: land the branch + real-device smoke test).

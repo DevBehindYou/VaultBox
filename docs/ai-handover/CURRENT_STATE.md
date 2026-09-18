@@ -15,8 +15,8 @@
 | `flutter build apk --release` | **UNKNOWN** — never attempted (R8/minify untested; signs with debug key) | — |
 | `dart format` conformance | **BROKEN (advisory)** — nearly every file "Changed" | run #6 `logs/format.log` |
 
-The latest green commit is **`4bd1af5`** on branch **`ci/bootstrap`** (CI run
-https://github.com/DevBehindYou/VaultBox/actions/runs/35366984098). *Everything the next agent does
+The latest green commit is **`fc5f2f4`** on branch **`ci/bootstrap`** (CI run
+https://github.com/DevBehindYou/VaultBox/actions/runs/35368040933) — identical code to `4bd1af5` (run #6) plus the handover docs and a workflow `paths-ignore`. *Everything the next agent does
 should start from that commit.*
 
 ## Runtime Status
@@ -67,14 +67,14 @@ SD-card/custom-folder onboarding option (UI-disabled with a "Phase 2" label).
 - `flutter_lints` held at 5.0.0 (6.0.0 exists).
 
 ## Current Branch
-`ci/bootstrap` (tracks `origin/ci/bootstrap`). **7 commits ahead of `main`**; **no PR opened; not merged.**
+`ci/bootstrap` (tracks `origin/ci/bootstrap`). **8 commits ahead of `main`**; **no PR opened; not merged.**
 `main` = `37f1d60` ("Push", made by the user).
 
 ## Current Commit
-`4bd1af5` (green) + **uncommitted** handover docs in `docs/ai-handover/` (this directory) — see Uncommitted Changes.
+`fc5f2f4` (green; includes the handover docs). A follow-up docs-only commit may sit on top — docs-only pushes skip CI.
 
 ## Uncommitted Changes
-Only `docs/ai-handover/*` (new). Nothing else is pending locally. The design folder
+None expected — working tree was clean and in sync with `origin/ci/bootstrap` at the end of the session. The design folder
 `vaultbox_full_app_ui_ux_design/` is already committed on `main` (163 files).
 
 ## Environment
@@ -90,7 +90,7 @@ Only `docs/ai-handover/*` (new). Nothing else is pending locally. The design fol
 - Repository `https://github.com/DevBehindYou/VaultBox` — **public**; default branch `main`.
 - Remote branches: `main`, `ci/bootstrap`, `ci-reports` (automation-owned, force-pushed each run).
 - PRs: none. Releases/tags: none.
-- Workflow: `.github/workflows/ci.yml`, job `verify` — **6 runs**; #5 and #6 green (Gate passed). Actions artifact: `vaultbox-debug-apk` (14-day retention).
+- Workflow: `.github/workflows/ci.yml`, job `verify` — **7 runs**; #5, #6 and #7 (`fc5f2f4`) green (Gate passed). Actions artifact: `vaultbox-debug-apk` (14-day retention).
 - Local `.git` identity: `DevBehindYou <ashutoshsept20@gmail.com>` (note: differs from the `akash.sep28@gmail.com` account email — irrelevant unless attribution matters).
 
 ## Deployment State
@@ -100,7 +100,7 @@ None. No servers, domains, or secrets. **Secrets required: none.** (`GITHUB_TOKE
 Green (run #6). Known upcoming break: runner label `ubuntu-latest` migrates to Ubuntu 26 on 2026-10-19.
 
 ## Current Test State
-108 pass / 0 fail / 0 skipped in CI (Linux). One DirectPath test is `skip: Platform.isWindows`. See TESTING_STATUS.md.
+108 pass / 0 fail in CI (Linux), reproduced in runs #6 and #7. One DirectPath test is `skip: Platform.isWindows` (skipped tests are not counted as failures). See TESTING_STATUS.md.
 
 ## Unresolved Conflicts Between Sources
 - `docs/IMPLEMENTATION_PLAN.md` and `README.md` still say "nothing has been compiled" and that `android/` doesn't exist and that SAF Kotlin is unreconciled — **now stale** (code + CI supersede them; priority rule: latest verified state > docs). They have **not** been updated yet (see PENDING_TASKS P1).

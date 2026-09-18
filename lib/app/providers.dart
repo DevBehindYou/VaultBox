@@ -11,11 +11,13 @@ import "../data/services/memory_storage_backend.dart";
 import "../data/services/saf_storage_backend.dart";
 import "../data/services/system_clock.dart";
 import "../domain/entities/recycle_item.dart";
+import "../domain/entities/server_state.dart";
 import "../domain/entities/storage_root.dart";
 import "../domain/repositories/clock.dart";
 import "../domain/repositories/file_repository.dart";
 import "../domain/repositories/id_generator.dart";
 import "../domain/repositories/recycle_bin_repository.dart";
+import "../domain/repositories/server_host.dart";
 import "../domain/repositories/storage_backend.dart";
 import "../domain/repositories/storage_root_repository.dart";
 import "../domain/usecases/copy_items.dart";
@@ -26,6 +28,7 @@ import "../domain/usecases/permanently_delete_recycled.dart";
 import "../domain/usecases/restore_items.dart";
 import "../platform/adapters/android_storage_host.dart";
 import "../platform/adapters/pigeon_android_storage_host.dart";
+import "../platform/adapters/pigeon_server_host.dart";
 
 /// Composition root for the storage/file layer.
 ///
@@ -191,3 +194,13 @@ final recycleItemsProvider =
     StreamProvider.autoDispose.family<List<RecycleItem>, String>((Ref ref, String rootId) {
       return ref.watch(recycleBinRepositoryProvider).watchItems(rootId);
     });
+
+// --- Server host (Phase 2) ---
+
+/// Controls the Foreground Service that hosts the server. Overridable in tests.
+final Provider<ServerHost> serverHostProvider =
+    Provider<ServerHost>((Ref ref) => PigeonServerHost());
+
+/// The server's live state (native owns it; this mirrors it).
+final StreamProvider<ServerState> serverStateProvider =
+    StreamProvider<ServerState>((Ref ref) => ref.watch(serverHostProvider).watch());

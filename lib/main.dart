@@ -5,6 +5,13 @@ import "package:go_router/go_router.dart";
 import "app/router.dart";
 import "core/design/aurora_theme.dart";
 import "core/logging/app_logger.dart";
+import "server/server_main.dart";
+
+/// The service's headless engine looks `serverMain` up BY NAME
+/// (`ServerForegroundService`), and nothing in the UI calls it — without a
+/// reference from here the library would not be linked into the app at all.
+// ignore: unused_element
+const Future<void> Function() _serverEntrypoint = serverMain;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

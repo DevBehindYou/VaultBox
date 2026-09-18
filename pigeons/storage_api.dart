@@ -176,3 +176,52 @@ abstract class AndroidStorageApi {
   @async
   List<PickedFileMessage> pickFilesToCache();
 }
+
+// ---------------------------------------------------------------------------
+// Server host (Phase 2). Two Flutter engines are involved and must not be
+// confused:
+//  - the UI engine (the Activity's) CONTROLS the service via ServerControlApi
+//    and RECEIVES state pushes via ServerStateListener;
+//  - the service's own headless engine RUNS the Dart server (`serverMain`) and
+//    REPORTS its state to native via ServerRuntimeApi.
+// The Android Foreground Service, not the Activity, owns the server lifecycle
+// (ADR-006), so state lives in native and is pushed to whichever UI is attached.
+// ---------------------------------------------------------------------------
+
+enum ServerRunStateMessage {
+  stopped,
+  starting,
+  running,
+  failed,
+}
+
+class ServerStateMessage {
+  ServerRunStateMessage? state;
+
+  /// Where the server can be reached, when running (e.g. http://127.0.0.1:41234/health/).
+  String? endpoint;
+
+  /// Human-readable failure reason, when failed.
+  String? detail;
+}
+
+/// UI engine -> native. Synchronous on purpose: these only start/stop the
+/// service and read a snapshot.
+@HostApi()
+abstract class ServerControlApi {
+  void start();
+  void stop();
+  ServerStateMessage getState();
+}
+
+/// Service (headless) engine -> native.
+@HostApi()
+abstract class ServerRuntimeApi {
+  void reportState(ServerStateMessage state);
+}
+
+/// Native -> UI engine push whenever the server state changes.
+@FlutterApi()
+abstract class ServerStateListener {
+  void onStateChanged(ServerStateMessage state);
+}

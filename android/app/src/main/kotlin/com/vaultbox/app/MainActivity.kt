@@ -1,7 +1,14 @@
 package com.vaultbox.app
 
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import com.vaultbox.app.pigeon.AndroidStorageApi
+import com.vaultbox.app.pigeon.ServerControlApi
+import com.vaultbox.app.pigeon.ServerStateListener
+import com.vaultbox.app.pigeon.ServerStateMessage
+import com.vaultbox.app.server.ServerControlHost
+import com.vaultbox.app.server.ServerStateStore
 import com.vaultbox.app.storage.ActivityDocumentPickerLauncher
 import com.vaultbox.app.storage.ActivityTreePickerLauncher
 import com.vaultbox.app.storage.SafStorageHostApi
@@ -11,15 +18,35 @@ import io.flutter.embedding.engine.FlutterEngine
 class MainActivity : FlutterActivity() {
     private val treePicker = ActivityTreePickerLauncher()
     private val documentPicker = ActivityDocumentPickerLauncher()
+    private var stateListener: ((ServerStateMessage) -> Unit)? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        val messenger = flutterEngine.dartExecutor.binaryMessenger
+
+        // Storage / pickers
         treePicker.bind { intent -> startActivityForResult(intent, REQUEST_OPEN_TREE) }
         documentPicker.bind { intent -> startActivityForResult(intent, REQUEST_PICK_DOCUMENTS) }
-        AndroidStorageApi.setUp(
-            flutterEngine.dartExecutor.binaryMessenger,
-            SafStorageHostApi(applicationContext, treePicker, documentPicker),
-        )
+        AndroidStorageApi.setUp(messenger, SafStorageHostApi(applicationContext, treePicker, documentPicker))
+
+        // Server host: this (UI) engine controls the service and receives its state.
+        ServerControlApi.setUp(messenger, ServerControlHost(applicationContext))
+        val dartListener = ServerStateListener(messenger)
+        val mainThread = Handler(Looper.getMainLooper())
+        val listener: (ServerStateMessage) -> Unit = { state ->
+            // Pigeon FlutterApi calls must be made on the platform thread.
+            mainThread.post { dartListener.onStateChanged(state) {} }
+        }
+        stateListener?.let { ServerStateStore.removeListener(it) }
+        stateListener = listener
+        ServerStateStore.addListener(listener)
+    }
+
+    override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        // The service outlives this Activity; only detach OUR listener.
+        stateListener?.let { ServerStateStore.removeListener(it) }
+        stateListener = null
+        super.cleanUpFlutterEngine(flutterEngine)
     }
 
     @Suppress("DEPRECATION")

@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
@@ -7,8 +9,11 @@ import "../../../core/design/aurora_colors.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
+import "../../../core/errors/app_failure.dart";
 import "../../../core/utils/byte_format.dart";
+import "../../../domain/entities/server_state.dart";
 import "../../../domain/entities/storage_root.dart";
+import "../../../domain/repositories/server_host.dart";
 
 /// Home. Deliberately thinner than its mockup.
 ///
@@ -20,9 +25,9 @@ import "../../../domain/entities/storage_root.dart";
 /// monitoring dashboard. Throughput and device temperature answer none of
 /// those six, so they live in Server Details / Diagnostics instead.
 ///
-/// Server state is Phase 2; until the Foreground Service exists this screen
-/// shows the real storage picture and an honest "not running yet" state
-/// rather than a mocked-up live server.
+/// Server state is real as of Phase 2 (Foreground Service + headless Dart
+/// runtime), but the server itself is still a loopback-only health listener:
+/// this screen says so plainly instead of implying network serving.
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -44,7 +49,7 @@ class HomeScreen extends ConsumerWidget {
               children: <Widget>[
                 Text("VaultBox", style: AuroraTypography.headlineLg),
                 const Spacer(),
-                const AuroraStatusChip(label: "Server off", status: AuroraStatus.idle),
+                const _ServerStatusChip(),
               ],
             ),
             const SizedBox(height: AuroraSpacing.md),
@@ -71,26 +76,102 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _ServerCard extends StatelessWidget {
-  const _ServerCard();
+class _ServerStatusChip extends ConsumerWidget {
+  const _ServerStatusChip();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ServerState server =
+        ref.watch(serverStateProvider).value ?? const ServerState.stopped();
+    return switch (server.run) {
+      ServerRunState.stopped => const AuroraStatusChip(label: "Server off", status: AuroraStatus.idle),
+      ServerRunState.starting => const AuroraStatusChip(label: "Starting…", status: AuroraStatus.idle),
+      ServerRunState.running => const AuroraStatusChip(label: "Server on", status: AuroraStatus.live),
+      ServerRunState.failed => const AuroraStatusChip(label: "Failed", status: AuroraStatus.danger),
+    };
+  }
+}
+
+class _ServerCard extends ConsumerWidget {
+  const _ServerCard();
+
+  Future<void> _run(BuildContext context, Future<void> Function() action) async {
+    try {
+      await action();
+    } on AppFailure catch (failure) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ServerState server =
+        ref.watch(serverStateProvider).value ?? const ServerState.stopped();
+    final ServerHost host = ref.read(serverHostProvider);
+
+    final String headline = switch (server.run) {
+      ServerRunState.stopped => "Your phone isn't serving.",
+      ServerRunState.starting => "Starting the server…",
+      ServerRunState.running => "The server is running.",
+      ServerRunState.failed => "The server couldn't start.",
+    };
+    final String explanation = switch (server.run) {
+      ServerRunState.stopped =>
+        "Start VaultBox's background service. For now it only runs a health "
+            "check on this phone itself; sharing files over the network "
+            "(HTTPS, WebDAV) arrives in Phase 3.",
+      ServerRunState.starting => "Starting the background service…",
+      ServerRunState.running =>
+        "The background service is running. It answers on this phone only — "
+            "nothing is exposed to your network yet.",
+      ServerRunState.failed => "Something went wrong starting the background service.",
+    };
+
     return AuroraCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("Your phone isn't serving yet.", style: AuroraTypography.headlineMd),
+          Text(headline, style: AuroraTypography.headlineMd),
           const SizedBox(height: AuroraSpacing.sm),
           Text(
-            "The local file manager works now. Network serving over HTTPS and "
-            "WebDAV arrives with the Phase 2 background service.",
+            explanation,
             style: AuroraTypography.bodyMd.copyWith(color: AuroraColors.inkSecondary),
           ),
+          if (server.isRunning && server.endpoint != null) ...<Widget>[
+            const SizedBox(height: AuroraSpacing.sm),
+            SelectableText(
+              server.endpoint!,
+              style: AuroraTypography.tabularFigures(AuroraTypography.labelMonoMd),
+            ),
+          ],
+          if (server.run == ServerRunState.failed && server.detail != null) ...<Widget>[
+            const SizedBox(height: AuroraSpacing.sm),
+            AuroraInlineBanner(
+              message: "The service reported an error.",
+              status: AuroraStatus.danger,
+              technicalDetail: server.detail,
+            ),
+          ],
           const SizedBox(height: AuroraSpacing.md),
-          // No fake Start button: per kickoff §77 a control that looks live but
-          // does nothing is worse than none at all.
-          const AuroraStatusChip(label: "HTTPS", status: AuroraStatus.idle, detail: "8443"),
+          switch (server.run) {
+            ServerRunState.running => OutlinedButton.icon(
+              onPressed: () => unawaited(_run(context, host.stop)),
+              icon: const Icon(Icons.stop),
+              label: const Text("Stop server"),
+            ),
+            ServerRunState.starting => const AuroraPrimaryButton(
+              label: "Starting…",
+              onPressed: null,
+              expand: false,
+            ),
+            ServerRunState.stopped || ServerRunState.failed => AuroraPrimaryButton(
+              label: server.run == ServerRunState.failed ? "Try again" : "Start server",
+              icon: Icons.play_arrow,
+              expand: false,
+              onPressed: () => unawaited(_run(context, host.start)),
+            ),
+          },
         ],
       ),
     );

@@ -9,7 +9,7 @@ You are continuing an existing project. **Do NOT restart it.** It is a Flutter/A
 **The user cannot install Flutter/Dart/Android SDK (no disk). Never download or install a toolchain, and never propose it.** All verification is GitHub Actions. (User correction #1 in PROJECT_CONTEXT.)
 
 ## First objective
-Get the user's decision on landing `ci/bootstrap`, and get a **real-device smoke test** of the debug APK (PENDING P0). Then P1: file import/open, SAF wiring, on-device SAF byte-I/O validation.
+Get the user's decision on landing `ci/bootstrap` (PENDING P0). The real-device smoke test **was done** (one phone, Android 14) and the core flow passed — see CURRENT_STATE 'Runtime Status'. Then P1: propose **stable debug signing**, file import/open, SAF wiring, on-device SAF byte-I/O validation. **If the user connects a phone again, test on it** (COMMANDS_AND_LOGS 'Device testing'): a phone catches whole bug classes CI cannot (e.g. the dark-mode selection bug).
 
 ## The verification loop (memorise this)
 ```bash
@@ -47,7 +47,9 @@ git show origin/ci-reports:generated/StorageApi.g.kt   # real Pigeon output
 6. `.github/workflows/ci.yml`
 
 ## Do NOT repeat
-- Do **not** try to install Flutter/Android locally or run `flutter` on the user's machine.
+- Do **not** try to install Flutter/Android locally or run `flutter` on the user's machine (`adb`/`aapt2` from the existing partial Android SDK are fine).
+- Do **not** trust a screenshot after `adb install` without reading the install result; a failed install leaves the OLD build running.
+- Do **not** read logcat unfiltered or touch other apps/data on the user's phone; do **not** use root to alter the device. Uninstalling *this* test app is fine (say so).
 - Do **not** run `flutter create .` in the repo (adds a broken `widget_test.dart`); the scaffold is already committed.
 - Do **not** re-add `sqlite3_flutter_libs ^0.5.x` (breaks `pub get`).
 - Do **not** call `StoragePath.parse` for names you already hold, nor `child` for wire input.

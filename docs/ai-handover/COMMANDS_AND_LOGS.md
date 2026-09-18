@@ -93,3 +93,25 @@ None.
 
 ## Secrets
 Required: **none.** (`GITHUB_TOKEN` is auto-injected per run.) The `gh` token lives in the user's Windows keyring — *VALUE NOT STORED FOR SECURITY*. Nothing secret is in this repo, this handover, or `ci-reports`.
+
+## Device testing (adb) — how the phone test was done
+Preconditions: user connects the phone, unlocks it, accepts the 'Allow USB debugging' prompt; `adb devices -l` must show `device` (this session: serial `5ff095c7f80a`, model `23076RN4BI`). `adb` is on PATH (`%LOCALAPPDATA%\Android\Sdk\platform-tools`). **The phone is personal — scope everything to the app.**
+```bash
+adb devices -l
+adb -s <serial> shell getprop ro.build.version.release        # also ro.product.cpu.abilist
+gh api repos/DevBehindYou/VaultBox/actions/runs/<RUN>/artifacts --jq '.artifacts[0].id'
+gh api repos/DevBehindYou/VaultBox/actions/artifacts/<ID>/zip > a.zip ; unzip a.zip      # reliable; `gh run download` silently did nothing in the background
+aapt2 dump badging app-debug.apk | grep -E "^package:|native-code"   # build-tools\<ver>\aapt2.exe
+adb -s <serial> install app-debug.apk        # -r only if signed with the SAME key (Error 14); else adb uninstall com.vaultbox.app first
+adb -s <serial> shell am start -W -n com.vaultbox.app/.MainActivity
+adb -s <serial> shell pidof com.vaultbox.app
+adb -s <serial> logcat -d --pid=<pid> -v brief *:E flutter:W   # ONLY the app's process; never dump the whole log
+adb -s <serial> exec-out screencap -p > shot.png   # 1080x2460; the image viewer shows 878x2000 => multiply coordinates by 1.23
+adb -s <serial> shell input tap X Y      # long-press: input swipe X Y X Y 900 ; text: input text Photos ; back: input keyevent KEYCODE_BACK
+adb -s <serial> shell "uiautomator dump /sdcard/u.xml; cat /sdcard/u.xml; rm /sdcard/u.xml"   # Flutter exposes content-desc => read on-screen text
+adb -s <serial> shell "run-as com.vaultbox.app find app_flutter | sort"    # debug builds only; app-private files, no root needed
+adb -s <serial> shell am force-stop com.vaultbox.app                       # cold-restart persistence test
+```
+Coordinates used (original 1080x2460): Home 'Set up storage' (328,1114) · onboarding CTA (539,2349) · 'This phone' card (539,775) · dock Files (343,2312) · 'New folder' FAB (846,2091) · dialog Create (768,984) · first list row (269,568) · Delete in selection bar (833,2066) · confirm 'Move to Recycle Bin' (695,1426) · header trash icon (788,262) · Recycle 'Restore' (755,416). Re-derive from a fresh screenshot if layouts change. The tap/screenshot PowerShell helper lived in the agent scratchpad (not in the repo).
+
+On-device facts: app-private root `/data/user/0/com.vaultbox.app/app_flutter/` holds `vaultbox.sqlite` and `storage/` (file root) with `.vaultbox/recycle/<uuid>__<name>`. Benign log noise: hidden-API reflection warnings, `base.dm` missing, an SELinux `max_map_count` denial.

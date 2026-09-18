@@ -11,9 +11,9 @@ A secure local-first phone storage server: local file manager first (always work
 
 ## Current Status
 - Project builds: **YES** (debug APK, CI run #6)
-- Application launches: **UNKNOWN** — never run on any device
-- Core functionality works: **PARTIAL** — local file manager logic verified with in-memory backends; no real-device or SAF verification; cannot import/open files yet
-- Tests passing: **108 / 108** (CI, Linux)
+- Application launches: **YES** — verified on a real phone (Xiaomi 23076RN4BI (custom ROM AP1A.240505.005), Android 14 / API 34, arm64-v8a, rooted, USB debugging) on 2026-09-18
+- Core functionality works: **PARTIAL** — on a real phone: onboarding, storage setup, create folder, select, delete → Recycle Bin → restore, and persistence across a cold restart all WORK. Not verified: SAF/SD-card path, large files. Cannot import/open files yet
+- Tests passing: **111 / 111** (CI, Linux; run 35371459634)
 - CI/CD working: **YES** (`.github/workflows/ci.yml`; runs #5, #6, #7 green)
 - Deployment working: **N/A** (nothing deployed)
 
@@ -22,7 +22,8 @@ A secure local-first phone storage server: local file manager first (always work
 - Fixed a dependency-resolution failure, 5 compile errors, several analyzer issues.
 - Fixed real bugs: **data loss on same-folder/ancestor Replace**, path-name mangling, reload race (duplicate rows/hangs), disposed-controller crash, null dereferences, DB-in-file-root, visible bookkeeping folder.
 - Committed the generated Android scaffold (Gradle 9.3.1 / Kotlin 2.4.0, minSdk 29).
-- Reconciled the native SAF bridge with real Pigeon output; added a Dart adapter; +11 regression tests.
+- Reconciled the native SAF bridge with real Pigeon output; added a Dart adapter; +14 regression tests.
+- **Tested on a real phone over adb** (user connected it): install, launch, onboarding, create/select/delete/restore, on-disk layout, cold-restart persistence. Found and fixed a dark-mode bug (selected row light-on-light) that no test could catch; found the debug-signing mismatch.
 
 ## What Is Currently Being Worked On
 Nothing in flight. Work is on branch `ci/bootstrap` (8 commits incl. docs, not merged; latest green `fc5f2f4`).
@@ -41,8 +42,8 @@ See ERRORS_AND_FIXES.md #1–#12. **Open:** SAF byte I/O via `/proc/self/fd` unp
 CHANGES_MADE.md changes 1–10.
 
 ## Current Blockers
-- **User action needed:** real-device smoke test of the APK; approval to merge/PR `ci/bootstrap` → `main`.
-- No device/emulator is available to the agent; nothing can be runtime-verified without the user.
+- **User decision needed:** approval to open a PR / merge `ci/bootstrap` → `main`.
+- The phone is available only while the user connects it (agent can then install + drive the app over adb; see COMMANDS_AND_LOGS 'Device testing'). CI debug APKs are signed with a different key per run, so each new build needs `adb uninstall` first (ERRORS_AND_FIXES #14, PENDING P1).
 
 ## Pending Work
 PENDING_TASKS.md (P0: land branch + smoke test; P1: file import/open, wire SAF, validate SAF I/O, refresh stale docs, tighten CI).

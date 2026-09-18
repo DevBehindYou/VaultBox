@@ -10,7 +10,7 @@ Every task below assumes the **CI-only verification loop** (no local SDK). "Veri
   - Relevant files: whole branch. Dependencies: user approval.
   - Verification: `main` builds green in CI (workflow triggers on push to any branch except `ci-reports`).
 
-- [ ] **Smoke-test the debug APK on a real phone (user action) and report back.**
+- [x] **Smoke-test the debug APK on a real phone — DONE 2026-09-18** (agent-driven over adb while the user had the phone connected). Original text kept below; repeat after UI-affecting changes.
   - Problem: the app has never been launched; every runtime claim is UNKNOWN.
   - Required action: user downloads artifact `vaultbox-debug-apk` (run #6, 87.5 MB, expires 2026-10-02) — `gh run download 35366984098 -n vaultbox-debug-apk` (needs the user's OK: it's a file download) or the Actions page — installs it, then: launch → Files tab → "Set up storage" → "This phone" → New folder → long-press → Delete → Recycle Bin → Restore. Ask for a screenshot/`adb logcat` of any crash.
   - Verification: user confirms each step; any crash gets logged in ERRORS_AND_FIXES.
@@ -41,6 +41,10 @@ Every task below assumes the **CI-only verification loop** (no local SDK). "Veri
 - [ ] **Add rename + file-details entry points in the Files UI** (VM/backends already support rename; no UI calls it).
 
 - [ ] **Tighten CI gate:** `--fatal-infos`, then enforce `dart format` after a single dedicated reformat commit (DECISIONS D11); pin `runs-on: ubuntu-24.04` before 2026-10-19; add `flutter test --coverage`.
+
+- [ ] **Stable debug signing so CI APKs update in place** (ERRORS_AND_FIXES #14). Ask the user first (adds a debug keystore to a public repo). Steps: `keytool -genkeypair -v -keystore android/app/debug.keystore -alias androiddebugkey -storepass android -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"`, `.gitignore` exception, `signingConfigs.debug` in `app/build.gradle.kts`, CI green, one last uninstall, then `adb install -r` works. Release signing must use a different, secret key (GitHub Actions secrets) — never commit it.
+
+- [ ] **Polish found on the real phone:** Recycle Bin folder icon (store entry type in `RecycleItem` -> Drift schema bump); Home storage card free/total; dark-mode SnackBar styling/placement; dark-mode secondary-text contrast; launcher icon; audit remaining light-only `AuroraColors.*`; add a dark-theme widget pass for every screen.
 
 ## P2 — Medium
 

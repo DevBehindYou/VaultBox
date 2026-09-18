@@ -139,9 +139,40 @@ The platform accepts only READ/WRITE bits and throws `IllegalArgumentException` 
 
 ---
 
+## Error 13 — Selected file row unreadable in dark mode *(found on a real device)*
+### Symptom
+Long-press-selecting a folder in dark mode: the row background became near-white (#EEF3FB) while its text stayed light, so the folder name was practically invisible.
+### Root cause
+`FileRow` used the **light theme's** `AuroraColors.selectionSoft`/`selectionBlue` unconditionally; `AuroraColorsDark` had no selection colours. Widget tests only rendered the light theme, so CI could not see it.
+### Fix
+`AuroraColorsDark.selectionSoft (#1E2B40)` / `selectionBlue (#6AA7F2)`; `FileRow` picks by brightness. Test `test/features/file_row_test.dart` (3 tests). **Re-verified on the phone.**
+### Status: RESOLVED (run 35371459634 + on device)
+### Lesson
+The dark theme is this phone's default and no test rendered it. Other light-only `AuroraColors.*` uses remain (see CURRENT_STATE 'Known UI defects').
+
+---
+
+## Error 14 — Newer CI APK cannot update an installed one *(tooling, not app code)*
+### Error Message
+```text
+adb: failed to install app-debug.apk: Failure [INSTALL_FAILED_UPDATE_INCOMPATIBLE:
+Existing package com.vaultbox.app signatures do not match newer version; ignoring!]
+```
+### Root cause
+`flutter build apk --debug` signs with the runner's `~/.android/debug.keystore`, generated fresh on each new GitHub runner VM, so every CI run yields a differently-signed APK.
+### Workaround used
+`adb uninstall com.vaultbox.app` (deletes app-private data; only test data here), then `adb install`.
+### Proper fix (PROPOSED — needs the user's OK: it commits a debug signing key to a *public* repo)
+Generate one debug keystore with `keytool` (JDK 21 is installed locally), commit it as `android/app/debug.keystore` (+ `.gitignore` exception), set `signingConfigs.debug` in `android/app/build.gradle.kts`. **Debug-only; never reuse for a release key.** Afterwards `adb install -r` updates in place and keeps data.
+### Status: WORKAROUND ONLY — see PENDING_TASKS P1
+
+---
+
 ## Non-errors worth knowing (traps)
 
 - **`continue-on-error` masks failures in the step list.** `gh run view` / the Actions API show `success` for a step whose *outcome* was `failure`. Read `summary.md` or the gate.
 - **`dart format --set-exit-if-changed` fails on essentially every file** (Dart 3.13 formatter style). Advisory only; see DECISIONS D11.
 - **CRLF warnings on Windows** (`LF will be replaced by CRLF`) are harmless; the repo stores LF. No `.gitattributes` exists.
+- **A silent failed `adb install` leaves the OLD build running.** Read the install result ('Success') before trusting a screenshot.
+- `gh run download` produced an empty folder when run in the background; `gh api repos/.../actions/artifacts/<id>/zip > file.zip` worked (~45 s for 87 MB).
 - `actions/upload-artifact` etc.: latest majors used are `checkout@v7`, `setup-java@v6`, `upload-artifact@v7`, `flutter-action@v2` (checked 2026-09-18). A runner annotation warns `ubuntu-latest` migrates to Ubuntu 26 on 2026-10-19 — pin `ubuntu-24.04` if that breaks the build.

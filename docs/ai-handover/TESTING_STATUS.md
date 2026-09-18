@@ -2,8 +2,7 @@
 
 Terminology: *inspected* (read only) · *implemented* · *compiled* · *tested* (automated, CI) ·
 *verified in runtime* · *verified on a real device* · *verified in production*.
-**Nothing in this project has been verified on a device or in production.** All "tested" below means
-`flutter test` on `ubuntu-latest` in GitHub Actions.
+**Automated tests ran only in CI** (`flutter test` on `ubuntu-latest`). **A manual on-device smoke test was done on 2026-09-18** (see 'Device Testing'). Nothing has been verified in production.
 
 ## Build Testing
 - `flutter build apk --debug` — **compiled** OK in CI (run #6), incl. Kotlin. Artifact: `vaultbox-debug-apk`.
@@ -30,8 +29,20 @@ None. No `integration_test/` directory.
 ## UI Testing
 Widget tests for `FilesScreen` only. **Not covered:** onboarding, home, shell/dock/router, destination picker, conflict dialog, Recycle Bin screen in isolation, dark theme, accessibility/semantics, golden tests.
 
-## Device Testing / Compatibility Testing
-**None.** No device, emulator, OEM lab, or Android-version matrix.
+## Device Testing (manual, via adb) — 1 device
+**Device:** Xiaomi 23076RN4BI (custom ROM AP1A.240505.005), Android 14 / API 34, arm64-v8a, rooted, USB debugging. Installed the CI debug APK, drove it with `adb shell input` + screenshots, read logcat filtered to the app pid, inspected files with `run-as` (no root used).
+
+| Step | Result |
+|---|---|
+| Install / cold launch | OK, no crash |
+| Onboarding -> 'This phone' | OK; root + DB created; DB outside file root |
+| Files: empty state, New folder, refresh | OK |
+| Multi-select | OK; **dark-mode contrast bug found -> fixed -> re-verified on device** |
+| Delete -> Recycle Bin -> Restore | OK; on-disk state correct at each step |
+| Cold restart persistence | OK (root, folder) |
+| In-place update with a newer CI APK | **FAILED** INSTALL_FAILED_UPDATE_INCOMPATIBLE (per-run debug key) -> uninstall + reinstall |
+
+**Compatibility:** 1 device / 1 Android version (14). No other OEM, no Android 10-13/15+, no tablet/foldable, no light-theme pass.
 
 ## API Testing / Security Testing / Performance Testing
 No server exists. Path-traversal logic is unit-tested (highest-value tests, doc §42). No fuzzing, no perf/jank profiling, no 10,000-file benchmark, no memory profiling of streaming copy.
@@ -52,7 +63,7 @@ None (run #6).
 Code review of every file in `lib/`, `test/`, `pigeons/`, Kotlin draft, docs, design system doc. Mockups (80 screens) were **listed and sampled by name only**, not visually reviewed.
 
 ## Known Testing Gaps (prioritised)
-1. **Real-device smoke test** of the debug APK: launch → onboarding → "This phone" → create/delete/restore. *(User can do this: install the CI artifact.)*
+1. ~~Real-device smoke test~~ **DONE 2026-09-18** (1 device). Remaining device gaps: Copy/Move/conflict dialogs, Delete-forever, sort, 1,000+ item folders, rotation, light theme, TalkBack, other Android versions/OEMs.
 2. SAF on a real device: pick tree → list → create → copy a large file → read back (validates `/proc/self/fd`; R-19/R-20).
 3. Widget tests for onboarding, router/shell, destination picker, conflict dialog, Recycle Bin.
 4. A property/regression test for `BackendRegistry` `saf` path once wired.

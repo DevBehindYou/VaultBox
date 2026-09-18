@@ -4,7 +4,7 @@
 VaultBox (Flutter/Android phone-as-NAS) — `github.com/DevBehindYou/VaultBox`
 
 ## Last Updated
-2026-09-18 — Session 1. Latest green commit `fc5f2f4` on branch `ci/bootstrap` (CI run 35368040933).
+2026-09-18 — Session 1. Phone-tested green commit `11720c5` on branch `ci/bootstrap` (CI run 35371459634; 111 tests). See `git log` for later commits.
 
 ## Handover Purpose
 
@@ -39,4 +39,4 @@ This directory contains the project state and AI-session context required for an
 | NEXT_AGENT_INSTRUCTIONS.md | Exact continuation instructions, the CI loop, do-not-repeat list |
 
 ## One-paragraph orientation
-The code compiles, analyzes clean, passes 108 tests and builds a debug APK — **only in GitHub Actions** (the user cannot install SDKs). It has never run on a device. Results are readable via `git fetch origin ci-reports`. Work is on `ci/bootstrap`, not yet merged. Start with PENDING_TASKS P0.
+The code compiles, analyzes clean, passes 111 tests and builds a debug APK — **only in GitHub Actions** (the user cannot install SDKs). It was smoke-tested on one real phone (Android 14) over adb: the core local-file-manager flow works. Results are readable via `git fetch origin ci-reports`. Work is on `ci/bootstrap`, not yet merged. Start with PENDING_TASKS P0.

@@ -15,24 +15,24 @@
 | `flutter build apk --release` | **UNKNOWN** — never attempted (R8/minify untested; signs with debug key) | — |
 | `dart format` conformance | **BROKEN (advisory)** — nearly every file "Changed" | run #6 `logs/format.log` |
 
-The latest green commit is **`fc5f2f4`** on branch **`ci/bootstrap`** (CI run
-https://github.com/DevBehindYou/VaultBox/actions/runs/35368040933) — identical code to `4bd1af5` (run #6) plus the handover docs and a workflow `paths-ignore`. *Everything the next agent does
+As of the phone test, the latest green commit is **`11720c5`** on branch **`ci/bootstrap`** (CI run https://github.com/DevBehindYou/VaultBox/actions/runs/35371459634; **111 tests**, analyze clean, APK builds). Later commits: see SESSION_HISTORY / `git log`. *Everything the next agent does
 should start from that commit.*
 
 ## Runtime Status
-**UNKNOWN.** The app has **never been launched** — no device or emulator was ever available
-(`adb devices` empty; no emulator installed; the user cannot install SDKs). Widget tests
-(in-memory backends) prove the Files UI logic; nothing proves real startup, Drift on-device,
-`path_provider`, the dock, or the SAF bridge.
+**VERIFIED ON A REAL DEVICE (2026-09-18, manual, via adb):** Xiaomi 23076RN4BI (custom ROM AP1A.240505.005), Android 14 / API 34, arm64-v8a, rooted, USB debugging. Cold start OK (~3.4-4.7 s), Impeller renderer, **no crash, no Dart exception, no app-process errors in logcat** through the whole flow.
+
+Verified on-device: Home -> onboarding (Welcome -> Choose storage -> Ready) -> **'This phone' root created** (`app_flutter/storage`, hidden `.vaultbox`); Drift DB created **outside** the file root (`app_flutter/vaultbox.sqlite`); Files tab; **New folder** dialog (no controller crash); listing refresh; long-press multi-select; delete -> confirm dialog -> moved to `.vaultbox/recycle/<uuid>__<name>` (verified on disk via `run-as`); Recycle Bin screen; **Restore** (verified on disk; list refreshes on return); **cold-restart persistence** (root + folder survive `am force-stop`).
+
+**Not verified on-device:** SAF picker/bridge (native code never executed), large-file I/O, Copy/Move/conflict dialogs, Delete-forever, sort, rotation/foldable layouts, light theme, TalkBack, low storage, background behaviour.
 
 ## Feature Status
 
 | Feature | Status | Notes |
 |---|---|---|
 | Aurora Glass tokens / light+dark theme | **PARTIALLY VERIFIED** | compiles + used by passing widget tests; dark mode incomplete (light-only `AuroraColors.*` in several widgets); fonts not bundled |
-| 5-tab shell + dock + go_router | **IMPLEMENTED BUT UNTESTED** (compiles) | no shell/router test exists; no first-run redirect to onboarding (app opens on `/home`) |
-| Onboarding (Welcome → Storage → Ready) | **IMPLEMENTED BUT UNTESTED** | "This phone" root now `<documents>/storage`; SD/custom-folder option still disabled; no widget test |
-| Home | **IMPLEMENTED BUT UNTESTED** | honest "server off" card + storage list; no real server state |
+| 5-tab shell + dock + go_router | **VERIFIED ON DEVICE** (manual) | no shell/router test exists; no first-run redirect to onboarding (app opens on `/home`) |
+| Onboarding (Welcome → Storage → Ready) | **VERIFIED ON DEVICE** (manual) | "This phone" root now `<documents>/storage`; SD/custom-folder option still disabled; no widget test |
+| Home | **VERIFIED ON DEVICE** (manual) | honest 'server off' card + storage list; **storage card shows no free/total space** (`freeBytes` never populated) |
 | Files: browse / page / sort / multi-select | **VERIFIED** (widget + VM tests, in-memory) | sort is per-loaded-page only |
 | Files: create folder | **VERIFIED** (widget test) | dialog bug fixed |
 | Files: rename | **IMPLEMENTED BUT UNTESTED** at UI level | VM + backend rename tested; **no rename UI entry point exists** |
@@ -45,7 +45,7 @@ should start from that commit.*
 | Kotlin `SafStorageHostApi` + `MainActivity` wiring | **PARTIALLY VERIFIED** — compiles against real generated interface; **never run** | |
 | Dart `PigeonAndroidStorageHost` adapter | **VERIFIED** vs a fake Pigeon client (8 tests); never talks to real native | **not used by app code yet** |
 | SAF as a selectable storage root | **NOT IMPLEMENTED** | `BackendRegistry._create` still throws `UnimplementedError` for `saf`; onboarding option disabled; `StorageRoot` has no field for the root document id |
-| Drift DB (`storage_roots`, `recycle_items`) | **VERIFIED** (8 tests, in-memory sqlite on Linux) | on-device open path (`driftDatabase`) untested |
+| Drift DB (`storage_roots`, `recycle_items`) | **VERIFIED** (8 tests, in-memory sqlite on Linux) | **on-device: DB created, root persisted across a cold restart** (verified) |
 | Server (FGS, HTTPS, WebDAV, REST), auth, users/ACL, sharing, Vault, transfers, activity, diagnostics, settings | **NOT IMPLEMENTED** | Share/Activity/Settings tabs are honest placeholders |
 
 ## Working Components
@@ -56,6 +56,14 @@ SAF stack (Dart backend + adapter + Kotlin) — each layer passes what it can in
 
 ## Broken Components
 None known to be *failing* today. (`dart format` is advisory-red.)
+
+## Known UI defects seen on the real phone (not yet fixed)
+- Recycle Bin shows a generic **file** icon even for folders (`RecycleItem` has no type).
+- Home 'Storage' card lists 'This phone' with no used/free space.
+- The confirmation **SnackBar is a bright white bar** in dark mode, sitting over the FAB/dock area.
+- Secondary text (grey on near-black) is low-contrast in dark mode (not measured).
+- No compact-dock-on-scroll (spec 6.2); default Flutter launcher icon.
+- (FIXED in `11720c5`, verified on device) selected file row was light-on-light in dark mode.
 
 ## Disabled Components
 SD-card/custom-folder onboarding option (UI-disabled with a "Phase 2" label).

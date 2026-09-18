@@ -20,12 +20,18 @@
 12. **Run #6 — green** (108 tests, APK includes Kotlin).
 13. Wrote this handover; committed with a workflow `paths-ignore` for docs. **Run #7 (`fc5f2f4`) green.**
 
+14. **User connected a rooted phone with USB debugging** and asked the agent to check the app on it. Agent: `adb devices` (read-only) -> Android 14/arm64/40 GB free -> downloaded the CI APK (`gh api .../artifacts/<id>/zip`, 87.5 MB, to the scratchpad) -> verified the package with `aapt2` -> `adb install` -> launched -> **drove the whole flow with screenshots** -> on-disk checks with `run-as` (no root) -> cold-restart persistence.
+15. **Results:** launches and works end-to-end; found a **dark-mode selected-row contrast bug** (fixed in `11720c5`, CI green, 111 tests, re-verified on the phone) and the **debug-signing mismatch** (worked around by uninstalling/reinstalling the test app; proper fix awaits the user's OK). App left installed on the phone.
+16. **User:** 'that's enough testing on mobile ... lets build and move to the next phases.' -> device testing paused; next phases built with CI as the loop (see later entries / `git log`).
+
 ### User corrections preserved
 | # | Correction | Effect |
 |---|---|---|
 | 1 | "I don't have enough storage… use alt … like GitHub workflow to build and test." | No local SDK, ever. CI is the loop. |
 | 2 | "I have made the repo public." | Anonymous API status reads work; visibility no longer blocks. |
-| — | (User actions) installed `gh`, authenticated it, pushed `main`. | `gh` available (full path); `main` moved under the agent. |
+| 3 | 'I have my phone with Rooted USB debugging and you check the app with my phone if I connect it.' | Agent may install/drive the app over adb while the phone is connected; keep reads scoped to the app (logcat by pid, `run-as`), never touch other apps/data, don't use root to alter the device. |
+| 4 | 'that's enough testing on mobile ... build and move to the next phases.' | Stop device testing for now; proceed with Phase 1 remainder / Phase 2 via CI. |
+| — | (User actions) installed `gh`, authenticated it, pushed `main`, connected the phone. | `gh` available (full path); `main` moved under the agent. |
 
 ### Findings that were *not* bugs but matter
 - CI step "conclusion" hides failed outcomes under `continue-on-error`.
@@ -34,7 +40,7 @@
 - The plan references a 29-file external doc set not in the repo.
 
 ### Result at end of session
-Green CI on `ci/bootstrap@fc5f2f4`; APK artifact available; handover written; **nothing device-verified; not merged to `main`.**
+Green CI on `ci/bootstrap`; smoke-tested on a real phone (1 device); handover written; **not merged to `main`**; SAF path still unexercised on a device.
 
 ### Pending at end of session
 See `PENDING_TASKS.md` (P0: land the branch + real-device smoke test).

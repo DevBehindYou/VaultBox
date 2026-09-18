@@ -239,36 +239,13 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
     BuildContext context,
     FilesViewModel viewModel,
   ) async {
-    final TextEditingController controller = TextEditingController();
-    try {
-      final String? name = await showDialog<String>(
-        context: context,
-        builder: (BuildContext dialogContext) => AlertDialog(
-          title: const Text("New folder"),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: const InputDecoration(hintText: "Folder name"),
-            onSubmitted: (String value) => Navigator.of(dialogContext).pop(value),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(controller.text),
-              child: const Text("Create"),
-            ),
-          ],
-        ),
-      );
-      final String trimmed = (name ?? "").trim();
-      if (trimmed.isNotEmpty) {
-        await viewModel.createFolder(trimmed);
-      }
-    } finally {
-      controller.dispose();
+    final String? name = await showDialog<String>(
+      context: context,
+      builder: (BuildContext dialogContext) => const _CreateFolderDialog(),
+    );
+    final String trimmed = (name ?? "").trim();
+    if (trimmed.isNotEmpty) {
+      await viewModel.createFolder(trimmed);
     }
   }
 
@@ -342,6 +319,54 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(batch.summary)),
+    );
+  }
+}
+
+/// Owns its [TextEditingController] so it is disposed only when the dialog
+/// route has fully left the tree.
+///
+/// The previous version created the controller in the caller and disposed it
+/// in a `finally` right after `showDialog` returned — but `showDialog`'s
+/// future completes as soon as `pop` is called, while the dialog is still
+/// animating out and its TextField is still using the controller. That threw
+/// "A TextEditingController was used after being disposed" and corrupted the
+/// widget tree (found by CI run #4's widget tests).
+class _CreateFolderDialog extends StatefulWidget {
+  const _CreateFolderDialog();
+
+  @override
+  State<_CreateFolderDialog> createState() => _CreateFolderDialogState();
+}
+
+class _CreateFolderDialogState extends State<_CreateFolderDialog> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() => Navigator.of(context).pop(_controller.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text("New folder"),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: const InputDecoration(hintText: "Folder name"),
+        onSubmitted: (String value) => _submit(),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text("Cancel"),
+        ),
+        TextButton(onPressed: _submit, child: const Text("Create")),
+      ],
     );
   }
 }

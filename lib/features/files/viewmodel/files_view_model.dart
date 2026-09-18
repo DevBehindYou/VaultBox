@@ -118,6 +118,10 @@ final class FilesViewModel extends Notifier<FilesState> {
   /// a stream it had itself cancelled.
   int _generation = 0;
 
+  /// The newest [loadFirstPage] load. A superseded caller still has to honour
+  /// "when this returns, the listing is loaded", so it waits for this one.
+  Future<void>? _latestLoad;
+
   @override
   FilesState build() {
     // Invalidate any in-flight load when this element goes away; the load
@@ -148,7 +152,19 @@ final class FilesViewModel extends Notifier<FilesState> {
       hasMore: true,
       clearFailure: true,
     );
-    await _loadPage(generation);
+    final Future<void> mine = _loadPage(generation);
+    _latestLoad = mine;
+    await _settled(mine);
+  }
+
+  Future<void> _settled(Future<void> mine) async {
+    Future<void> waitingOn = mine;
+    while (true) {
+      await waitingOn;
+      final Future<void>? latest = _latestLoad;
+      if (latest == null || identical(latest, waitingOn)) return;
+      waitingOn = latest;
+    }
   }
 
   Future<void> loadMore() async {

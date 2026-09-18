@@ -69,13 +69,22 @@ final class PigeonServerHost implements ServerHost, ServerStateListener {
     return ServerConfig(
       allowNetworkAccess: message.allowNetworkAccess ?? false,
       port: message.port ?? ServerConfig.defaultPort,
+      httpsEnabled: message.httpsEnabled ?? true,
+      httpEnabled: message.httpEnabled ?? false,
+      httpPort: message.httpPort ?? ServerConfig.defaultHttpPort,
     );
   }
 
   @override
   Future<void> saveConfig(ServerConfig config) => _guard(
     () => _api.setConfig(
-      ServerConfigMessage(allowNetworkAccess: config.allowNetworkAccess, port: config.port),
+      ServerConfigMessage(
+        allowNetworkAccess: config.allowNetworkAccess,
+        port: config.port,
+        httpsEnabled: config.httpsEnabled,
+        httpEnabled: config.httpEnabled,
+        httpPort: config.httpPort,
+      ),
     ),
   );
 
@@ -91,6 +100,7 @@ final class PigeonServerHost implements ServerHost, ServerStateListener {
         ServerRunStateMessage.stopped || null => ServerRunState.stopped,
       },
       endpoint: message.endpoint,
+      endpoints: (message.endpoints ?? const <String?>[]).whereType<String>().toList(),
       detail: message.detail,
     );
   }

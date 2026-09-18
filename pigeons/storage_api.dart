@@ -203,12 +203,24 @@ class ServerStateMessage {
 
   /// Human-readable failure reason, when failed.
   String? detail;
+
+  /// Every URL the server answers on (HTTPS and/or HTTP), when running.
+  List<String?>? endpoints;
 }
 
 class ServerConfigMessage {
   /// false (default) = loopback only; true = reachable from the local network.
   bool? allowNetworkAccess;
+
+  /// HTTPS port.
   int? port;
+
+  /// HTTPS (encrypted). On by default.
+  bool? httpsEnabled;
+
+  /// Plain HTTP (NOT encrypted). Off by default; an explicit, warned opt-in.
+  bool? httpEnabled;
+  int? httpPort;
 }
 
 /// The server's TLS identity. The private key is decrypted by native code only

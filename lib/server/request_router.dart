@@ -2,15 +2,25 @@ import "dart:async";
 import "dart:convert";
 import "dart:io";
 
-/// Routes and answers HTTP requests. Transport-agnostic (no TLS here) so it can
-/// be exercised over plain loopback sockets in tests; `HttpsListener` supplies
-/// the TLS.
+import "network_addresses.dart";
+
+/// Routes and answers HTTP requests. Transport-agnostic so it can be exercised
+/// over plain loopback sockets in tests; `HttpsListener` / `HttpListener`
+/// supply the transport.
 ///
 /// Rules every response follows:
 ///  - JSON only, no HTML, no stack traces or internal detail ever leave here;
 ///  - `no-store` + `nosniff` + a `default-src 'none'` CSP;
 ///  - an unexpected error becomes a bare 500.
 final class RequestRouter {
+  /// [secure]: this router sits behind TLS (only then is HSTS meaningful).
+  /// [privateClientsOnly]: refuse any client that isn't this phone or on a
+  /// private network — used for the unencrypted HTTP listener.
+  const RequestRouter({this.secure = true, this.privateClientsOnly = false});
+
+  final bool secure;
+  final bool privateClientsOnly;
+
   /// Accepts connections from [server] until it is closed.
   Future<void> serve(HttpServer server) async {
     await for (final HttpRequest request in server) {
@@ -22,6 +32,14 @@ final class RequestRouter {
     final HttpResponse response = request.response;
     _applySecurityHeaders(response);
     try {
+      if (privateClientsOnly) {
+        final InternetAddress? client = request.connectionInfo?.remoteAddress;
+        if (client == null || !isPrivateOrLoopbackClient(client)) {
+          _json(response, HttpStatus.forbidden, <String, Object?>{"error": "forbidden"});
+          return;
+        }
+      }
+
       final String path = request.uri.path;
       if (path == "/health/" || path == "/health") {
         if (request.method == "GET") {
@@ -46,8 +64,10 @@ final class RequestRouter {
       ..set(HttpHeaders.cacheControlHeader, "no-store")
       ..set("X-Content-Type-Options", "nosniff")
       ..set("Content-Security-Policy", "default-src 'none'")
-      ..set("Referrer-Policy", "no-referrer")
-      ..set("Strict-Transport-Security", "max-age=31536000");
+      ..set("Referrer-Policy", "no-referrer");
+    if (secure) {
+      response.headers.set("Strict-Transport-Security", "max-age=31536000");
+    }
   }
 
   void _json(HttpResponse response, int status, Map<String, Object?> body) {

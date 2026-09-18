@@ -124,7 +124,11 @@ class ServerForegroundService : Service() {
     }
 
     private fun describe(state: ServerStateMessage): String = when (state.state) {
-        ServerRunStateMessage.RUNNING -> "Running" + (state.endpoint?.let { " · $it" } ?: "")
+        ServerRunStateMessage.RUNNING -> {
+            val urls = state.endpoints?.filterNotNull().orEmpty()
+                .ifEmpty { listOfNotNull(state.endpoint) }
+            "Running" + urls.joinToString(separator = "") { " · $it" }
+        }
         ServerRunStateMessage.FAILED -> "Failed: ${state.detail ?: "unknown error"}"
         else -> "Starting…"
     }

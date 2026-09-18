@@ -97,6 +97,30 @@ class _ServerStatusChip extends ConsumerWidget {
 class _ServerCard extends ConsumerWidget {
   const _ServerCard();
 
+  static List<String> _urls(ServerState server) => server.endpoints.isNotEmpty
+      ? server.endpoints
+      : <String>[if (server.endpoint != null) server.endpoint!];
+
+  static String _reachableCopy(ServerState server) {
+    final List<String> urls = _urls(server);
+    final bool https = urls.any((String u) => u.startsWith("https://"));
+    final bool http = urls.any((String u) => u.startsWith("http://"));
+    final StringBuffer text = StringBuffer(
+      "The background service is running and reachable from devices on your local network",
+    );
+    if (https && http) {
+      text.write(" over HTTPS (encrypted) and HTTP (not encrypted).");
+    } else if (http) {
+      text.write(" over HTTP, which is not encrypted.");
+    } else {
+      text.write(" over HTTPS.");
+    }
+    if (https) {
+      text.write(" HTTPS uses a self-signed certificate: compare the fingerprint below before trusting it.");
+    }
+    return text.toString();
+  }
+
   /// True when the server only listens on this phone (loopback endpoint).
   static bool _isLocalOnly(String? endpoint) {
     final String? host = endpoint == null ? null : Uri.tryParse(endpoint)?.host;
@@ -126,15 +150,13 @@ class _ServerCard extends ConsumerWidget {
     };
     final String explanation = switch (server.run) {
       ServerRunState.stopped =>
-        "Start VaultBox's background service. For now it only answers an "
-            "encrypted health check; login and file access come next.",
+        "Start VaultBox's background service. For now it only answers a "
+            "health check; login and file access come next.",
       ServerRunState.starting => "Starting the background service…",
       ServerRunState.running => _isLocalOnly(server.endpoint)
           ? "The background service is running. It answers on this phone only — "
                 "nothing is exposed to your network."
-          : "The background service is running and reachable from devices on your "
-                "local network over HTTPS. It uses a self-signed certificate: compare "
-                "the fingerprint below before trusting it.",
+          : _reachableCopy(server),
       ServerRunState.failed => "Something went wrong starting the background service.",
     };
 
@@ -148,13 +170,23 @@ class _ServerCard extends ConsumerWidget {
             explanation,
             style: AuroraTypography.bodyMd.copyWith(color: AuroraColors.inkSecondary),
           ),
-          if (server.isRunning && server.endpoint != null) ...<Widget>[
-            const SizedBox(height: AuroraSpacing.sm),
-            SelectableText(
-              server.endpoint!,
-              style: AuroraTypography.tabularFigures(AuroraTypography.labelMonoMd),
-            ),
-          ],
+          if (server.isRunning)
+            for (final String url in _urls(server)) ...<Widget>[
+              const SizedBox(height: AuroraSpacing.sm),
+              SelectableText(
+                url,
+                style: AuroraTypography.tabularFigures(AuroraTypography.labelMonoMd),
+              ),
+              if (url.startsWith("http://") && !_isLocalOnly(url))
+                Text(
+                  "Not encrypted — use only on a network you trust.",
+                  style: AuroraTypography.bodySm.copyWith(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AuroraColorsDark.statusWarning
+                        : AuroraColors.statusWarning,
+                  ),
+                ),
+            ],
           const _FingerprintRow(),
           if (server.run == ServerRunState.failed && server.detail != null) ...<Widget>[
             const SizedBox(height: AuroraSpacing.sm),
@@ -165,6 +197,7 @@ class _ServerCard extends ConsumerWidget {
             ),
           ],
           const _NetworkAccessSwitch(),
+          const _ProtocolSwitches(),
           const SizedBox(height: AuroraSpacing.md),
           switch (server.run) {
             ServerRunState.running => OutlinedButton.icon(
@@ -284,6 +317,105 @@ class _NetworkAccessSwitch extends ConsumerWidget {
     }
     try {
       await ref.read(serverHostProvider).saveConfig(config.copyWith(allowNetworkAccess: enable));
+      ref.invalidate(serverConfigProvider);
+    } on AppFailure catch (failure) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));
+    }
+  }
+}
+
+/// Which protocols the server speaks. HTTPS (encrypted) is on by default; plain
+/// HTTP is an explicit, warned opt-in for people who accept the risk on a
+/// network they trust (e.g. to skip the self-signed certificate warning). At
+/// least one must stay on, and both lock while the server runs.
+class _ProtocolSwitches extends ConsumerWidget {
+  const _ProtocolSwitches();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ServerState server =
+        ref.watch(serverStateProvider).value ?? const ServerState.stopped();
+    final ServerConfig? config = ref.watch(serverConfigProvider).value;
+    if (config == null) return const SizedBox.shrink();
+    final bool canChange =
+        server.run == ServerRunState.stopped || server.run == ServerRunState.failed;
+
+    return Material(
+      type: MaterialType.transparency,
+      child: Column(
+        children: <Widget>[
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text("HTTPS (encrypted)"),
+            subtitle: const Text("Recommended. Uses a self-signed certificate."),
+            value: config.httpsEnabled,
+            onChanged: canChange
+                ? (bool on) => unawaited(_set(context, ref, config.copyWith(httpsEnabled: on)))
+                : null,
+          ),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text("HTTP (not encrypted)"),
+            subtitle: Text(
+              canChange
+                  ? "Opens in any browser without a certificate warning, but "
+                        "passwords and files can be read by others on your Wi-Fi."
+                  : "Stop the server to change this.",
+            ),
+            value: config.httpEnabled,
+            onChanged: canChange
+                ? (bool on) => unawaited(_toggleHttp(context, ref, config, on))
+                : null,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _toggleHttp(
+    BuildContext context,
+    WidgetRef ref,
+    ServerConfig config,
+    bool on,
+  ) async {
+    if (on) {
+      final bool? confirmed = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext dialogContext) => AlertDialog(
+          title: const Text("Turn on unencrypted HTTP?"),
+          content: const Text(
+            "With HTTP, your password and your files travel across the network "
+            "in plain text. Anyone on the same Wi-Fi who is listening can read "
+            "them. Only use it on a network you fully trust, and keep HTTPS on "
+            "for everything else. HTTP only accepts devices on private networks.",
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text("Cancel"),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text("Turn on HTTP"),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !context.mounted) return;
+    }
+    await _set(context, ref, config.copyWith(httpEnabled: on));
+  }
+
+  Future<void> _set(BuildContext context, WidgetRef ref, ServerConfig next) async {
+    if (!next.httpsEnabled && !next.httpEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Keep at least one of HTTPS and HTTP on.")),
+      );
+      return;
+    }
+    try {
+      await ref.read(serverHostProvider).saveConfig(next);
       ref.invalidate(serverConfigProvider);
     } on AppFailure catch (failure) {
       if (!context.mounted) return;

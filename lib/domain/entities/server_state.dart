@@ -3,14 +3,22 @@
 enum ServerRunState { stopped, starting, running, failed }
 
 final class ServerState {
-  const ServerState({required this.run, this.endpoint, this.detail});
+  const ServerState({
+    required this.run,
+    this.endpoint,
+    this.endpoints = const <String>[],
+    this.detail,
+  });
 
   const ServerState.stopped() : this(run: ServerRunState.stopped);
 
   final ServerRunState run;
 
-  /// Where the server answers, when [run] is running.
+  /// The primary URL the server answers on, when [run] is running.
   final String? endpoint;
+
+  /// Every URL it answers on (HTTPS and/or HTTP).
+  final List<String> endpoints;
 
   /// Technical failure detail, when [run] is failed. Shown only behind a
   /// "Technical details" disclosure, never as the headline.

@@ -83,6 +83,17 @@ void main() {
     expect(first.endpoint, "http://127.0.0.1:1/health/");
   });
 
+  test("every reported endpoint reaches the UI", () async {
+    api.snapshot = ServerStateMessage(
+      state: ServerRunStateMessage.running,
+      endpoint: "https://192.168.1.5:8443/",
+      endpoints: <String?>["https://192.168.1.5:8443/", "http://192.168.1.5:8080/"],
+    );
+
+    final ServerState first = await host.watch().first;
+    expect(first.endpoints, <String>["https://192.168.1.5:8443/", "http://192.168.1.5:8080/"]);
+  });
+
   test("pushed changes follow the snapshot, mapped", () async {
     final List<ServerState> seen = <ServerState>[];
     final StreamSubscription<ServerState> sub = host.watch().listen(seen.add);
@@ -144,21 +155,44 @@ void main() {
   });
 
   test("config maps native settings; missing values fall back to safe defaults", () async {
-    api.configMessage = ServerConfigMessage(allowNetworkAccess: true, port: 9000);
+    api.configMessage = ServerConfigMessage(
+      allowNetworkAccess: true,
+      port: 9000,
+      httpsEnabled: false,
+      httpEnabled: true,
+      httpPort: 9001,
+    );
     final ServerConfig custom = await host.config();
     expect(custom.allowNetworkAccess, isTrue);
     expect(custom.port, 9000);
+    expect(custom.httpsEnabled, isFalse);
+    expect(custom.httpEnabled, isTrue);
+    expect(custom.httpPort, 9001);
 
     api.configMessage = ServerConfigMessage();
     final ServerConfig defaults = await host.config();
     expect(defaults.allowNetworkAccess, isFalse, reason: "network access must default to OFF");
     expect(defaults.port, 8443);
+    expect(defaults.httpsEnabled, isTrue, reason: "HTTPS defaults to ON");
+    expect(defaults.httpEnabled, isFalse, reason: "unencrypted HTTP must default to OFF");
+    expect(defaults.httpPort, 8080);
   });
 
   test("saveConfig sends both fields to native", () async {
-    await host.saveConfig(const ServerConfig(allowNetworkAccess: true, port: 8444));
+    await host.saveConfig(
+      const ServerConfig(
+        allowNetworkAccess: true,
+        port: 8444,
+        httpsEnabled: false,
+        httpEnabled: true,
+        httpPort: 8081,
+      ),
+    );
     expect(api.lastSetConfig?.allowNetworkAccess, isTrue);
     expect(api.lastSetConfig?.port, 8444);
+    expect(api.lastSetConfig?.httpsEnabled, isFalse);
+    expect(api.lastSetConfig?.httpEnabled, isTrue);
+    expect(api.lastSetConfig?.httpPort, 8081);
   });
 
   test("tlsFingerprint passes through", () async {

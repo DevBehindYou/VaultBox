@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
@@ -33,7 +35,7 @@ class _OnboardingStorageScreenState extends ConsumerState<OnboardingStorageScree
     try {
       await addAppStorageRoot(ref);
       if (!mounted) return;
-      context.push("/onboarding/ready");
+      unawaited(context.push("/onboarding/ready"));
     } on AppFailure catch (failure) {
       if (!mounted) return;
       setState(() => _failure = failure);

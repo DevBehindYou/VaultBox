@@ -82,16 +82,34 @@ final class StoragePath {
     return StoragePath._(rootId, segments.sublist(0, segments.length - 1));
   }
 
+  /// Appends one **literal** file or folder name.
+  ///
+  /// Unlike [parse], this never percent-decodes or trims: [name] is an actual
+  /// name that came from a directory listing or a text field, not a wire
+  /// path. Routing it through [parse] (as this used to) silently rewrote real
+  /// names — `100%25.txt` became `100%.txt`, `%2F` became a `/` inside one
+  /// segment, and leading/trailing spaces were dropped — so the entry pointed
+  /// at a different file than the one listed. Protocol handlers must still
+  /// call [parse] on client-supplied paths; this is only for names we
+  /// already hold.
   StoragePath child(String name) {
-    // Re-validate through parse() so a hand-built child segment gets the
-    // same traversal checks as anything coming off the wire.
-    final StoragePath validatedChild = StoragePath.parse(rootId, name);
-    if (validatedChild.segments.length != 1) {
+    if (name.trim().isEmpty || name == "." || name == "..") {
+      throw const PathTraversalRejectedFailure(debugDetail: "invalid child name");
+    }
+    if (name.contains("/") || name.contains("\\")) {
       throw const PathTraversalRejectedFailure(
         debugDetail: "child() must be a single segment",
       );
     }
-    return StoragePath._(rootId, <String>[...segments, validatedChild.segments.single]);
+    if (_looksAbsolute(name)) {
+      throw const PathTraversalRejectedFailure(debugDetail: "absolute-looking name");
+    }
+    if (name.codeUnits.any((int c) => c < 0x20)) {
+      throw const PathTraversalRejectedFailure(
+        debugDetail: "control character in name",
+      );
+    }
+    return StoragePath._(rootId, <String>[...segments, name]);
   }
 
   /// True if this path is [other] itself, or lives inside it. Used to block
@@ -123,8 +141,14 @@ final class StoragePath {
 
   static bool _looksAbsolute(String segment) {
     if (segment.startsWith("/") || segment.startsWith("\\")) return true;
-    // Windows drive letter, e.g. "C:"
-    if (segment.length >= 2 && segment[1] == ":") return true;
+    // Windows drive letter, e.g. "C:". Must be a letter: "1:1 notes.txt" is a
+    // perfectly ordinary Android file name and used to be rejected here.
+    if (segment.length >= 2 && segment[1] == ":") {
+      final int first = segment.codeUnitAt(0);
+      final bool isLetter =
+          (first >= 0x41 && first <= 0x5A) || (first >= 0x61 && first <= 0x7A);
+      if (isLetter) return true;
+    }
     return false;
   }
 

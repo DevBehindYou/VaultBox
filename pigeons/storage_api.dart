@@ -82,28 +82,34 @@ abstract class AndroidStorageApi {
   /// permission grant on the result (`Intent.FLAG_GRANT_*_URI_PERMISSION` +
   /// `ContentResolver.takePersistableUriPermission`), and returns the chosen
   /// tree. Returns null if the user cancelled the picker.
+  @async
   SafTreeMessage? openDocumentTree();
 
   /// Every tree this app currently holds a persisted grant for — survives
   /// app restarts and reboots by design (that's what "persistable" means), so
   /// this is how the storage-root repository reconciles its own rows against
   /// what Android will actually still let the app touch.
+  @async
   List<SafTreeMessage> persistedTrees();
 
   /// Releases a grant. Does not delete any files — purely revokes VaultBox's
   /// own access, mirroring what "Remove storage location" should do in
   /// Settings.
+  @async
   void releasePersistedUri(String treeUri);
 
   /// Direct children of [parentDocumentId] within [treeUri]. Pass the tree's
   /// own root document id (obtainable via
   /// `DocumentFile.fromTreeUri(...).documentId` on the Kotlin side) to list
   /// the tree's top level.
+  @async
   List<SafEntryMessage> listChildren(String treeUri, String parentDocumentId);
 
+  @async
   SafEntryMessage? stat(String treeUri, String documentId);
 
   /// Returns the new directory's document id.
+  @async
   String createDirectory(String treeUri, String parentDocumentId, String name);
 
   /// Creates an empty document and returns its id — the caller then opens a
@@ -111,11 +117,14 @@ abstract class AndroidStorageApi {
   /// Splitting create-then-write (rather than one call that also takes bytes)
   /// is what makes streaming large files possible at all through this
   /// bridge.
+  @async
   String createFile(String treeUri, String parentDocumentId, String name, String mimeType);
 
+  @async
   void deleteDocument(String treeUri, String documentId);
 
   /// Returns the (possibly changed — SAF may rename-on-conflict) new name.
+  @async
   String renameDocument(String treeUri, String documentId, String newName);
 
   /// Opens a raw file descriptor via
@@ -134,5 +143,6 @@ abstract class AndroidStorageApi {
   /// cancellation mid-transfer, and behaviour across the Android versions
   /// VaultBox targets) before anything depends on it for real user data. See
   /// docs/IMPLEMENTATION_PLAN.md's risk register.
+  @async
   int openFileDescriptor(String treeUri, String documentId, String mode);
 }

@@ -6,6 +6,7 @@ import "../models/operation_batch.dart";
 import "../repositories/file_repository.dart";
 import "../repositories/recycle_bin_repository.dart";
 import "../repositories/storage_root_repository.dart";
+import "../value_objects/storage_path.dart";
 
 /// `PermanentlyDeleteRecycled` — the explicit, no-going-back step doc §27
 /// requires ("Permanent delete requires explicit confirmation"). Removes the
@@ -44,7 +45,13 @@ final class PermanentlyDeleteRecycled {
         await _recycleBin.remove(id);
         outcomes.add(ItemOutcome.completed(source: item.originalPath));
       } on AppFailure catch (failure) {
-        outcomes.add(ItemOutcome.failed(source: item!.recyclePath, reason: failure.message));
+        // `item` is null when the lookup itself failed — don't dereference it.
+        outcomes.add(
+          ItemOutcome.failed(
+            source: item?.recyclePath ?? StoragePath.root("unknown"),
+            reason: failure.message,
+          ),
+        );
       }
     }
 

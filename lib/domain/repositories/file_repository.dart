@@ -1,6 +1,5 @@
 import "../models/file_ref.dart";
 import "../value_objects/storage_entry.dart";
-import "../value_objects/storage_path.dart";
 import "../value_objects/write_mode.dart";
 import "storage_backend.dart";
 

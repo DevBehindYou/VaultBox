@@ -6,6 +6,7 @@ import "../models/operation_batch.dart";
 import "../repositories/file_repository.dart";
 import "../repositories/recycle_bin_repository.dart";
 import "../repositories/storage_root_repository.dart";
+import "../value_objects/storage_path.dart";
 import "../value_objects/write_mode.dart";
 
 /// `RestoreItems` — the inverse of [DeleteItemsToRecycleBin]. Copies each
@@ -58,13 +59,16 @@ final class RestoreItems {
       } on PathConflictFailure {
         outcomes.add(
           ItemOutcome.skipped(
-            source: item!.recyclePath,
+            source: item?.recyclePath ?? StoragePath.root("unknown"),
             reason: "Something else is already at the original location",
           ),
         );
       } on AppFailure catch (failure) {
         outcomes.add(
-          ItemOutcome.failed(source: item!.recyclePath, reason: failure.message),
+          ItemOutcome.failed(
+            source: item?.recyclePath ?? StoragePath.root("unknown"),
+            reason: failure.message,
+          ),
         );
       }
     }

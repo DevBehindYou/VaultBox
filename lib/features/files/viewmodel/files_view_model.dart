@@ -104,6 +104,7 @@ final class FilesViewModel extends Notifier<FilesState> {
   final FileRef arg;
 
   static const int _pageSize = 100;
+  static const String _reservedDirName = ".vaultbox";
 
   StreamSubscription<StorageEntry>? _subscription;
   String? _cursor;
@@ -142,7 +143,14 @@ final class FilesViewModel extends Notifier<FilesState> {
   }
 
   Future<void> loadMore() async {
-    if (state.isLoadingMore || state.isLoadingFirstPage || !state.hasMore) return;
+    // A standing failure means "Retry" (loadFirstPage) is the way forward;
+    // paging on top of it used to leave isLoadingMore stuck true forever.
+    if (state.isLoadingMore ||
+        state.isLoadingFirstPage ||
+        !state.hasMore ||
+        state.failure != null) {
+      return;
+    }
     state = state.copyWith(isLoadingMore: true);
     await _loadPage();
   }
@@ -177,8 +185,16 @@ final class FilesViewModel extends Notifier<FilesState> {
     if (!ref.mounted) return;
     if (state.failure != null) return;
 
+    // The cursor and hasMore are driven by the RAW page (what the backend
+    // returned), not the filtered one, so hiding an entry can't stall paging.
     _cursor = page.isEmpty ? _cursor : page.last.name;
-    final List<StorageEntry> combined = <StorageEntry>[...state.entries, ...page];
+    final bool atRoot = state.directory.path.isRoot;
+    final List<StorageEntry> combined = <StorageEntry>[
+      ...state.entries,
+      // `.vaultbox` is VaultBox's own bookkeeping (Recycle Bin lives in it).
+      // Showing it lets a user delete or rename it and silently break restore.
+      ...page.where((StorageEntry e) => !(atRoot && e.name == _reservedDirName)),
+    ];
     _sortInPlace(combined);
 
     state = state.copyWith(

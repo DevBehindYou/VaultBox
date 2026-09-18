@@ -38,7 +38,7 @@ void main() {
 
     final BackendRegistry registry = BackendRegistry()..register(backend);
     container = ProviderContainer(
-      overrides: <Override>[backendRegistryProvider.overrideWithValue(registry)],
+      overrides: [backendRegistryProvider.overrideWithValue(registry)],
     );
     dirRef = FileRef(root: root, path: StoragePath.root(root.id));
     // autoDispose tears the element down once nothing is listening — a bare
@@ -65,6 +65,37 @@ void main() {
     final List<String> conflicts = await notifier.findConflicts(dest);
 
     expect(conflicts, <String>["taken.txt"]);
+  });
+
+  test("the internal .vaultbox folder is hidden at the root but not below it", () async {
+    backend
+      ..seedDirectory("/.vaultbox")
+      ..seedDirectory("/sub/.vaultbox");
+
+    final FilesViewModel notifier = container.read(filesViewModelProvider(dirRef).notifier);
+    await notifier.loadFirstPage();
+
+    final List<String> rootNames = container
+        .read(filesViewModelProvider(dirRef))
+        .entries
+        .map((StorageEntry e) => e.name)
+        .toList();
+    expect(rootNames, isNot(contains(".vaultbox")), reason: "Recycle Bin bookkeeping stays out of the UI");
+    expect(rootNames, containsAll(<String>["dest", "sub", "taken.txt", "free.txt"]));
+
+    // Only the top-level one is reserved; a user's own folder of that name is not.
+    final FileRef subRef = FileRef(root: root, path: StoragePath.parse(root.id, "sub"));
+    container.listen(
+      filesViewModelProvider(subRef),
+      (FilesState? previous, FilesState next) {},
+    );
+    await container.read(filesViewModelProvider(subRef).notifier).loadFirstPage();
+    final List<String> subNames = container
+        .read(filesViewModelProvider(subRef))
+        .entries
+        .map((StorageEntry e) => e.name)
+        .toList();
+    expect(subNames, contains(".vaultbox"));
   });
 
   test("validateDestination allows an unrelated folder", () async {

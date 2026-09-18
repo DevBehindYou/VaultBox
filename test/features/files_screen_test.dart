@@ -44,7 +44,7 @@ void main() {
   }) {
     final BackendRegistry registry = BackendRegistry()..register(backend);
     return ProviderScope(
-      overrides: <Override>[
+      overrides: [
         backendRegistryProvider.overrideWithValue(registry),
         storageRootRepositoryProvider.overrideWithValue(
           storageRoots ?? InMemoryStorageRootRepository(initial: <StorageRoot>[root]),

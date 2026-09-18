@@ -67,7 +67,8 @@ final class MemoryStorageBackend implements StorageBackend {
 
       final _MemoryNode child = _nodes[childPath]!;
       yield StorageEntry(
-        path: StoragePath.parse(id, childPath),
+        // Literal name, not a wire path — see StoragePath.child.
+        path: directory.child(childName),
         type: child.isDirectory ? StorageEntryType.directory : StorageEntryType.file,
         sizeBytes: child.isDirectory ? null : child.bytes!.length,
         modifiedAt: child.modifiedAt,

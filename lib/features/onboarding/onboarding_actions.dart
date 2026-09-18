@@ -1,4 +1,7 @@
+import "dart:io";
+
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:path/path.dart" as p;
 import "package:path_provider/path_provider.dart";
 
 import "../../app/providers.dart";
@@ -22,9 +25,16 @@ import "../../domain/value_objects/storage_path.dart";
 /// should show via [AuroraInlineBanner] rather than a raw exception (kickoff
 /// §71).
 Future<String> addAppStorageRoot(WidgetRef ref) async {
+  // A dedicated subdirectory, NOT the documents directory itself: that
+  // directory also holds vaultbox.sqlite (+ -wal/-shm), and using it as the
+  // file root would show the database in the file manager, where a rename or
+  // delete could corrupt it (IMPLEMENTATION_PLAN R-18).
   final String path;
   try {
-    path = (await getApplicationDocumentsDirectory()).path;
+    final Directory documents = await getApplicationDocumentsDirectory();
+    final Directory storage = Directory(p.join(documents.path, "storage"));
+    await storage.create(recursive: true);
+    path = storage.path;
   } on Object catch (error) {
     throw UnexpectedFailure(debugDetail: error.toString());
   }

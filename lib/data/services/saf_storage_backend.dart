@@ -95,8 +95,17 @@ final class SafStorageBackend implements StorageBackend {
       }
       if (pageSize != null && emitted >= pageSize) return;
 
+      // Skip names that can't be one path segment instead of aborting the
+      // whole listing (same policy as DirectPathStorageBackend.list).
+      final StoragePath childPath;
+      try {
+        childPath = directory.child(entry.name);
+      } on PathTraversalRejectedFailure {
+        continue;
+      }
+
       yield StorageEntry(
-        path: directory.child(entry.name),
+        path: childPath,
         type: entry.kind == SafEntryKind.directory
             ? StorageEntryType.directory
             : StorageEntryType.file,
@@ -297,6 +306,7 @@ final class _SafWriteHandle implements StorageWriteHandle {
   final Future<void> Function() _onAbort;
   bool _finished = false;
   int _written = 0;
+  // ignore: close_sinks — closed via _sink in commit()/abort(); this only wraps it.
   _CountingSink? _countingSink;
 
   @override

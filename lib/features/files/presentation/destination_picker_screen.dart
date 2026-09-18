@@ -5,7 +5,6 @@ import "../../../app/providers.dart";
 import "../../../core/design/aurora_colors.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
-import "../../../core/design/aurora_widgets.dart";
 import "../../../domain/entities/storage_root.dart";
 import "../../../domain/models/file_ref.dart";
 import "../../../domain/value_objects/storage_entry.dart";

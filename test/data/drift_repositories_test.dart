@@ -129,8 +129,9 @@ void main() {
       expect(loaded!.recyclePath.normalized, "/.vaultbox/recycle/recycle-1__photo.jpg");
       expect(loaded.originalPath.normalized, "/DCIM/photo.jpg");
       expect(loaded.originalName, "photo.jpg");
-      expect(loaded.deletedAt, item.deletedAt);
-      expect(loaded.purgeAfter, item.purgeAfter);
+      // Drift hands back local DateTimes; DateTime == also compares isUtc, so compare the instant.
+      expect(loaded.deletedAt.isAtSameMomentAs(item.deletedAt), isTrue);
+      expect(loaded.purgeAfter!.isAtSameMomentAs(item.purgeAfter!), isTrue);
       expect(loaded.sizeBytes, 4200000);
     });
 

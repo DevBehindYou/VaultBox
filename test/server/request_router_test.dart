@@ -3,8 +3,8 @@ import "dart:convert";
 import "dart:io";
 
 import "package:flutter_test/flutter_test.dart";
-import "package:vaultbox/server/request_router.dart";
 import "package:vaultbox/server/network_addresses.dart";
+import "package:vaultbox/server/request_router.dart";
 
 /// The router over plain loopback sockets (TLS is HttpsListener's job and is
 /// verified on a device — a certificate can't be minted in a plain Dart test).

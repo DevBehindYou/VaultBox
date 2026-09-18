@@ -33,6 +33,9 @@ final class PigeonServerHost implements ServerHost, ServerStateListener {
 
   @override
   Stream<ServerState> watch() {
+    // A single-subscription controller is finished when its one listener cancels
+    // (onCancel below stops the feed), so there is nothing left to close.
+    // ignore: close_sinks
     late final StreamController<ServerState> out;
     StreamSubscription<ServerState>? subscription;
 

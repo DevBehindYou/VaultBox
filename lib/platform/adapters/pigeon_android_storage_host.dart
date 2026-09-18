@@ -75,7 +75,27 @@ final class PigeonAndroidStorageHost implements AndroidStorageHost {
   Future<int> openFileDescriptor(String treeUri, String documentId, String mode) =>
       _guard(() => _api.openFileDescriptor(treeUri, documentId, mode));
 
+  @override
+  Future<List<PickedFile>> pickFilesToCache() async {
+    final List<PickedFileMessage> picked = await _guard(_api.pickFilesToCache);
+    return picked.map(_toPickedFile).toList();
+  }
+
   // --- mapping ---
+
+  PickedFile _toPickedFile(PickedFileMessage message) {
+    final String? cachePath = message.cachePath;
+    final String? name = message.name;
+    if (cachePath == null || name == null) {
+      throw const UnexpectedFailure(debugDetail: "native picked-file message missing cachePath/name");
+    }
+    return PickedFile(
+      cachePath: cachePath,
+      name: name,
+      sizeBytes: message.sizeBytes,
+      mimeType: message.mimeType,
+    );
+  }
 
   SafTreeInfo _toTreeInfo(SafTreeMessage message) {
     final String? treeUri = message.treeUri;

@@ -5,11 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
+import android.provider.OpenableColumns
 import com.vaultbox.app.pigeon.AndroidStorageApi
 import com.vaultbox.app.pigeon.FlutterError
+import com.vaultbox.app.pigeon.PickedFileMessage
 import com.vaultbox.app.pigeon.SafEntryMessage
 import com.vaultbox.app.pigeon.SafEntryTypeMessage
 import com.vaultbox.app.pigeon.SafTreeMessage
+import java.io.File
+import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -34,6 +38,7 @@ import kotlin.coroutines.resume
 class SafStorageHostApi(
     private val context: Context,
     private val treePicker: TreePickerLauncher,
+    private val documentPicker: DocumentPickerLauncher,
 ) : AndroidStorageApi {
 
     private val resolver: ContentResolver
@@ -174,6 +179,45 @@ class SafStorageHostApi(
             }
         }
 
+    // --- Importing files from anywhere (system picker) ---
+
+    override suspend fun pickFilesToCache(): List<PickedFileMessage> {
+        // Runs on Main (where the generated handler dispatches us): the picker
+        // needs the Activity and suspends until onActivityResult delivers.
+        val uris = documentPicker.launch()
+        if (uris.isEmpty()) return emptyList()
+
+        return withContext(Dispatchers.IO) {
+            guarded {
+                val directory = File(context.cacheDir, "imports/${UUID.randomUUID()}")
+                if (!directory.mkdirs()) {
+                    throw IllegalStateException("Couldn't create the import cache directory")
+                }
+                // Cache files are named by INDEX, never by the provider-supplied
+                // display name, so a hostile provider can't smuggle path segments.
+                uris.mapIndexed { index, uri -> copyToCache(uri, File(directory, index.toString())) }
+            }
+        }
+    }
+
+    private fun copyToCache(uri: Uri, target: File): PickedFileMessage {
+        var displayName: String? = null
+        resolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) displayName = cursor.getString(0)
+        }
+        val input = resolver.openInputStream(uri)
+            ?: throw java.io.FileNotFoundException("Couldn't open the picked document")
+        input.use { source ->
+            target.outputStream().use { sink -> source.copyTo(sink, 64 * 1024) }
+        }
+        return PickedFileMessage(
+            cachePath = target.absolutePath,
+            name = displayName ?: uri.lastPathSegment ?: "file",
+            sizeBytes = target.length(),
+            mimeType = resolver.getType(uri),
+        )
+    }
+
     // --- helpers ---
 
     private fun describeTree(treeUri: Uri): SafTreeMessage {
@@ -291,6 +335,56 @@ class ActivityTreePickerLauncher : TreePickerLauncher {
                         Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
                         Intent.FLAG_GRANT_PREFIX_URI_PERMISSION,
                 )
+            },
+        )
+    }
+}
+
+/** Suspends until the user picks (or cancels) documents with `ACTION_OPEN_DOCUMENT`. */
+interface DocumentPickerLauncher {
+    suspend fun launch(): List<Uri>
+}
+
+/** Same Activity hand-off as [ActivityTreePickerLauncher], for multi-select document picking. */
+class ActivityDocumentPickerLauncher : DocumentPickerLauncher {
+    private var startPicker: ((Intent) -> Unit)? = null
+    private var pending: ((List<Uri>) -> Unit)? = null
+
+    /** Called from `MainActivity.configureFlutterEngine`. */
+    fun bind(start: (Intent) -> Unit) {
+        startPicker = start
+    }
+
+    /** Called from `MainActivity.onActivityResult`; pass null when cancelled. */
+    fun onResult(data: Intent?) {
+        val callback = pending
+        pending = null
+        val uris = mutableListOf<Uri>()
+        val clip = data?.clipData
+        if (clip != null) {
+            for (i in 0 until clip.itemCount) uris.add(clip.getItemAt(i).uri)
+        } else {
+            data?.data?.let { uris.add(it) }
+        }
+        callback?.invoke(uris)
+    }
+
+    override suspend fun launch(): List<Uri> = suspendCancellableCoroutine { continuation ->
+        val start = startPicker
+        if (start == null) {
+            // Not bound: fail closed (report "cancelled") rather than hang forever.
+            continuation.resume(emptyList())
+            return@suspendCancellableCoroutine
+        }
+        pending?.invoke(emptyList())
+        pending = { uris -> if (continuation.isActive) continuation.resume(uris) }
+        continuation.invokeOnCancellation { pending = null }
+
+        start(
+            Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "*/*"
+                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             },
         )
     }

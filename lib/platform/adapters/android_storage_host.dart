@@ -40,6 +40,23 @@ abstract interface class AndroidStorageHost {
   /// for closing whatever it opens from
   /// `File('/proc/self/fd/$fd')`. [mode] is `"r"`, `"w"`, or `"rw"`.
   Future<int> openFileDescriptor(String treeUri, String documentId, String mode);
+
+  /// System file picker (multi-select). The native side copies each picked
+  /// document into the app's cache and returns the copies; the caller OWNS them
+  /// and must delete every [PickedFile.cachePath] when done. Empty = cancelled.
+  Future<List<PickedFile>> pickFilesToCache();
+}
+
+/// A document the user picked, already copied to a plain file in the app cache.
+final class PickedFile {
+  const PickedFile({required this.cachePath, required this.name, this.sizeBytes, this.mimeType});
+
+  final String cachePath;
+
+  /// The document's real display name (what the imported file should be called).
+  final String name;
+  final int? sizeBytes;
+  final String? mimeType;
 }
 
 final class SafTreeInfo {

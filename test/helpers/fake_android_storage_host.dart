@@ -11,6 +11,12 @@ final class FakeAndroidStorageHost implements AndroidStorageHost {
   /// What the next `openDocumentTree()` returns (null = user cancelled).
   SafTreeInfo? nextTree;
 
+  /// What the next `pickFilesToCache()` returns (empty = cancelled).
+  List<PickedFile> nextPicked = <PickedFile>[];
+
+  /// When set, `pickFilesToCache` throws it.
+  AppFailure? failPick;
+
   /// Tree URIs passed to `releasePersistedUri`.
   final List<String> released = <String>[];
 
@@ -115,6 +121,13 @@ final class FakeAndroidStorageHost implements AndroidStorageHost {
       "FakeAndroidStorageHost cannot fabricate a real OS file descriptor — "
       "see this test file's top-of-file scope note.",
     );
+  }
+
+  @override
+  Future<List<PickedFile>> pickFilesToCache() async {
+    final AppFailure? failure = failPick;
+    if (failure != null) throw failure;
+    return nextPicked;
   }
 
   @override

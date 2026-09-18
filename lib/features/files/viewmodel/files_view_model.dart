@@ -4,6 +4,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../../app/providers.dart";
 import "../../../core/errors/app_failure.dart";
+import "../../../data/services/picked_file_source.dart";
 import "../../../domain/entities/storage_root.dart";
 import "../../../domain/models/file_ref.dart";
 import "../../../domain/models/operation_batch.dart";
@@ -11,6 +12,7 @@ import "../../../domain/repositories/file_repository.dart";
 import "../../../domain/value_objects/storage_entry.dart";
 import "../../../domain/value_objects/storage_path.dart";
 import "../../../domain/value_objects/write_mode.dart";
+import "../../../platform/adapters/android_storage_host.dart";
 
 enum FileSortField { name, modified, size, type }
 
@@ -364,6 +366,72 @@ final class FilesViewModel extends Notifier<FilesState> {
     clearSelection();
     await loadFirstPage();
     return batch;
+  }
+
+  /// "Add files": lets the person pick files with the system picker, then
+  /// imports them into this folder.
+  ///
+  /// Returns the per-file batch, or `null` if nothing happened (picker
+  /// cancelled, or the person cancelled at the conflict prompt). [onConflicts]
+  /// is asked once, only if some picked names already exist here; returning
+  /// `null` from it cancels the whole import. The picker's temporary copies are
+  /// always deleted, whatever the outcome.
+  Future<OperationBatch?> importFiles({
+    required Future<ConflictPolicy?> Function(List<String> conflictingNames) onConflicts,
+  }) async {
+    final List<PickedFile> picked;
+    try {
+      picked = await ref.read(androidStorageHostProvider).pickFilesToCache();
+    } on AppFailure catch (failure) {
+      if (ref.mounted) state = state.copyWith(failure: failure);
+      return null;
+    }
+    if (picked.isEmpty) return null; // cancelled
+
+    Future<void> discardAll() async {
+      for (final PickedFile file in picked) {
+        await deletePickedCacheFile(file.cachePath);
+      }
+    }
+
+    try {
+      if (!ref.mounted) return null;
+      final FileRef destination = state.directory;
+
+      final List<String> conflicts = <String>[];
+      for (final PickedFile file in picked) {
+        if (await _existsIn(destination, file.name)) conflicts.add(file.name);
+      }
+
+      ConflictPolicy policy = ConflictPolicy.keepBoth;
+      if (conflicts.isNotEmpty) {
+        final ConflictPolicy? chosen = await onConflicts(conflicts);
+        if (chosen == null) return null; // cancelled; `finally` discards the copies
+        policy = chosen;
+      }
+      if (!ref.mounted) return null;
+
+      final OperationBatch batch = await ref.read(importFilesProvider).call(
+        sources: picked.map(importSourceFromPicked).toList(),
+        destinationDirectory: destination,
+        conflictPolicy: policy,
+      );
+      if (ref.mounted) await loadFirstPage();
+      return batch;
+    } finally {
+      await discardAll(); // idempotent; also covers early exits and unexpected throws
+    }
+  }
+
+  Future<bool> _existsIn(FileRef directory, String name) async {
+    try {
+      final StorageEntry? existing = await _files.statEntry(
+        FileRef(root: directory.root, path: directory.path.child(name)),
+      );
+      return existing != null;
+    } on PathTraversalRejectedFailure {
+      return false; // an unusable name isn't a conflict; the import reports it as failed
+    }
   }
 
   // --- Copy/move pre-flight (destination picker + conflict sheet) ---

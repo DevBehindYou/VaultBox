@@ -101,12 +101,28 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
       ),
       floatingActionButton: state.isSelectionMode
           ? null
-          : FloatingActionButton.extended(
-              onPressed: () => _showCreateFolderDialog(context, viewModel),
-              backgroundColor: AuroraColors.auroraMid,
-              foregroundColor: AuroraColors.inkPrimary,
-              icon: const Icon(Icons.create_new_folder_outlined),
-              label: const Text("New folder"),
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                FloatingActionButton.small(
+                  heroTag: "files-add-files",
+                  tooltip: "Add files",
+                  onPressed: () => _importFiles(context, viewModel),
+                  backgroundColor: AuroraColors.auroraMid,
+                  foregroundColor: AuroraColors.inkPrimary,
+                  child: const Icon(Icons.upload_file_outlined),
+                ),
+                const SizedBox(height: AuroraSpacing.sm),
+                FloatingActionButton.extended(
+                  heroTag: "files-new-folder",
+                  onPressed: () => _showCreateFolderDialog(context, viewModel),
+                  backgroundColor: AuroraColors.auroraMid,
+                  foregroundColor: AuroraColors.inkPrimary,
+                  icon: const Icon(Icons.create_new_folder_outlined),
+                  label: const Text("New folder"),
+                ),
+              ],
             ),
       bottomNavigationBar: state.isSelectionMode
           ? _SelectionActionBar(
@@ -185,6 +201,20 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
     );
     if (!context.mounted) return;
     await viewModel.loadFirstPage();
+  }
+
+  /// System file picker -> import into this folder. The conflict prompt is
+  /// only shown if a picked name already exists here.
+  Future<void> _importFiles(BuildContext context, FilesViewModel viewModel) async {
+    final OperationBatch? batch = await viewModel.importFiles(
+      onConflicts: (List<String> names) async {
+        // Called after the picker returned — the screen may be gone by now.
+        if (!context.mounted) return null;
+        return showConflictResolutionDialog(context, conflictingNames: names);
+      },
+    );
+    if (batch == null || !context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(batch.summary)));
   }
 
   Future<void> _copySelected(BuildContext context, FilesViewModel viewModel) async {

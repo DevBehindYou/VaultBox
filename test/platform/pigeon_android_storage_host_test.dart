@@ -12,6 +12,7 @@ final class FakeApi extends AndroidStorageApi {
   SafTreeMessage? tree;
   List<SafEntryMessage> children = <SafEntryMessage>[];
   PlatformException? failWith;
+  List<PickedFileMessage> picked = <PickedFileMessage>[];
 
   void _maybeFail() {
     final PlatformException? failure = failWith;
@@ -28,6 +29,12 @@ final class FakeApi extends AndroidStorageApi {
   Future<List<SafEntryMessage>> listChildren(String treeUri, String parentDocumentId) async {
     _maybeFail();
     return children;
+  }
+
+  @override
+  Future<List<PickedFileMessage>> pickFilesToCache() async {
+    _maybeFail();
+    return picked;
   }
 
   @override
@@ -121,5 +128,26 @@ void main() {
 
   test("passes the file descriptor straight through", () async {
     expect(await host.openFileDescriptor("tree", "doc", "w"), 42);
+  });
+
+  test("maps picked files (cache path, real name, size, mime)", () async {
+    api.picked = <PickedFileMessage>[
+      PickedFileMessage(cachePath: "/cache/imports/x/0", name: "report.pdf", sizeBytes: 42, mimeType: "application/pdf"),
+    ];
+
+    final List<PickedFile> files = await host.pickFilesToCache();
+    expect(files.single.cachePath, "/cache/imports/x/0");
+    expect(files.single.name, "report.pdf");
+    expect(files.single.sizeBytes, 42);
+    expect(files.single.mimeType, "application/pdf");
+  });
+
+  test("a cancelled pick is an empty list", () async {
+    expect(await host.pickFilesToCache(), isEmpty);
+  });
+
+  test("a picked-file message missing its path or name is rejected", () async {
+    api.picked = <PickedFileMessage>[PickedFileMessage(name: "no path")];
+    expect(host.pickFilesToCache(), throwsA(isA<UnexpectedFailure>()));
   });
 }

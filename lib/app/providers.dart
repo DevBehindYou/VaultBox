@@ -20,6 +20,7 @@ import "../domain/repositories/storage_backend.dart";
 import "../domain/repositories/storage_root_repository.dart";
 import "../domain/usecases/copy_items.dart";
 import "../domain/usecases/delete_items_to_recycle_bin.dart";
+import "../domain/usecases/import_files.dart";
 import "../domain/usecases/move_items.dart";
 import "../domain/usecases/permanently_delete_recycled.dart";
 import "../domain/usecases/restore_items.dart";
@@ -147,6 +148,9 @@ final StreamProvider<List<StorageRoot>> storageRootsProvider =
 
 final Provider<CopyItems> copyItemsProvider =
     Provider<CopyItems>((Ref ref) => CopyItems(ref.watch(fileRepositoryProvider)));
+
+final Provider<ImportFiles> importFilesProvider =
+    Provider<ImportFiles>((Ref ref) => ImportFiles(ref.watch(fileRepositoryProvider)));
 
 final Provider<MoveItems> moveItemsProvider =
     Provider<MoveItems>((Ref ref) => MoveItems(ref.watch(fileRepositoryProvider)));

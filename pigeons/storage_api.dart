@@ -77,6 +77,20 @@ class SafEntryMessage {
   String? mimeType;
 }
 
+// A document the user picked with the system file picker, ALREADY COPIED into
+// the app's cache directory by the native side. Handing Dart a plain cache
+// path (instead of a content:// URI) means importing needs no SAF fd tricks:
+// Dart just streams a normal file. The caller owns the copy and must delete it.
+class PickedFileMessage {
+  // Absolute path of the cached copy. The file name is an index, never the
+  // provider-supplied name (a hostile provider could otherwise inject path
+  // segments); the real name travels separately in [name].
+  String? cachePath;
+  String? name;
+  int? sizeBytes;
+  String? mimeType;
+}
+
 /// Native-side storage bridge. Implemented in Kotlin
 /// (`SafStorageHostApi.kt`), called from Dart via `SafStorageBackend`
 /// (`lib/data/services/saf_storage_backend.dart`) through the
@@ -150,4 +164,15 @@ abstract class AndroidStorageApi {
   /// docs/IMPLEMENTATION_PLAN.md's risk register.
   @async
   int openFileDescriptor(String treeUri, String documentId, String mode);
+
+  /// Launches `ACTION_OPEN_DOCUMENT` (multi-select), then copies every picked
+  /// document into a fresh directory under the app's cache and returns the
+  /// copies. An empty list means the person cancelled. Copying happens on a
+  /// background thread with plain ContentResolver streams (works for every
+  /// provider, needs no persistable grant).
+  ///
+  /// Costs temporary extra space (one full copy per picked file) — acceptable
+  /// for an import, and the reason the caller must delete each copy afterwards.
+  @async
+  List<PickedFileMessage> pickFilesToCache();
 }

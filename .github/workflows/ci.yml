@@ -17,6 +17,9 @@ name: CI
 on:
   push:
     branches-ignore: [ci-reports]
+    # Docs-only pushes don't need a 6-minute build (and would overwrite the
+    # ci-reports branch with an identical report).
+    paths-ignore: ["docs/**", "**.md"]
   workflow_dispatch:
 
 concurrency:

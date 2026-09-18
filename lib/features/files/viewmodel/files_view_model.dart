@@ -106,15 +106,24 @@ final class FilesViewModel extends Notifier<FilesState> {
   static const int _pageSize = 100;
   static const String _reservedDirName = ".vaultbox";
 
-  StreamSubscription<StorageEntry>? _subscription;
   String? _cursor;
+
+  /// Bumped by every [loadFirstPage] (and on dispose). A load only applies its
+  /// result if it is still the newest one when it finishes.
+  ///
+  /// Without this, two overlapping reloads (e.g. the initial load still in
+  /// flight when "create folder" or "back from Recycle Bin" reloads) each
+  /// appended their page onto whatever `state.entries` held at that moment —
+  /// producing duplicate rows — and the superseded one could wait forever on
+  /// a stream it had itself cancelled.
+  int _generation = 0;
 
   @override
   FilesState build() {
-    // A subscription created here outlives build() — cancel it when this
-    // element is disposed or a screen transition leaks a live listener
-    // (KB vol2 §9.3).
-    ref.onDispose(() => unawaited(_subscription?.cancel()));
+    // Invalidate any in-flight load when this element goes away; the load
+    // loop notices on its next event and stops consuming (which cancels the
+    // backend stream).
+    ref.onDispose(() => _generation++);
     scheduleMicrotask(loadFirstPage);
     return FilesState(directory: arg);
   }
@@ -122,7 +131,6 @@ final class FilesViewModel extends Notifier<FilesState> {
   FileRepository get _files => ref.read(fileRepositoryProvider);
 
   Future<void> loadFirstPage() async {
-    await _subscription?.cancel();
     // Riverpod 3.0: touching `ref`/`state` after this element is disposed
     // now THROWS rather than silently no-op-ing (breaking change from 2.x —
     // verified against the official 3.0 migration guide, not assumed). Every
@@ -131,15 +139,16 @@ final class FilesViewModel extends Notifier<FilesState> {
     // provider can be popped mid-operation (e.g. a fast back-out during a
     // folder load).
     if (!ref.mounted) return;
-    _subscription = null;
+    final int generation = ++_generation;
     _cursor = null;
     state = state.copyWith(
       entries: const <StorageEntry>[],
       isLoadingFirstPage: true,
+      isLoadingMore: false,
       hasMore: true,
       clearFailure: true,
     );
-    await _loadPage();
+    await _loadPage(generation);
   }
 
   Future<void> loadMore() async {
@@ -152,42 +161,50 @@ final class FilesViewModel extends Notifier<FilesState> {
       return;
     }
     state = state.copyWith(isLoadingMore: true);
-    await _loadPage();
+    await _loadPage(_generation);
   }
 
-  Future<void> _loadPage() async {
+  Future<void> _loadPage(int generation) async {
+    bool isStale() => !ref.mounted || generation != _generation;
+
+    final String? cursor = _cursor;
     final List<StorageEntry> page = <StorageEntry>[];
-    final Completer<void> done = Completer<void>();
 
-    await _subscription?.cancel();
-    if (!ref.mounted) return;
+    try {
+      await for (final StorageEntry entry in _files.list(
+        state.directory,
+        cursor: cursor,
+        pageSize: _pageSize,
+      )) {
+        // Returning from inside `await for` cancels the underlying stream.
+        if (isStale()) return;
+        page.add(entry);
+      }
+    } on AppFailure catch (failure) {
+      if (isStale()) return;
+      state = state.copyWith(
+        isLoadingFirstPage: false,
+        isLoadingMore: false,
+        failure: failure,
+      );
+      return;
+    } on Object catch (error) {
+      // Anything that isn't already a typed failure is a bug or a platform
+      // surprise; keep the raw detail behind "Technical details" only.
+      if (isStale()) return;
+      state = state.copyWith(
+        isLoadingFirstPage: false,
+        isLoadingMore: false,
+        failure: UnexpectedFailure(debugDetail: error.toString()),
+      );
+      return;
+    }
 
-    _subscription = _files
-        .list(state.directory, cursor: _cursor, pageSize: _pageSize)
-        .listen(
-          page.add,
-          onError: (Object error) {
-            if (!done.isCompleted) done.complete();
-            if (!ref.mounted) return;
-            state = state.copyWith(
-              isLoadingFirstPage: false,
-              isLoadingMore: false,
-              failure: error is AppFailure ? error : const UnexpectedFailure(),
-            );
-          },
-          onDone: () {
-            if (!done.isCompleted) done.complete();
-          },
-          cancelOnError: true,
-        );
-
-    await done.future;
-    if (!ref.mounted) return;
-    if (state.failure != null) return;
+    if (isStale()) return;
 
     // The cursor and hasMore are driven by the RAW page (what the backend
     // returned), not the filtered one, so hiding an entry can't stall paging.
-    _cursor = page.isEmpty ? _cursor : page.last.name;
+    _cursor = page.isEmpty ? cursor : page.last.name;
     final bool atRoot = state.directory.path.isRoot;
     final List<StorageEntry> combined = <StorageEntry>[
       ...state.entries,

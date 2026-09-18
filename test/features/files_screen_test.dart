@@ -60,6 +60,14 @@ void main() {
     );
   }
 
+  /// Every visible Text on screen — attached to failure messages so a red CI
+  /// run shows what the UI actually rendered (no local device to look at).
+  String screenTexts(WidgetTester tester) => tester
+      .widgetList<Text>(find.byType(Text))
+      .map((Text t) => t.data ?? t.textSpan?.toPlainText() ?? "")
+      .toList()
+      .toString();
+
   testWidgets("renders folders and files from the backend", (WidgetTester tester) async {
     final MemoryStorageBackend backend = MemoryStorageBackend(id: root.id)
       ..seedDirectory("/Documents")
@@ -108,7 +116,7 @@ void main() {
     await tester.tap(find.text("Create"));
     await tester.pumpAndSettle();
 
-    expect(find.text("Photos"), findsOneWidget);
+    expect(find.text("Photos"), findsOneWidget, reason: "screen: ${screenTexts(tester)}");
   });
 
   testWidgets("delete then restore round-trips through the Recycle Bin",
@@ -128,7 +136,11 @@ void main() {
     await tester.tap(find.text("Move to Recycle Bin"));
     await tester.pumpAndSettle();
 
-    expect(find.text("keepsake.txt"), findsNothing, reason: "gone from the live folder");
+    expect(
+      find.text("keepsake.txt"),
+      findsNothing,
+      reason: "gone from the live folder; screen: ${screenTexts(tester)}",
+    );
 
     // Open the Recycle Bin and restore it.
     await tester.tap(find.byTooltip("Recycle Bin"));

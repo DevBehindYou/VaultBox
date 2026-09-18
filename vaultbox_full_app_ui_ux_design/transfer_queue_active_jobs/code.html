@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><title>VaultBox</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#fbf9f4;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "status-warning-border": "#DCD0B0", "on-primary-fixed": "#1a045e", "inverse-primary": "#c8bfff", "on-secondary": "#ffffff", "inverse-surface": "#30312d", "status-danger-surface": "#FDF6F6", "error-container": "#ffdad6", "secondary-container": "#5a9fff", "outline": "#797582", "ink-tertiary": "#8A8A8A", "aurora-soft-l": "#CFC8EF", "surface": "#fbf9f4", "primary-fixed-dim": "#c8bfff", "aurora-lavender": "#8F83D8", "on-tertiary-container": "#fffbff", "surface-container-low": "#f5f3ee", "ink-primary": "#1A1A1A", "secondary": "#005eb4", "on-primary-fixed-variant": "#473a8a", "status-danger-border": "#C98A8A", "on-tertiary": "#ffffff", "border-default": "#DCDCDC", "outline-variant": "#c9c4d2", "on-error": "#ffffff", "selection-soft": "#EEF3FB", "on-primary-container": "#fffbff", "on-surface": "#1b1c19", "status-success-border": "#B0CDB4", "error": "#ba1a1a", "tertiary-fixed-dim": "#feb0d2", "surface-tertiary": "#F7F7F5", "on-tertiary-fixed-variant": "#6d3350", "ink-secondary": "#666666", "surface-tint": "#5f53a4", "border-strong": "#1A1A1A", "background": "#fbf9f4", "border-muted": "#E8E8E8", "tertiary-fixed": "#ffd8e7", "on-secondary-fixed-variant": "#00468a", "ink-disabled": "#A5A5A5", "on-surface-variant": "#484551", "selection-blue": "#2A78D6", "tertiary": "#864866", "primary-container": "#7569bc", "surface-variant": "#e4e2dd", "surface-primary": "#FFFFFF", "surface-container-high": "#eae8e3", "inverse-on-surface": "#f3f1eb", "surface-container-highest": "#e4e2dd", "aurora-pink": "#D98FB0", "surface-container-lowest": "#ffffff", "aurora-mid": "#B58FD0", "surface-secondary": "#FAFAFA", "status-success": "#3A7A4A", "on-error-container": "#93000a", "on-tertiary-fixed": "#390724", "status-danger": "A34A4A", "aurora-soft-p": "#EEC9D6", "on-secondary-container": "#00356a", "status-warning": "#8A6A2A", "primary-fixed": "#e5deff", "on-secondary-fixed": "#001b3c", "on-background": "#1b1c19", "tertiary-container": "#a2607f", "surface-dim": "#dcdad5", "primary": "#5c50a1", "surface-bright": "#fbf9f4", "secondary-fixed-dim": "#a8c8ff", "surface-container": "#f0eee9", "on-primary": "#ffffff", "secondary-fixed": "#d5e3ff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "gutter-lg": "1.5rem", "margin-lg": "1.5rem", "gutter": "1rem", "space-lg": "1.25rem", "space-xl": "1.5rem", "space-md": "1rem", "margin": "1rem", "space-sm": "0.5rem", "gutter-sm": "0.75rem", "margin-sm": "0.875rem", "space-xs": "0.25rem" }, fontFamily: { "label-lg": ["Inter"], "body-lg": ["Inter"], "headline-lg": ["Epilogue"], "headline-md": ["Epilogue"], "headline-sm": ["Epilogue"], "display-xl-mobile": ["Epilogue"], "body-md": ["Inter"], "label-md": ["JetBrains Mono"], "display-xl": ["Epilogue"], "label-sm": ["JetBrains Mono"], "body-sm": ["Inter"] }, fontSize: { "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "display-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "display-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md text-body-md antialiased min-h-screen flex flex-col"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0 flex-shrink"><img alt="A modern geometric server NAS emblem for VaultBox. Stylized storage vault cube box with subtle network pulse signal lines, rendered with soft lavender and violet aurora accents and crisp ink borders. Clean vector icon, perfectly centered.. Design context: - Primary color: #8f83d8 - Font: epilogue - Mode: light - Roundness: rounded-md . The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XFa-uWEsGJPgdLDzAOo7A0aej7Tu1EA-aPNPuKD3u556Cv3c39haZ4T7BqCw4jnYpkWgsZPjsINsWzOouij-4DG3Cbi7Fgr9mpIxiRwvrmaGL0Ubd-PxA8OW3f9dt74s7O9tkigKcIkulCHst4kr4KWX_9ArAErbPl1DOf4NQqUZu8a_DxX9ouOWO_l0EJy1fRNdFQO8reujt8MlLgs_TNlhLubtUjTytYFPUtxFs10rKncpmO3hpsppQ"/><div class="flex flex-col truncate"><span class="font-headline-sm text-headline-sm tracking-tight text-ink-primary truncate">VaultBox</span><span class="font-label-sm text-label-sm text-ink-tertiary truncate uppercase tracking-wider">Node Activity</span></div></div><div class="flex items-center gap-space-sm flex-shrink-0"><div class="h-7 px-2.5 rounded-full bg-surface-primary flex items-center gap-1.5 shadow-[0_1px_4px_rgba(0,0,0,0.04)]"><span class="w-2 h-2 rounded-full bg-status-success animate-pulse"></span><span class="font-label-sm text-label-sm text-status-success">LIVE</span></div><a aria-label="Settings" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-ink-primary hover:bg-surface-secondary transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[20px]">tune</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 shadow-[0_2px_6px_rgba(92,80,161,0.25)]"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-28 bg-surface"><div class="flex flex-col w-full px-margin pb-6 gap-y-4">
+<!-- Eyebrow & Main Title with Refresh Indicator -->
+<div class="flex flex-col pt-1">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase tracking-wider">Background I/O Engine</span>
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surface-container">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success animate-ping"></span>
+<span class="font-label-sm text-label-sm text-ink-secondary">I/O THREAD 04</span>
+</div>
+</div>
+<div class="flex items-center justify-between mt-1">
+<h1 class="font-headline-lg text-headline-lg text-ink-primary tracking-tight">Transfer Queue</h1>
+<button aria-label="Bandwidth throttling settings" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-ink-secondary hover:text-ink-primary active:scale-95 transition-transform" id="throttle-btn">
+<span class="material-symbols-outlined text-[20px]">speed</span>
+</button>
+</div>
+</div>
+<!-- Filter Pill Switcher -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+<button class="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-label-md text-label-md font-semibold shadow-sm flex items-center gap-1.5 flex-shrink-0">
+<span>All</span>
+<span class="w-4 h-4 rounded-full bg-white/60 flex items-center justify-center text-[10px]">5</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-full bg-surface-primary text-ink-secondary hover:text-ink-primary font-label-md text-label-md flex items-center gap-1.5 shadow-sm flex-shrink-0">
+<span>Active</span>
+<span class="w-4 h-4 rounded-full bg-surface-container-high text-ink-primary flex items-center justify-center text-[10px]">2</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-full bg-surface-primary text-ink-secondary hover:text-ink-primary font-label-md text-label-md flex items-center gap-1.5 shadow-sm flex-shrink-0">
+<span>Completed</span>
+<span class="w-4 h-4 rounded-full bg-surface-container-high text-ink-primary flex items-center justify-center text-[10px]">18</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-full bg-surface-primary text-status-danger hover:text-error font-label-md text-label-md flex items-center gap-1.5 shadow-sm flex-shrink-0">
+<span>Failed</span>
+<span class="w-4 h-4 rounded-full bg-status-danger-surface text-status-danger flex items-center justify-center text-[10px]">1</span>
+</button>
+</div>
+<!-- Aggregate Processing Telemetry Banner -->
+<div class="p-4 rounded-xl bg-surface-primary shadow-sm flex flex-col gap-3 relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-aurora-lavender/15 blur-2xl pointer-events-none"></div>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px] animate-pulse">sync</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-ink-primary">2 Active Jobs Processing</h2>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Dedicated Node Pool #1 · Socket Keep-Alive</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-md bg-selection-soft text-selection-blue font-label-sm text-label-sm uppercase font-semibold">Fast I/O</span>
+</div>
+<!-- Aggregate Speeds Metric -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<div class="p-2.5 rounded-lg bg-surface-secondary flex flex-col">
+<div class="flex items-center gap-1 text-ink-tertiary">
+<span class="material-symbols-outlined text-[15px] text-aurora-pink">arrow_upward</span>
+<span class="font-label-sm text-label-sm">Upload Aggregate</span>
+</div>
+<span class="font-label-md text-label-md text-ink-primary font-semibold mt-0.5">▲ 8.4 MB/s</span>
+</div>
+<div class="p-2.5 rounded-lg bg-surface-secondary flex flex-col">
+<div class="flex items-center gap-1 text-ink-tertiary">
+<span class="material-symbols-outlined text-[15px] text-secondary">arrow_downward</span>
+<span class="font-label-sm text-label-sm">Download Aggregate</span>
+</div>
+<span class="font-label-md text-label-md text-ink-primary font-semibold mt-0.5">▼ 22.1 MB/s</span>
+</div>
+</div>
+<!-- System Telemetry Row -->
+<div class="flex items-center justify-between pt-1 font-label-sm text-label-sm text-ink-secondary">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-status-success">thermostat</span>
+<span>Normal (36°C)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-aurora-lavender">bolt</span>
+<span>WakeLock Active</span>
+</div>
+<div class="flex items-center gap-1 text-ink-tertiary">
+<span class="material-symbols-outlined text-[15px]">memory</span>
+<span>RAM: 1.1 GB</span>
+</div>
+</div>
+</div>
+<!-- Section Label: Active Transfers -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-ink-primary">Active Transfers</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container font-label-sm text-label-sm text-ink-secondary">2 running</span>
+</div>
+<button class="font-label-sm text-label-sm text-secondary hover:underline flex items-center gap-0.5">
+<span>Pause All</span>
+<span class="material-symbols-outlined text-[14px]">pause</span>
+</button>
+</div>
+<!-- Job Card 1: Batch Download (MacBook Pro) -->
+<div class="p-4 rounded-xl bg-surface-primary shadow-sm flex flex-col gap-3 relative">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3 min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-[24px]">folder_zip</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-surface-container-high font-label-sm text-label-sm text-ink-primary uppercase font-semibold">WebDAV</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">MacBook Pro Client</span>
+</div>
+<h3 class="font-body-lg text-body-lg font-medium text-ink-primary truncate mt-0.5">Studio_Shoot_Selects.zip</h3>
+<span class="font-label-sm text-label-sm text-ink-secondary">14 files · Batch Download</span>
+</div>
+</div>
+<div class="flex items-center gap-1 flex-shrink-0">
+<button aria-label="Pause Studio Shoot transfer" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-ink-secondary hover:text-ink-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">pause</span>
+</button>
+<button aria-label="Cancel Studio Shoot transfer" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-ink-secondary hover:text-status-danger transition-colors">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- Progress Track & Stats -->
+<div class="flex flex-col gap-1.5">
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-gradient-to-r from-aurora-lavender to-aurora-mid rounded-full transition-all duration-300" style="width: 64%;"></div>
+</div>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-ink-tertiary">
+<span class="text-ink-primary font-medium">64% · 2.4 GB / 3.8 GB</span>
+<div class="flex items-center gap-2 font-label-sm text-label-sm">
+<span class="text-secondary font-medium">18.2 MB/s</span>
+<span>·</span>
+<span>ETA: 1m 14s</span>
+</div>
+</div>
+</div>
+<!-- Path / Destination metadata -->
+<div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-surface-secondary text-ink-secondary min-w-0">
+<span class="material-symbols-outlined text-[15px] flex-shrink-0 text-ink-tertiary">folder_open</span>
+<span class="font-label-sm text-label-sm truncate">/Internal SSD/Projects/Studio_Shoot/</span>
+</div>
+</div>
+<!-- Job Card 2: Incoming Browser Upload (iPad Pro) -->
+<div class="p-4 rounded-xl bg-surface-primary shadow-sm flex flex-col gap-3">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3 min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-secondary flex-shrink-0">
+<span class="material-symbols-outlined text-[24px]">movie</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-selection-soft font-label-sm text-label-sm text-selection-blue uppercase font-semibold">HTTP Web Portal</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">iPad Pro (Safari)</span>
+</div>
+<h3 class="font-body-lg text-body-lg font-medium text-ink-primary truncate mt-0.5">B-Roll_4K_Drone_004.mp4</h3>
+<span class="font-label-sm text-label-sm text-ink-secondary">Incoming direct file upload</span>
+</div>
+</div>
+<div class="flex items-center gap-1 flex-shrink-0">
+<button aria-label="Pause Drone footage transfer" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-ink-secondary hover:text-ink-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">pause</span>
+</button>
+<button aria-label="Cancel Drone footage transfer" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-ink-secondary hover:text-status-danger transition-colors">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- Progress Track & Stats -->
+<div class="flex flex-col gap-1.5">
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-gradient-to-r from-aurora-mid to-aurora-pink rounded-full transition-all duration-300" style="width: 38%;"></div>
+</div>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-ink-tertiary">
+<span class="text-ink-primary font-medium">38% · 480 MB / 1.25 GB</span>
+<div class="flex items-center gap-2 font-label-sm text-label-sm">
+<span class="text-aurora-pink font-medium">8.4 MB/s</span>
+<span>·</span>
+<span>ETA: 1m 32s</span>
+</div>
+</div>
+</div>
+<!-- Path / Destination metadata -->
+<div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-surface-secondary text-ink-secondary min-w-0">
+<span class="material-symbols-outlined text-[15px] flex-shrink-0 text-ink-tertiary">drive_file_move</span>
+<span class="font-label-sm text-label-sm truncate">/Deliverables/Client_Reels/</span>
+</div>
+</div>
+<!-- Section Label: Queued & Attention Required -->
+<div class="flex items-center justify-between pt-1">
+<span class="font-headline-sm text-headline-sm text-ink-primary">Scheduled &amp; Recoveries</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">2 items</span>
+</div>
+<!-- Job Card 3: Queued Cryptographic Ciphering -->
+<div class="p-4 rounded-xl bg-surface-primary shadow-sm flex flex-col gap-2.5">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3 min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">lock_clock</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-surface-container-high font-label-sm text-label-sm text-ink-primary font-semibold">CIPHER 256</span>
+<span class="font-label-sm text-label-sm text-status-warning font-medium">Waiting for I/O thread</span>
+</div>
+<h3 class="font-body-md text-body-md font-medium text-ink-primary truncate mt-0.5">Batch Move to Encrypted Vault</h3>
+<span class="font-label-sm text-label-sm text-ink-secondary">6 RAW DNG files · Total 312 MB</span>
+</div>
+</div>
+<button aria-label="Reorder Queue" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-ink-secondary hover:text-ink-primary">
+<span class="material-symbols-outlined text-[18px]">drag_handle</span>
+</button>
+</div>
+<div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-surface-secondary text-ink-tertiary font-label-sm text-label-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">hourglass_top</span>
+        Queued after "B-Roll_4K_Drone_004"
+      </span>
+<span class="text-ink-secondary font-medium">Position: #1</span>
+</div>
+</div>
+<!-- Job Card 4: Failed Job with Direct Recovery -->
+<div class="p-4 rounded-xl bg-surface-primary shadow-sm flex flex-col gap-3">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-lg bg-status-danger-surface flex items-center justify-center text-status-danger flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">error_outline</span>
+</div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-status-danger-surface text-status-danger font-label-sm text-label-sm font-semibold uppercase">Aborted</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">WebDAV Push</span>
+</div>
+<h3 class="font-body-md text-body-md font-medium text-ink-primary truncate mt-0.5">Client_Contract_v3.pdf</h3>
+<p class="font-label-sm text-label-sm text-status-danger mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] flex-shrink-0">portable_wifi_off</span>
+<span class="truncate">Incomplete socket write (Client closed connection)</span>
+</p>
+</div>
+</div>
+<!-- Recovery Actions -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="h-10 px-4 rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[16px]">replay</span>
+<span>Retry Transfer</span>
+</button>
+<button class="h-10 px-4 rounded-full bg-surface-container text-ink-primary hover:bg-surface-container-high font-label-md text-label-md flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[16px]">delete_sweep</span>
+<span>Dismiss</span>
+</button>
+</div>
+</div>
+<!-- Engine Notification Note (Android Foreground Service) -->
+<div class="p-3.5 rounded-xl bg-surface-container-low shadow-sm flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-primary flex items-center justify-center text-status-success flex-shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-ink-primary font-semibold uppercase tracking-wide">Persistent Node Service</span>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">
+        Android Foreground Service active: Transfers proceed when screen is off, conserving battery via low-latency batch writes.
+      </p>
+</div>
+</div>
+</div>
+<script>
+  // Micro-interaction for quick feedback on Pause/Cancel controls
+  document.querySelectorAll('button[aria-label*="Pause"]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const icon = btn.querySelector('.material-symbols-outlined');
+      if (icon) {
+        if (icon.textContent.trim() === 'pause') {
+          icon.textContent = 'play_arrow';
+          btn.classList.add('text-status-warning');
+        } else {
+          icon.textContent = 'pause';
+          btn.classList.remove('text-status-warning');
+        }
+      }
+    });
+  });
+
+  // Smooth dismiss handler for failed jobs
+  const dismissBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Dismiss'));
+  if (dismissBtn) {
+    dismissBtn.addEventListener('click', () => {
+      const card = dismissBtn.closest('.rounded-xl');
+      if (card) {
+        card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(-8px)';
+        setTimeout(() => card.remove(), 250);
+      }
+    });
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe pointer-events-none" data-active-classes="bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-semibold shadow-[0_2px_10px_rgba(143,131,216,0.3)]"><div class="px-margin pb-space-sm"><div class="pointer-events-auto h-[66px] rounded-full bg-surface-primary/85 backdrop-blur-xl shadow-[0_8px_30px_rgba(26,26,26,0.08)] flex items-center justify-around px-space-xs"><a class="flex flex-col items-center justify-center min-w-[54px] h-[52px] px-2 rounded-full text-on-surface-variant hover:text-ink-primary transition-all" data-path="home-dashboard" href="#"><span class="material-symbols-outlined text-[22px]">dns</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a class="flex flex-col items-center justify-center min-w-[54px] h-[52px] px-2 rounded-full text-on-surface-variant hover:text-ink-primary transition-all" data-path="file-browser" href="#"><span class="material-symbols-outlined text-[22px]">folder_data</span><span class="font-label-sm text-label-sm mt-0.5">Files</span></a><a class="flex flex-col items-center justify-center min-w-[54px] h-[52px] px-2 rounded-full text-on-surface-variant hover:text-ink-primary transition-all" data-path="shared-links" href="#"><span class="material-symbols-outlined text-[22px]">share</span><span class="font-label-sm text-label-sm mt-0.5">Share</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[54px] h-[52px] px-2 rounded-full transition-all bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-semibold shadow-[0_2px_10px_rgba(143,131,216,0.3)]" data-path="node-activity" href="#"><span class="material-symbols-outlined text-[22px]">swap_calls</span><span class="font-label-sm text-label-sm mt-0.5">Activity</span></a><a class="flex flex-col items-center justify-center min-w-[54px] h-[52px] px-2 rounded-full text-on-surface-variant hover:text-ink-primary transition-all" data-path="server-settings" href="#"><span class="material-symbols-outlined text-[22px]">settings</span><span class="font-label-sm text-label-sm mt-0.5">Settings</span></a></div></div></nav></body></html>

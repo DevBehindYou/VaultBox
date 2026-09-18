@@ -1,0 +1,75 @@
+name: vaultbox
+description: >
+  VaultBox — turns an Android phone into a secure personal storage server /
+  mini-NAS. Local-first file manager with an optional HTTPS/WebDAV/REST server.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  # Reference baseline verified in docs/25_Research_Basis_and_Verified_Platform_Facts.md
+  # (Flutter 3.47.x line). Pin the exact patch in CI once the toolchain is available.
+  sdk: ">=3.6.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # --- Navigation ---
+  # Reference verified version: 18.0.1 (doc §00 / §25). Declarative routing, ShellRoute
+  # for the 5-tab nav dock, nested routes for contextual sheets/dialogs.
+  go_router: ^18.0.1
+
+  # --- State management / DI ---
+  # Verified against pub.dev (latest stable: 3.4.3 at time of writing, not
+  # guessed). Used for ViewModel composition, Notifier-based ViewModels
+  # (constructor-injected family args per Riverpod 3.0's actual API — see
+  # lib/features/files/viewmodel/files_view_model.dart doc comment),
+  # repository/service DI, test overrides.
+  # NOTE: this Phase 0/1 slice uses *manual* (non-codegen) Riverpod providers
+  # deliberately — see docs/IMPLEMENTATION_PLAN.md §E. riverpod_generator can
+  # be adopted later without changing the public ViewModel shape.
+  flutter_riverpod: ^3.0.0
+
+  # --- Metadata database ---
+  # Verified current versions (checked against pub.dev, not guessed): drift
+  # 2.34.x, drift_flutter 0.3.1. Stores users/ACL/shares/sessions/settings/
+  # transfer-state/audit — never large user files (ADR-005).
+  drift: ^2.34.0
+  drift_flutter: ^0.3.1
+  sqlite3_flutter_libs: ^0.5.24
+  path_provider: ^2.1.4
+
+  # --- Storage path handling ---
+  path: ^1.9.0
+
+  # --- ID generation ---
+  uuid: ^4.5.1
+
+  # --- Structured logging (doc §16/§20: no print() in production code) ---
+  logging: ^1.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # Doc-mandated strict analyzer baseline (§00/§20/§25).
+  flutter_lints: ^5.0.0
+
+  # --- Codegen (required to actually compile — run locally, see README.md) ---
+  build_runner: ^2.4.13
+  # Verified current version (pub.dev, not guessed).
+  drift_dev: ^2.34.2
+
+  # --- Native bridge (Phase 2+, contract authored now — see pigeons/storage_api.dart) ---
+  # Reference verified version: 29.0.1 (doc §00 / §25).
+  pigeon: ^29.0.1
+
+  # --- Deliberately NOT pulled into Phase 0/1 (see docs/IMPLEMENTATION_PLAN.md §E) ---
+  # freezed: ^2.5.7
+  # freezed_annotation: ^2.4.4
+  # json_serializable: ^6.14.1
+  # json_annotation: ^4.9.0
+  # cryptography: ^2.7.0            # Vault, Phase 8
+  # flutter_secure_storage: ^9.2.2  # Auth secrets, Phase 3
+
+flutter:
+  uses-material-design: true

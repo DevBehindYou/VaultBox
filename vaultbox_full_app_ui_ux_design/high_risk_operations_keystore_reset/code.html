@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "selection-soft": "#EEF3FB", "status-success": "#3A7A4A", "tertiary": "#864866", "surface-bright": "#fbf9f4", "border-default": "#DCDCDC", "on-primary-fixed-variant": "#473a8a", "error-container": "#ffdad6", "border-strong": "#1A1A1A", "primary-fixed": "#e5deff", "surface-container-high": "#eae8e3", "on-secondary-fixed": "#001b3c", "on-primary-container": "#fffbff", "ink-primary": "#1A1A1A", "on-error": "#ffffff", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#c8bfff", "on-secondary-fixed-variant": "#00468a", "outline-variant": "#c9c4d2", "status-danger": "#A34A4A", "on-tertiary-container": "#fffbff", "on-primary-fixed": "#1a045e", "on-error-container": "#93000a", "status-warning-border": "#DCD0B0", "primary": "#5c50a1", "on-surface-variant": "#484551", "tertiary-container": "#a2607f", "on-tertiary-fixed": "#390724", "inverse-surface": "#30312d", "on-secondary": "#ffffff", "status-danger-surface": "#FDF6F6", "inverse-on-surface": "#f3f1eb", "secondary": "#005eb4", "background": "#fbf9f4", "aurora-soft-l": "#CFC8EF", "on-tertiary-fixed-variant": "#6d3350", "secondary-container": "#5a9fff", "aurora-pink": "#D98FB0", "aurora-soft-p": "#EEC9D6", "on-secondary-container": "#00356a", "border-muted": "#E8E8E8", "on-surface": "#1b1c19", "surface-container-low": "#f5f3ee", "inverse-primary": "#c8bfff", "tertiary-fixed-dim": "#feb0d2", "surface-dim": "#dcdad5", "ink-disabled": "#A5A5A5", "tertiary-fixed": "#ffd8e7", "surface-tint": "#5f53a4", "surface-variant": "#e4e2dd", "on-primary": "#ffffff", "primary-container": "#7569bc", "ink-tertiary": "#8A8A8A", "surface-secondary": "#FAFAFA", "surface": "#fbf9f4", "secondary-fixed": "#d5e3ff", "status-warning": "#8A6A2A", "status-success-border": "#B0CDB4", "selection-blue": "#2A78D6", "aurora-lavender": "#8F83D8", "surface-primary": "#FFFFFF", "aurora-mid": "#B58FD0", "outline": "#797582", "error": "#ba1a1a", "surface-container-highest": "#e4e2dd", "on-tertiary": "#ffffff", "on-background": "#1b1c19", "surface-tertiary": "#F7F7F5", "surface-container": "#f0eee9", "secondary-fixed-dim": "#a8c8ff", "ink-secondary": "#666666", "status-danger-border": "#C98A8A" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xl": "1.5rem", "space-sm": "0.5rem", "gutter-sm": "0.75rem", "margin-lg": "1.5rem", "gutter": "1rem", "space-md": "1rem", "space-xs": "0.25rem", "margin-sm": "0.875rem", "gutter-lg": "1.5rem", "margin": "1rem", "space-lg": "1.25rem" }, "fontFamily": { "label-lg": ["Inter"], "label-md": ["JetBrains Mono"], "label-sm": ["JetBrains Mono"], "display-xl": ["Epilogue"], "display-xl-mobile": ["Epilogue"], "headline-md": ["Epilogue"], "body-md": ["Inter"], "body-sm": ["Inter"], "body-lg": ["Inter"], "headline-lg": ["Epilogue"], "headline-sm": ["Epilogue"] }, "fontSize": { "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "display-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }] } } } };</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; min-height: 100vh; background-color: #fbf9f4; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style></head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0 flex-1"><img alt="A modern geometric server NAS emblem for VaultBox. Stylized storage vault cube box with subtle network pulse signal lines, rendered with soft lavender and violet aurora accents and crisp ink borders. Clean vector icon, perfectly centered.. Design context: - Primary color: #8f83d8 - Font: epilogue - Mode: light - Roundness: rounded-md . The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XFa-uWEsGJPgdLDzAOo7A0aej7Tu1EA-aPNPuKD3u556Cv3c39haZ4T7BqCw4jnYpkWgsZPjsINsWzOouij-4DG3Cbi7Fgr9mpIxiRwvrmaGL0Ubd-PxA8OW3f9dt74s7O9tkigKcIkulCHst4kr4KWX_9ArAErbPl1DOf4NQqUZu8a_DxX9ouOWO_l0EJy1fRNdFQO8reujt8MlLgs_TNlhLubtUjTytYFPUtxFs10rKncpmO3hpsppQ"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-ink-primary tracking-tight truncate">VaultBox</span><span class="px-space-xs py-[2px] rounded-full bg-surface-primary text-status-success font-label-sm text-label-sm flex items-center gap-1 shadow-[0_0_0_1.5px_#B0CDB4]"><span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>Live</span></div><span class="font-label-sm text-label-sm text-ink-secondary truncate">Settings</span></div></div><div class="flex items-center gap-space-xs shrink-0"><a aria-label="Settings" class="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink-primary hover:bg-surface-container transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[20px]">settings</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-32 px-margin bg-surface"><div class="flex flex-col w-full max-w-xl mx-auto space-y-space-md">
+<!-- Breadcrumb / Section Header -->
+<div class="flex items-center justify-between pt-space-xs">
+<a class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full bg-surface-container text-ink-primary hover:bg-surface-container-high transition-colors" data-path="settings" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<div class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-status-danger-surface text-status-danger">
+<span class="w-2 h-2 rounded-full bg-status-danger animate-ping"></span>
+<span class="font-label-sm text-label-sm tracking-wider uppercase font-semibold">Zone 4 · High Risk</span>
+</div>
+</div>
+<!-- Hero Title & Visual Framing -->
+<div class="relative overflow-hidden rounded-xl bg-surface-primary p-space-lg shadow-sm">
+<div class="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-status-danger/5 pointer-events-none blur-2xl"></div>
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-status-danger-surface text-status-danger flex items-center justify-center shrink-0 shadow-inner">
+<span class="material-symbols-outlined text-[28px]">key_off</span>
+</div>
+<div class="flex flex-col min-w-0">
+<h1 class="font-headline-md text-headline-md text-ink-primary tracking-tight">High-Risk Operations</h1>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Hardware Keystore, Cryptographic Enclave &amp; Node State</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="font-label-sm text-label-sm text-ink-tertiary px-2 py-0.5 rounded bg-surface-container">SEC-LVL: STRONGBOX_TOMBSTONE</span>
+<span class="font-label-sm text-label-sm text-status-danger font-medium">Zero-Cloud Mirror</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Explanatory Danger Banner -->
+<div class="rounded-xl bg-status-danger-surface p-space-md shadow-sm">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-status-danger shrink-0 text-[24px]">warning</span>
+<div class="flex-1 min-w-0">
+<h2 class="font-headline-sm text-headline-sm text-status-danger">Irreversible Key Eviction Zone</h2>
+<p class="font-body-sm text-body-sm text-ink-primary mt-1 leading-relaxed">
+          Actions in this perimeter permanently dismantle local cryptographic keys, hardware secrets, and state databases. VaultBox maintains <strong>zero cloud backups</strong>, telemetry mirrors, or recovery escrow. Once key material is purged, underlying ciphertexts become absolute random noise.
+        </p>
+</div>
+</div>
+</div>
+<!-- Hardware Guard Badge -->
+<div class="rounded-lg bg-surface-primary p-space-sm shadow-sm flex items-center justify-between gap-2">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-aurora-lavender text-[20px]">fingerprint</span>
+<span class="font-label-sm text-label-sm text-ink-secondary truncate">TOMBSTONE_GUARD: Hardware Biometrics + Admin PIN required</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-surface-container text-ink-primary font-mono shrink-0">ARM_TEE · ACTIVE</span>
+</div>
+<!-- CRITICAL ACTION 1: Erase Vault & Master Key -->
+<section class="rounded-xl bg-surface-primary p-space-lg shadow-sm space-y-space-md">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-2.5">
+<span class="w-8 h-8 rounded-lg bg-status-danger-surface text-status-danger flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">delete_forever</span>
+</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-ink-primary">Erase Vault &amp; Destroy Key Material</h2>
+<span class="font-label-sm text-label-sm text-status-danger font-mono uppercase tracking-wider">HARDWARE ENCLAVE PURGE</span>
+</div>
+</div>
+<span class="px-2 py-1 rounded bg-status-danger/10 text-status-danger font-label-sm text-label-sm font-semibold">DESTRUCTIVE</span>
+</div>
+<div class="rounded-lg bg-surface-secondary p-space-md space-y-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-ink-secondary text-[16px]">info</span>
+<span class="font-label-md text-label-md text-ink-primary">Deterministic Key Destruction Consequence</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary leading-relaxed">
+        Purges the hardware-backed <code class="font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded text-ink-primary">AES-256-GCM</code> master key from the Android Keystore StrongBox. All encrypted files located in <code class="font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded text-ink-primary">/Vault/SecureStore</code> will become permanently unrecoverable gibberish forever.
+      </p>
+</div>
+<!-- Interactive Friction Gate -->
+<div class="space-y-space-sm pt-space-xs">
+<label class="block font-label-md text-label-md text-ink-secondary" for="keystore-confirm-input">
+        Type <span class="font-mono font-bold text-status-danger select-all tracking-wider">ERASE VAULT</span> to unlock hardware shredder:
+      </label>
+<div class="relative">
+<input autocomplete="off" class="w-full h-12 px-space-md bg-surface-secondary rounded-lg font-label-md text-label-md text-ink-primary uppercase tracking-widest placeholder:text-ink-disabled focus:outline-none focus:bg-surface-primary transition-all" id="keystore-confirm-input" placeholder="ERASE VAULT" spellcheck="false" type="text"/>
+<div class="absolute right-3.5 top-1/2 -translate-y-1/2 hidden text-status-success" id="check-icon">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+</div>
+</div>
+<button class="w-full h-12 rounded-full bg-surface-container text-ink-disabled font-headline-sm text-headline-sm flex items-center justify-center gap-2 cursor-not-allowed transition-all duration-200 shadow-none" disabled="" id="btn-shred-vault">
+<span class="material-symbols-outlined text-[20px]">save_as</span>
+<span>Shred Vault Enclave</span>
+</button>
+<p class="font-label-sm text-label-sm text-center text-ink-tertiary">Requires system biometric authentication prompt upon trigger</p>
+</div>
+</section>
+<!-- Visual Divider / Break -->
+<div class="relative py-2 flex items-center justify-center">
+<div class="w-full h-px bg-surface-container-high"></div>
+<span class="absolute px-3 bg-surface text-ink-tertiary font-label-sm text-label-sm tracking-widest">STATE RESET</span>
+</div>
+<!-- CRITICAL ACTION 2: Factory Reset SQLite Node Database -->
+<section class="rounded-xl bg-surface-primary p-space-lg shadow-sm space-y-space-md">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-2.5">
+<span class="w-8 h-8 rounded-lg bg-surface-container text-ink-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">storage</span>
+</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-ink-primary">Factory Reset Server Database</h2>
+<span class="font-label-sm text-label-sm text-ink-secondary font-mono uppercase tracking-wider">SQLITE WAL &amp; METADATA PURGE</span>
+</div>
+</div>
+<span class="px-2 py-1 rounded bg-surface-container text-ink-primary font-label-sm text-label-sm font-semibold">IRREVERSIBLE</span>
+</div>
+<div class="rounded-lg bg-surface-secondary p-space-md space-y-2">
+<p class="font-body-sm text-body-sm text-ink-secondary leading-relaxed">
+        Wipes SQLite WAL metadata, active user credentials, audit logs, share links, and WebDAV endpoints. 
+        <span class="text-ink-primary font-medium">Raw files on internal storage and SD cards remain intact</span>, but indexing tags and ownership records are removed.
+      </p>
+<div class="flex items-center gap-2 pt-1">
+<span class="material-symbols-outlined text-status-warning text-[16px]">schedule</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Estimated reset time: ~400ms · Daemon restart required</span>
+</div>
+</div>
+<!-- Slide to Confirm Component -->
+<div class="space-y-space-xs">
+<div class="relative w-full h-12 rounded-full bg-surface-container overflow-hidden p-1 select-none flex items-center" id="slider-track">
+<div class="absolute left-0 top-0 bottom-0 w-12 rounded-full bg-status-danger/20 transition-all" id="slider-fill"></div>
+<span class="w-full text-center font-label-md text-label-md text-ink-secondary pointer-events-none pl-6">
+          Slide to reset SQLite state →
+        </span>
+<div class="absolute left-1 w-10 h-10 rounded-full bg-surface-primary shadow-md flex items-center justify-center text-status-danger cursor-grab active:cursor-grabbing z-10 transition-transform" id="slider-thumb">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+<div class="flex justify-between items-center px-1">
+<span class="font-label-sm text-label-sm text-ink-tertiary">Node ID: VBX-NODE-0924</span>
+<button class="font-label-sm text-label-sm text-status-danger underline hover:opacity-80" id="btn-manual-db-reset">Use Button Confirmation</button>
+</div>
+</div>
+</section>
+<!-- CRITICAL ACTION 3: Rotate Root TLS Authority -->
+<section class="rounded-xl bg-surface-primary p-space-lg shadow-sm space-y-space-md">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-2.5">
+<span class="w-8 h-8 rounded-lg bg-surface-container text-ink-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">published_with_changes</span>
+</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-ink-primary">Revoke &amp; Regenerate Root CA</h2>
+<span class="font-label-sm text-label-sm text-ink-secondary font-mono uppercase tracking-wider">X.509 TLS ROTATION</span>
+</div>
+</div>
+<span class="px-2 py-1 rounded bg-status-warning-border/30 text-status-warning font-label-sm text-label-sm font-semibold">CLIENT SEVER</span>
+</div>
+<div class="rounded-lg bg-surface-secondary p-space-md">
+<p class="font-body-sm text-body-sm text-ink-secondary leading-relaxed">
+        Generates a new self-signed root certificate authority. All connected macOS Finder, Windows Network, and Linux WebDAV mounts will <strong class="text-ink-primary">immediately fail TLS verification</strong> and require reinstalling the new CRT profile on every remote workstation.
+      </p>
+</div>
+<div class="flex items-center justify-between pt-space-xs">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-ink-tertiary">Current Certificate Thumbprint</span>
+<span class="font-label-sm text-label-sm text-ink-primary font-mono mt-0.5">SHA256: 7F:A3:9B:44:0E:12:88:AC</span>
+</div>
+<button class="h-10 px-space-md rounded-full bg-surface-container text-ink-primary hover:bg-surface-container-high font-label-md text-label-md flex items-center gap-1.5 transition-colors shadow-sm" id="btn-rotate-ca">
+<span class="material-symbols-outlined text-[18px]">sync_lock</span>
+<span>Rotate Node TLS CA</span>
+</button>
+</div>
+</section>
+<!-- CRITICAL ACTION 4: Legacy Insecure Protocol Warning & Switch -->
+<section class="rounded-xl bg-surface-primary p-space-lg shadow-sm space-y-space-md">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-center gap-2.5">
+<span class="w-8 h-8 rounded-lg bg-status-warning-border/30 text-status-warning flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">no_encryption</span>
+</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-ink-primary">Plain Insecure FTP (RFC 959)</h2>
+<span class="font-label-sm text-label-sm text-status-warning font-mono uppercase tracking-wider">CLEAR TEXT TELEMETRY</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-status-warning-border/40 text-status-warning font-label-sm text-label-sm font-semibold">
+        Insecure Legacy Mode
+      </span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary leading-relaxed">
+      Transmits usernames, passwords, file listings, and binaries in plaintext without TLS. Exposing port 21 on public, campus, or untrusted Wi-Fi environments is strictly unadvised and exposes data to passive wiretapping.
+    </p>
+<div class="rounded-lg bg-surface-secondary p-space-sm flex items-center justify-between">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-ink-secondary text-[20px]">router</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-ink-primary truncate">FTP Server Daemon (Port 2121)</span>
+<span class="font-label-sm text-label-sm text-status-success font-mono" id="ftp-status-desc">DAEMON TERMINATED (SECURE)</span>
+</div>
+</div>
+<!-- Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer select-none">
+<input class="sr-only peer" id="ftp-toggle" type="checkbox"/>
+<div class="w-12 h-7 bg-surface-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-primary after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-status-danger"></div>
+</label>
+</div>
+</section>
+<!-- Active Session Telemetry Footer -->
+<div class="rounded-xl bg-surface-secondary p-space-md flex items-center justify-between text-ink-tertiary">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span class="font-label-sm text-label-sm">Android Keystore StrongBox Tier-1 Validated</span>
+</div>
+<span class="font-label-sm text-label-sm font-mono">FIPS 140-2 Level 3</span>
+</div>
+<!-- Security Confirmation Modal Backdrop (Hidden by default) -->
+<div class="fixed inset-0 bg-ink-primary/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-space-md" id="modal-danger-backdrop">
+<div class="w-full max-w-sm rounded-xl bg-surface-primary p-space-lg shadow-2xl space-y-space-md transform transition-all scale-95 opacity-0" id="modal-panel">
+<div class="w-12 h-12 rounded-full bg-status-danger-surface text-status-danger mx-auto flex items-center justify-center">
+<span class="material-symbols-outlined text-[28px]">shield_person</span>
+</div>
+<div class="text-center space-y-1">
+<h3 class="font-headline-sm text-headline-sm text-ink-primary" id="modal-title">Authorize Keystore Shred</h3>
+<p class="font-body-sm text-body-sm text-ink-secondary" id="modal-desc">
+          Place enrolled fingerprint or enter Admin Master PIN to finalize irreversible key tombstone.
+        </p>
+</div>
+<div class="rounded-lg bg-surface-secondary p-space-sm font-mono text-center">
+<span class="font-label-sm text-label-sm text-ink-tertiary">TOKEN:</span>
+<span class="font-label-sm text-label-sm text-status-danger font-bold ml-1">AUTH-PURGE-9981-DEAD</span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm pt-space-xs">
+<button class="h-11 rounded-full bg-surface-container text-ink-primary font-label-md text-label-md hover:bg-surface-container-high transition-colors" id="modal-cancel-btn">
+          Abort
+        </button>
+<button class="h-11 rounded-full bg-status-danger text-on-error font-headline-sm text-headline-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-1" id="modal-confirm-btn">
+<span class="material-symbols-outlined text-[18px]">lock_open</span>
+<span>Verify &amp; Wipe</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Toast Feedback Element -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-ink-primary text-surface-primary font-label-sm text-label-sm px-4 py-2 rounded-full shadow-lg pointer-events-none opacity-0 transition-opacity duration-300 flex items-center gap-2" id="toast">
+<span class="material-symbols-outlined text-[16px] text-aurora-lavender" id="toast-icon">check</span>
+<span id="toast-text">Operation completed</span>
+</div>
+</div>
+<script>
+  // UI Interactive Friction & Security Confirmation Scripts
+  (function initDangerousSettings() {
+    const eraseInput = document.getElementById('keystore-confirm-input');
+    const shredBtn = document.getElementById('btn-shred-vault');
+    const checkIcon = document.getElementById('check-icon');
+    const modalBackdrop = document.getElementById('modal-danger-backdrop');
+    const modalPanel = document.getElementById('modal-panel');
+    const modalTitle = document.getElementById('modal-title');
+    const modalDesc = document.getElementById('modal-desc');
+    const modalCancel = document.getElementById('modal-cancel-btn');
+    const modalConfirm = document.getElementById('modal-confirm-btn');
+    const ftpToggle = document.getElementById('ftp-toggle');
+    const ftpStatusDesc = document.getElementById('ftp-status-desc');
+    const rotateCaBtn = document.getElementById('btn-rotate-ca');
+    const manualDbBtn = document.getElementById('btn-manual-db-reset');
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toast-text');
+
+    let currentActionType = null;
+
+    function showToast(msg, icon = 'info') {
+      if (!toast) return;
+      toastText.textContent = msg;
+      const iconEl = document.getElementById('toast-icon');
+      if (iconEl) iconEl.textContent = icon;
+      toast.classList.remove('opacity-0');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+      }, 3200);
+    }
+
+    function openModal(title, desc, actionType) {
+      currentActionType = actionType;
+      modalTitle.textContent = title;
+      modalDesc.textContent = desc;
+      modalBackdrop.classList.remove('hidden');
+      setTimeout(() => {
+        modalPanel.classList.remove('scale-95', 'opacity-0');
+        modalPanel.classList.add('scale-100', 'opacity-100');
+      }, 10);
+    }
+
+    function closeModal() {
+      modalPanel.classList.remove('scale-100', 'opacity-100');
+      modalPanel.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        modalBackdrop.classList.add('hidden');
+        currentActionType = null;
+      }, 200);
+    }
+
+    // Erase Vault Input Listener
+    eraseInput.addEventListener('input', (e) => {
+      const val = e.target.value.trim().toUpperCase();
+      if (val === 'ERASE VAULT') {
+        shredBtn.removeAttribute('disabled');
+        shredBtn.classList.remove('bg-surface-container', 'text-ink-disabled', 'cursor-not-allowed');
+        shredBtn.classList.add('bg-status-danger', 'text-on-error', 'shadow-md', 'active:scale-95');
+        checkIcon.classList.remove('hidden');
+      } else {
+        shredBtn.setAttribute('disabled', 'true');
+        shredBtn.classList.add('bg-surface-container', 'text-ink-disabled', 'cursor-not-allowed');
+        shredBtn.classList.remove('bg-status-danger', 'text-on-error', 'shadow-md', 'active:scale-95');
+        checkIcon.classList.add('hidden');
+      }
+    });
+
+    shredBtn.addEventListener('click', () => {
+      openModal(
+        'Confirm Hardware Keystore Shred',
+        'Warning: You are about to permanently destroy the Master StrongBox Key. ALL data in /Vault will become unreadable forever.',
+        'SHRED_VAULT'
+      );
+    });
+
+    manualDbBtn.addEventListener('click', () => {
+      openModal(
+        'Reset Server Database',
+        'Wipes user accounts, WebDAV sessions, share links, and audit history. Raw disk storage is unaffected.',
+        'RESET_SQLITE'
+      );
+    });
+
+    rotateCaBtn.addEventListener('click', () => {
+      openModal(
+        'Rotate Root Certificate Authority',
+        'This will sever connections from all currently authorized computers and phones until certificates are re-installed.',
+        'ROTATE_CA'
+      );
+    });
+
+    ftpToggle.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        openModal(
+          'Expose Insecure Plaintext FTP?',
+          'Warning: Port 2121 will broadcast passwords in plaintext. Anyone monitoring your Wi-Fi will see unencrypted credentials.',
+          'ENABLE_FTP'
+        );
+      } else {
+        ftpStatusDesc.textContent = 'DAEMON TERMINATED (SECURE)';
+        ftpStatusDesc.classList.remove('text-status-danger');
+        ftpStatusDesc.classList.add('text-status-success');
+        showToast('Plaintext FTP Daemon Stopped', 'verified');
+      }
+    });
+
+    modalCancel.addEventListener('click', () => {
+      if (currentActionType === 'ENABLE_FTP') {
+        ftpToggle.checked = false;
+      }
+      closeModal();
+    });
+
+    modalConfirm.addEventListener('click', () => {
+      const act = currentActionType;
+      closeModal();
+
+      if (act === 'SHRED_VAULT') {
+        eraseInput.value = '';
+        eraseInput.dispatchEvent(new Event('input'));
+        showToast('Keystore shredded. Cryptographic material evicted.', 'delete_forever');
+      } else if (act === 'RESET_SQLITE') {
+        showToast('Node database reset to pristine factory state.', 'restart_alt');
+      } else if (act === 'ROTATE_CA') {
+        showToast('Generated new Root X.509 CA Certificate.', 'sync_lock');
+      } else if (act === 'ENABLE_FTP') {
+        ftpStatusDesc.textContent = 'PORT 2121 LISTENING (PLAINTEXT)';
+        ftpStatusDesc.classList.remove('text-status-success');
+        ftpStatusDesc.classList.add('text-status-danger');
+        showToast('Insecure FTP active on port 2121', 'warning');
+      }
+    });
+
+    // Touch / Mouse Slide to Confirm Implementation
+    const track = document.getElementById('slider-track');
+    const thumb = document.getElementById('slider-thumb');
+    const fill = document.getElementById('slider-fill');
+    let isDragging = false;
+    let startX = 0;
+    let maxDistance = 0;
+
+    function startDrag(e) {
+      isDragging = true;
+      startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+      maxDistance = track.clientWidth - thumb.clientWidth - 8;
+      thumb.style.transition = 'none';
+      fill.style.transition = 'none';
+    }
+
+    function moveDrag(e) {
+      if (!isDragging) return;
+      const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+      let delta = currentX - startX;
+      delta = Math.max(0, Math.min(delta, maxDistance));
+
+      thumb.style.transform = `translateX(${delta}px)`;
+      fill.style.width = `${delta + thumb.clientWidth + 8}px`;
+
+      if (delta >= maxDistance - 2) {
+        endDrag();
+        triggerSlideAction();
+      }
+    }
+
+    function endDrag() {
+      if (!isDragging) return;
+      isDragging = false;
+      thumb.style.transition = 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+      fill.style.transition = 'width 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+      thumb.style.transform = 'translateX(0px)';
+      fill.style.width = '48px';
+    }
+
+    function triggerSlideAction() {
+      openModal(
+        'Confirm Node State Database Reset',
+        'Slide gesture verified. Authorize final deletion of WAL journals and metadata tables.',
+        'RESET_SQLITE'
+      );
+    }
+
+    if (thumb && track) {
+      thumb.addEventListener('mousedown', startDrag);
+      window.addEventListener('mousemove', moveDrag);
+      window.addEventListener('mouseup', endDrag);
+
+      thumb.addEventListener('touchstart', startDrag, { passive: true });
+      window.addEventListener('touchmove', moveDrag, { passive: true });
+      window.addEventListener('touchend', endDrag);
+    }
+
+    // Highlighting navigation item in App Shell
+    const navSettings = document.querySelector('nav a[data-path="settings"]');
+    if (navSettings) {
+      navSettings.classList.add('text-ink-primary', 'font-semibold');
+      navSettings.classList.remove('text-ink-secondary');
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe pointer-events-none" data-active-classes="text-ink-primary bg-white/90 shadow-[0_2px_12px_rgba(143,131,216,0.25)] ring-[1.5px] ring-border-strong font-semibold"><div class="px-margin pb-space-sm pt-space-xs flex justify-center"><div class="w-full max-w-md h-[68px] bg-white/80 backdrop-blur-xl rounded-full shadow-[0_4px_20px_rgba(26,26,26,0.06)] ring-[1.5px] ring-border-default/80 p-1.5 flex items-center justify-between pointer-events-auto"><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[22px]">dns</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="file-browser" href="#"><span class="material-symbols-outlined text-[22px]">folder_open</span><span class="font-label-sm text-label-sm mt-0.5">Files</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="share-hub" href="#"><span class="material-symbols-outlined text-[22px]">share</span><span class="font-label-sm text-label-sm mt-0.5">Share</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="activity-monitor" href="#"><span class="material-symbols-outlined text-[22px]">monitoring</span><span class="font-label-sm text-label-sm mt-0.5">Activity</span></a><a aria-current="page" class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full transition-all duration-200 text-ink-primary bg-white/90 shadow-[0_2px_12px_rgba(143,131,216,0.25)] ring-[1.5px] ring-border-strong font-semibold" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-label-sm text-label-sm mt-0.5">Settings</span></a></div></div></nav></body></html>

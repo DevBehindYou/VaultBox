@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Patrick+Hand&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;background-color:#F0EEE9;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "inverse-surface": "#30312d", "ink-secondary": "#666666", "on-primary-fixed": "#1a045e", "surface-tertiary": "#F7F7F5", "tertiary-container": "#a2607f", "on-primary-fixed-variant": "#473a8a", "on-secondary-fixed-variant": "#00468a", "aurora-soft-p": "#EEC9D6", "on-secondary-fixed": "#001b3c", "surface-container-high": "#eae8e3", "aurora-lavender": "#8F83D8", "surface": "#fbf9f4", "on-secondary": "#ffffff", "ink-disabled": "#A5A5A5", "outline-variant": "#c9c4d2", "secondary-container": "#5a9fff", "secondary": "#005eb4", "on-tertiary-fixed": "#390724", "on-surface-variant": "#484551", "on-background": "#1b1c19", "selection-blue": "#2A78D6", "on-secondary-container": "#00356a", "status-warning-border": "#DCD0B0", "aurora-soft-l": "#CFC8EF", "inverse-on-surface": "#f3f1eb", "surface-primary": "#FFFFFF", "border-strong": "#1A1A1A", "status-danger": "#A34A4A", "on-error-container": "#93000a", "inverse-primary": "#c8bfff", "surface-container-low": "#f5f3ee", "primary-container": "#7569bc", "status-danger-surface": "#FDF6F6", "surface-container": "#f0eee9", "ink-tertiary": "#8A8A8A", "border-default": "#DCDCDC", "on-error": "#ffffff", "ink-primary": "#1A1A1A", "error-container": "#ffdad6", "secondary-fixed": "#d5e3ff", "outline": "#797582", "border-muted": "#E8E8E8", "surface-variant": "#e4e2dd", "status-warning": "#8A6A2A", "status-danger-border": "#C98A8A", "selection-soft": "#EEF3FB", "surface-container-lowest": "#ffffff", "surface-dim": "#dcdad5", "aurora-pink": "#D98FB0", "status-success": "#3A7A4A", "on-primary": "#ffffff", "tertiary-fixed-dim": "#feb0d2", "on-tertiary-container": "#fffbff", "on-tertiary": "#ffffff", "surface-bright": "#fbf9f4", "tertiary": "#864866", "secondary-fixed-dim": "#a8c8ff", "primary-fixed": "#e5deff", "surface-container-highest": "#e4e2dd", "status-success-border": "#B0CDB4", "tertiary-fixed": "#ffd8e7", "surface-tint": "#5f53a4", "background": "#fbf9f4", "on-primary-container": "#fffbff", "primary": "#5c50a1", "on-surface": "#1b1c19", "on-tertiary-fixed-variant": "#6d3350", "aurora-mid": "#B58FD0", "error": "#ba1a1a", "primary-fixed-dim": "#c8bfff", "surface-secondary": "#FAFAFA" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "space-lg": "1.25rem", "gutter-lg": "1.5rem", "margin-sm": "0.875rem", "space-xl": "1.5rem", "margin": "1rem", "space-xs": "0.25rem", "space-md": "1rem", "gutter": "1rem", "gutter-sm": "0.75rem", "space-sm": "0.5rem", "margin-lg": "1.5rem" }, fontFamily: { "display-xl": ["Epilogue"], "label-md": ["JetBrains Mono"], "body-lg": ["Inter"], "body-sm": ["Inter"], "headline-sm": ["Epilogue"], "body-md": ["Inter"], "display-xl-mobile": ["Epilogue"], "headline-md": ["Epilogue"], "headline-lg": ["Epilogue"], "label-lg": ["Inter"], "label-sm": ["JetBrains Mono"], "brand": ["'Patrick Hand'", "cursive"] }, fontSize: { "display-xl": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "700" }], "label-md": ["12px", { lineHeight: "16px", fontWeight: "500" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }], "body-sm": ["12px", { lineHeight: "18px", fontWeight: "400" }], "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "display-xl-mobile": ["30px", { lineHeight: "38px", letterSpacing: "-0.02em", fontWeight: "700" }], "headline-md": ["22px", { lineHeight: "30px", fontWeight: "600" }], "headline-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "600" }], "label-lg": ["14px", { lineHeight: "20px", fontWeight: "500" }], "label-sm": ["10px", { lineHeight: "14px", letterSpacing: "0.02em", fontWeight: "500" }] } } } };</script></head><body class="bg-surface-container font-body-md text-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-4 flex items-center justify-between gap-2"><div class="flex items-center gap-2 min-w-0"><img alt="VaultBox Server Logo" class="h-8 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBU5-vEYYIAdueMVRJOAPqR7RGEHQV9d3MCbusnN7vZaPf-WnzU0sZfm4qgd6VzHqLNKBja1EbT-jMlDrjn5diHN8F-nPJ9dauV6ybt1vPUsbEVWaSKjRgPpgst3z8UH23MgFJABcCdKpMksLZGWR_RqgMzif2xCHd2v9kGWfSjcw8vir-8pmcOvVXvpKwTMpmqvnsJ9885zmo3aGLYWPVplQ-y1I-bp-XWBxPemhdw_qQLx0o4pDnE_Q"/><div class="flex flex-col min-w-0"><span class="font-brand text-2xl leading-none text-ink-primary tracking-wide shrink-0">VaultBox</span><span class="font-label-sm text-label-sm text-ink-secondary truncate">Home</span></div></div><div class="flex items-center gap-2 shrink-0"><div class="h-7 px-2.5 rounded-full bg-surface-primary flex items-center gap-1.5 shadow-[0_1px_4px_rgba(0,0,0,0.04)]"><span class="w-2 h-2 rounded-full bg-status-success animate-pulse"></span><span class="font-label-sm text-label-sm text-status-success font-medium">Server Live</span></div><button class="w-11 h-11 flex items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-colors"><span class="material-symbols-outlined text-[20px]">tune</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-[112px] bg-surface-container min-h-screen"><div class="flex flex-col w-full">
+<!-- Interactive Toast Notification -->
+<div class="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 translate-y-[-8px]" id="copy-toast">
+<div class="bg-inverse-surface text-inverse-on-surface px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-aurora-pink text-[18px]">check_circle</span>
+<span class="font-label-md text-label-md" id="toast-msg">Copied to clipboard</span>
+</div>
+</div>
+<div class="px-4 py-3 flex flex-col gap-4">
+<!-- Breadcrumb & Status Navigation Header -->
+<div class="flex items-center justify-between gap-2">
+<a class="inline-flex items-center gap-1 text-ink-secondary hover:text-ink-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">arrow_back_ios_new</span>
+<span class="font-label-lg text-label-lg font-medium">WebDAV Node</span>
+</a>
+<div class="flex items-center gap-2">
+<div class="h-7 px-3 rounded-full bg-surface-primary flex items-center gap-1.5 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-status-success font-semibold">WebDAV Live :8443</span>
+</div>
+</div>
+</div>
+<!-- Title & Purpose Hero Framing -->
+<div class="flex items-start justify-between gap-3">
+<div class="flex flex-col">
+<h1 class="font-headline-md text-headline-md text-ink-primary tracking-tight">Connect Another Device</h1>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Mount remote storage as a lightning-fast native local drive.</p>
+</div>
+<button aria-label="Share Configuration" class="w-10 h-10 rounded-full bg-surface-primary text-ink-primary shadow-sm flex items-center justify-center hover:bg-surface-secondary active:scale-95 transition-all shrink-0" onclick="triggerToast('Config package generated')">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+</div>
+<!-- Hero WebDAV Endpoint & Credentials Card -->
+<div class="rounded-xl bg-surface-primary p-4 shadow-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">cloud_sync</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-ink-primary">Endpoint URIs</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-selection-soft text-selection-blue font-medium">TLS 1.3 Active</span>
+</div>
+<!-- Primary Local Endpoint URL -->
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-ink-secondary">Primary Local mDNS URL</span>
+<div class="bg-surface-secondary rounded-lg px-3 py-2 flex items-center justify-between gap-2">
+<span class="font-label-md text-label-md text-ink-primary truncate select-all">https://vaultbox.local:8443/webdav</span>
+<button class="text-ink-secondary hover:text-primary active:scale-90 transition-all p-1" onclick="copyText('https://vaultbox.local:8443/webdav', 'Local address copied')" title="Copy URL">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Fallback Direct IP -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-ink-secondary">Fallback Static LAN IP</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Direct Route</span>
+</div>
+<div class="bg-surface-secondary rounded-lg px-3 py-2 flex items-center justify-between gap-2">
+<span class="font-label-md text-label-md text-ink-primary truncate select-all">https://192.168.1.41:8443/webdav</span>
+<button class="text-ink-secondary hover:text-primary active:scale-90 transition-all p-1" onclick="copyText('https://192.168.1.41:8443/webdav', 'IP address copied')" title="Copy Direct IP">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Credentials Grid -->
+<div class="pt-2 flex flex-col gap-2">
+<div class="grid grid-cols-2 gap-2">
+<div class="bg-surface-container rounded-lg p-2.5 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-ink-tertiary">Username</span>
+<button class="text-ink-secondary hover:text-primary active:scale-90 transition-all" onclick="copyText('admin', 'Username copied')">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+<span class="font-label-md text-label-md text-ink-primary font-semibold mt-1">admin</span>
+</div>
+<div class="bg-surface-container rounded-lg p-2.5 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-ink-tertiary">Port / Scheme</span>
+<span class="font-label-sm text-label-sm text-status-success font-medium">SSL/TLS</span>
+</div>
+<span class="font-label-md text-label-md text-ink-primary font-semibold mt-1">8443 HTTPS</span>
+</div>
+</div>
+<div class="bg-surface-container rounded-lg p-2.5 flex items-center justify-between gap-2">
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-ink-tertiary">App Access Token</span>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="font-label-md text-label-md text-ink-primary tracking-wider" id="passkey-display">••••••••••••••••</span>
+</div>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<button class="w-8 h-8 rounded-full bg-surface-primary text-ink-secondary hover:text-ink-primary flex items-center justify-center transition-colors" id="toggle-passkey-btn" onclick="togglePasskey()">
+<span class="material-symbols-outlined text-[18px]" id="toggle-passkey-icon">visibility</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-surface-primary text-ink-secondary hover:text-ink-primary flex items-center justify-center transition-colors" onclick="copyText('vbx_tok_994d82f7c041ea', 'Token copied')">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Trust Notice -->
+<div class="bg-surface-secondary rounded-lg p-2.5 flex items-center gap-2">
+<span class="material-symbols-outlined text-status-warning text-[18px] shrink-0">verified_user</span>
+<p class="font-body-sm text-body-sm text-ink-secondary leading-tight">
+          Self-Signed Vault Certificate: Accept browser or OS warning when prompted.
+        </p>
+</div>
+</div>
+<!-- OS Platform Selector Tabs -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg font-medium text-ink-primary">Setup Guide by Platform</span>
+<span class="font-label-sm text-label-sm text-primary font-medium">Interactive Guide</span>
+</div>
+<div class="flex items-center gap-1.5 overflow-x-auto pb-1" role="tablist">
+<button class="os-tab px-3.5 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 whitespace-nowrap bg-gradient-to-r from-aurora-soft-l via-aurora-soft-p to-aurora-soft-l text-ink-primary shadow-sm font-semibold" id="tab-windows" onclick="switchTab('windows')">
+<span class="material-symbols-outlined text-[18px]">desktop_windows</span>
+          Windows
+        </button>
+<button class="os-tab px-3.5 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 whitespace-nowrap bg-surface-primary text-ink-secondary hover:text-ink-primary shadow-sm" id="tab-macos" onclick="switchTab('macos')">
+<span class="material-symbols-outlined text-[18px]">laptop_mac</span>
+          macOS
+        </button>
+<button class="os-tab px-3.5 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 whitespace-nowrap bg-surface-primary text-ink-secondary hover:text-ink-primary shadow-sm" id="tab-linux" onclick="switchTab('linux')">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+          Linux
+        </button>
+<button class="os-tab px-3.5 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 whitespace-nowrap bg-surface-primary text-ink-secondary hover:text-ink-primary shadow-sm" id="tab-mobile" onclick="switchTab('mobile')">
+<span class="material-symbols-outlined text-[18px]">smartphone</span>
+          iOS / Android
+        </button>
+</div>
+</div>
+<!-- OS-Specific Step-by-Step Connection Guide Content -->
+<!-- Windows Pane -->
+<div class="os-pane flex flex-col gap-3" id="pane-windows">
+<div class="rounded-xl bg-surface-primary p-4 shadow-sm flex flex-col gap-3.5">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-ink-primary">Windows File Explorer</span>
+<span class="font-label-sm text-label-sm text-ink-secondary">Native Mount</span>
+</div>
+<!-- Step 1 -->
+<div class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">
+            1
+          </div>
+<div class="flex flex-col">
+<p class="font-body-md text-body-md text-ink-primary">Open Windows <strong class="font-semibold">File Explorer</strong> (<kbd class="font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded">Win + E</kbd>) and click <span class="font-medium text-ink-primary">This PC</span> in the left sidebar.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">
+            2
+          </div>
+<div class="flex flex-col">
+<p class="font-body-md text-body-md text-ink-primary">In the top horizontal ribbon, select <span class="font-medium text-ink-primary">Map network drive</span> (or press <kbd class="font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded">Alt + T</kbd> then <kbd class="font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded">M</kbd>).</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">
+            3
+          </div>
+<div class="flex flex-col w-full gap-1.5">
+<p class="font-body-md text-body-md text-ink-primary">Choose a Drive Letter (e.g. <strong class="font-semibold">V:</strong> for VaultBox), then paste your endpoint into the <span class="font-medium">Folder</span> field:</p>
+<div class="flex items-center justify-between bg-surface-secondary rounded-lg px-2.5 py-1.5">
+<span class="font-label-sm text-label-sm text-primary select-all truncate">https://vaultbox.local:8443/webdav</span>
+<button class="text-ink-secondary hover:text-ink-primary text-label-sm font-label-sm font-medium px-2 py-0.5 rounded bg-surface-primary shadow-xs" onclick="copyText('https://vaultbox.local:8443/webdav', 'WebDAV URI copied')">
+                Copy
+              </button>
+</div>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">
+            4
+          </div>
+<div class="flex flex-col">
+<p class="font-body-md text-body-md text-ink-primary">Check <strong class="font-semibold">"Connect using different credentials"</strong> and click <span class="font-medium">Finish</span>.</p>
+</div>
+</div>
+<!-- Step 5 -->
+<div class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">
+            5
+          </div>
+<div class="flex flex-col">
+<p class="font-body-md text-body-md text-ink-primary">When the Windows Security dialog appears, enter username <code class="font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded">admin</code> and your App Access Token as password.</p>
+</div>
+</div>
+<!-- Windows Advisory / Registry Callout -->
+<div class="bg-status-warning-border/20 rounded-lg p-3 flex flex-col gap-1.5">
+<div class="flex items-center gap-1.5 text-status-warning">
+<span class="material-symbols-outlined text-[18px]">help_outline</span>
+<span class="font-label-md text-label-md font-semibold">Windows WebClient Service Note</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary">
+            If Windows displays "The folder you entered does not appear to be valid", ensure Windows WebClient service is running and install the VaultBox Root Certificate or run the auto-patch script below.
+          </p>
+</div>
+</div>
+</div>
+<!-- macOS Pane -->
+<div class="os-pane hidden flex flex-col gap-3" id="pane-macos">
+<div class="rounded-xl bg-surface-primary p-4 shadow-sm flex flex-col gap-3.5">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-ink-primary">macOS Finder Mount</span>
+<span class="font-label-sm text-label-sm text-ink-secondary">Zero-Config Native</span>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">1</div>
+<p class="font-body-md text-body-md text-ink-primary">Switch to Finder and press <kbd class="font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded">Cmd + K</kbd> (or select <span class="font-medium">Go > Connect to Server</span>).</p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">2</div>
+<div class="flex flex-col w-full gap-1.5">
+<p class="font-body-md text-body-md text-ink-primary">Enter Server Address:</p>
+<div class="flex items-center justify-between bg-surface-secondary rounded-lg px-2.5 py-1.5">
+<span class="font-label-sm text-label-sm text-primary select-all">https://vaultbox.local:8443/webdav</span>
+<button class="text-ink-secondary hover:text-ink-primary text-label-sm font-label-sm font-medium px-2 py-0.5 rounded bg-surface-primary shadow-xs" onclick="copyText('https://vaultbox.local:8443/webdav', 'Copied for Finder')">Copy</button>
+</div>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">3</div>
+<p class="font-body-md text-body-md text-ink-primary">Click <span class="font-medium">Connect</span>, choose <span class="font-medium">Registered User</span>, and input your admin credentials and app token.</p>
+</div>
+</div>
+</div>
+<!-- Linux Pane -->
+<div class="os-pane hidden flex flex-col gap-3" id="pane-linux">
+<div class="rounded-xl bg-surface-primary p-4 shadow-sm flex flex-col gap-3.5">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-ink-primary">GNOME Files / CLI Mount</span>
+<span class="font-label-sm text-label-sm text-ink-secondary">FUSE / davfs2</span>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">1</div>
+<p class="font-body-md text-body-md text-ink-primary">Open Files (Nautilus) > <span class="font-medium">+ Other Locations</span>.</p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">2</div>
+<div class="flex flex-col w-full gap-1.5">
+<p class="font-body-md text-body-md text-ink-primary">In Connect to Server, enter using davs:// protocol:</p>
+<div class="bg-surface-secondary rounded-lg px-2.5 py-1.5">
+<span class="font-label-sm text-label-sm text-primary select-all">davs://vaultbox.local:8443/webdav</span>
+</div>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">3</div>
+<p class="font-body-md text-body-md text-ink-primary">For CLI fstab / mount, install <code class="font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded">davfs2</code> package.</p>
+</div>
+</div>
+</div>
+<!-- Mobile Pane -->
+<div class="os-pane hidden flex flex-col gap-3" id="pane-mobile">
+<div class="rounded-xl bg-surface-primary p-4 shadow-sm flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-ink-primary">Mobile File Managers</span>
+<span class="font-label-sm text-label-sm text-ink-secondary">iOS & Android</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary">
+          Compatible with FE File Explorer, Solid Explorer, Documents by Readdle, and Cx File Explorer.
+        </p>
+<div class="bg-surface-secondary rounded-lg p-3 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-medium text-ink-primary">Fast Mobile Pairing</span>
+<span class="font-body-sm text-body-sm text-ink-tertiary">Scan QR to push credentials directly</span>
+</div>
+<button class="px-3 py-1.5 rounded-full bg-surface-primary text-ink-primary font-label-sm text-label-sm shadow-sm flex items-center gap-1" onclick="triggerToast('QR Pairing code active')">
+<span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
+            Show QR
+          </button>
+</div>
+</div>
+</div>
+<!-- Direct Action Helpers & Tools -->
+<div class="flex flex-col gap-2 pt-1">
+<button class="w-full h-12 rounded-full bg-gradient-to-r from-aurora-soft-l via-aurora-soft-p to-aurora-soft-l text-ink-primary font-label-lg text-label-lg font-semibold shadow-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform" onclick="copyAllDetails()">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+        Copy All Connection Details
+      </button>
+<div class="grid grid-cols-2 gap-2">
+<button class="h-11 rounded-full bg-surface-primary text-ink-primary font-label-sm text-label-sm font-medium shadow-sm flex items-center justify-center gap-1.5 hover:bg-surface-secondary transition-colors" onclick="triggerToast('Script downloaded (.cmd / .reg)')">
+<span class="material-symbols-outlined text-primary text-[18px]">download</span>
+          Get Setup Script
+        </button>
+<button class="h-11 rounded-full bg-surface-primary text-ink-primary font-label-sm text-label-sm font-medium shadow-sm flex items-center justify-center gap-1.5 hover:bg-surface-secondary transition-colors" onclick="triggerToast('QR ready to scan')">
+<span class="material-symbols-outlined text-aurora-pink text-[18px]">qr_code_2</span>
+          Scan QR Code
+        </button>
+</div>
+<button class="h-11 rounded-full bg-surface-primary text-ink-secondary font-label-sm text-label-sm font-medium shadow-sm flex items-center justify-center gap-1.5 hover:bg-surface-secondary transition-colors" onclick="triggerToast('Certificate downloaded: VaultBoxCA.crt')">
+<span class="material-symbols-outlined text-[18px]">security</span>
+        Download VaultBox Root Certificate (.crt)
+      </button>
+</div>
+<!-- Visual Divider / Separation -->
+<div class="h-px bg-surface-variant my-1"></div>
+<!-- Diagnostics & Safety Note -->
+<div class="rounded-xl bg-surface-primary p-4 shadow-sm flex items-start gap-3 mb-2">
+<div class="w-8 h-8 rounded-full bg-status-success-border/30 text-status-success flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[18px]">wifi_tethering</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md font-semibold text-ink-primary">Private Local Mesh</span>
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-1 leading-snug">
+          WebDAV operates inside your private local network. Ensure both devices are connected to the same Wi-Fi SSID (<span class="font-medium text-ink-primary">HomeStudio_5G</span>). Zero internet exposure.
+        </p>
+</div>
+</div>
+</div>
+<!-- Local Interactive Scripting -->
+<script>
+    let passkeyRevealed = false;
+    const realToken = "vbx_tok_994d82f7c041ea";
+
+    function togglePasskey() {
+      const display = document.getElementById('passkey-display');
+      const icon = document.getElementById('toggle-passkey-icon');
+      passkeyRevealed = !passkeyRevealed;
+      if (passkeyRevealed) {
+        display.textContent = realToken;
+        icon.textContent = 'visibility_off';
+      } else {
+        display.textContent = '••••••••••••••••';
+        icon.textContent = 'visibility';
+      }
+    }
+
+    function triggerToast(message) {
+      const toast = document.getElementById('copy-toast');
+      const toastMsg = document.getElementById('toast-msg');
+      toastMsg.textContent = message;
+      toast.classList.remove('opacity-0', 'translate-y-[-8px]');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-[-8px]');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 2200);
+    }
+
+    function copyText(val, message = "Copied to clipboard") {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(val).catch(() => {});
+      }
+      triggerToast(message);
+    }
+
+    function copyAllDetails() {
+      const summary = `VaultBox WebDAV Configuration:
+Primary URI: https://vaultbox.local:8443/webdav
+Fallback URI: https://192.168.1.41:8443/webdav
+Username: admin
+App Token: ${realToken}
+Port: 8443 (HTTPS / TLS 1.3)`;
+      copyText(summary, "Full connection bundle copied");
+    }
+
+    function switchTab(os) {
+      const tabs = document.querySelectorAll('.os-tab');
+      tabs.forEach(tab => {
+        tab.className = 'os-tab px-3.5 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 whitespace-nowrap bg-surface-primary text-ink-secondary hover:text-ink-primary shadow-sm';
+      });
+
+      const activeTab = document.getElementById('tab-' + os);
+      if (activeTab) {
+        activeTab.className = 'os-tab px-3.5 py-1.5 rounded-full font-label-md text-label-md transition-all flex items-center gap-1.5 whitespace-nowrap bg-gradient-to-r from-aurora-soft-l via-aurora-soft-p to-aurora-soft-l text-ink-primary shadow-sm font-semibold';
+      }
+
+      const panes = document.querySelectorAll('.os-pane');
+      panes.forEach(pane => pane.classList.add('hidden'));
+
+      const activePane = document.getElementById('pane-' + os);
+      if (activePane) {
+        activePane.classList.remove('hidden');
+      }
+    }
+  </script>
+</div></main><div class="fixed bottom-0 w-full z-50 pb-safe pointer-events-none flex justify-center"><div class="w-full max-w-[390px] px-4 pb-4"><nav class="pointer-events-auto h-[74px] rounded-[32px] bg-white/85 backdrop-blur-xl shadow-[0_4px_24px_rgba(26,26,26,0.08)] px-2 flex items-center justify-around relative" data-active-classes="text-ink-primary bg-gradient-to-r from-aurora-soft-l/50 via-aurora-soft-p/50 to-aurora-soft-l/50 shadow-[0_2px_12px_rgba(143,131,216,0.25)]"><a aria-current="page" class="flex flex-col items-center justify-center min-w-[56px] min-h-[52px] h-[52px] px-2 rounded-full transition-all text-ink-primary bg-gradient-to-r from-aurora-soft-l/50 via-aurora-soft-p/50 to-aurora-soft-l/50 shadow-[0_2px_12px_rgba(143,131,216,0.25)]" data-path="home" href="#"><span class="material-symbols-outlined text-[22px]">dns</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[52px] h-[52px] px-2 rounded-full text-ink-secondary transition-all" data-path="files" href="#"><span class="material-symbols-outlined text-[22px]">folder_open</span><span class="font-label-sm text-label-sm mt-0.5">Files</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[52px] h-[52px] px-2 rounded-full text-ink-secondary transition-all" data-path="share" href="#"><span class="material-symbols-outlined text-[22px]">share</span><span class="font-label-sm text-label-sm mt-0.5">Share</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[52px] h-[52px] px-2 rounded-full text-ink-secondary transition-all" data-path="activity" href="#"><span class="material-symbols-outlined text-[22px]">sync_alt</span><span class="font-label-sm text-label-sm mt-0.5">Activity</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[52px] h-[52px] px-2 rounded-full text-ink-secondary transition-all" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-label-sm text-label-sm mt-0.5">Settings</span></a></nav></div></div></body></html>

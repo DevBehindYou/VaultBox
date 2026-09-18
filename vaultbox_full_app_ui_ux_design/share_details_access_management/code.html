@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'on-tertiary-container': '#fffbff', 'surface-dim': '#dcdad5', 'aurora-mid': '#B58FD0', 'on-error-container': '#93000a', 'inverse-on-surface': '#f3f1eb', 'aurora-pink': '#D98FB0', 'aurora-soft-p': '#EEC9D6', 'surface-container-high': '#eae8e3', 'primary-fixed-dim': '#c8bfff', 'outline': '#797582', 'ink-tertiary': '#8A8A8A', 'tertiary-container': '#a2607f', 'on-secondary-fixed-variant': '#00468a', 'secondary-container': '#5a9fff', 'status-success': '#3A7A4A', 'on-error': '#ffffff', 'on-secondary-fixed': '#001b3c', 'surface-container-low': '#f5f3ee', 'surface-secondary': '#FAFAFA', 'secondary': '#005eb4', 'on-secondary': '#ffffff', 'on-primary-fixed': '#1a045e', 'ink-primary': '#1A1A1A', 'surface-tertiary': '#F7F7F5', 'on-tertiary-fixed-variant': '#6d3350', 'error-container': '#ffdad6', 'primary-fixed': '#e5deff', 'on-primary-fixed-variant': '#473a8a', 'tertiary-fixed': '#ffd8e7', 'selection-soft': '#EEF3FB', 'aurora-lavender': '#8F83D8', 'tertiary-fixed-dim': '#feb0d2', 'secondary-fixed-dim': '#a8c8ff', 'surface-container': '#f0eee9', 'status-danger': '#A34A4A', 'ink-secondary': '#666666', 'tertiary': '#864866', 'surface-primary': '#FFFFFF', 'secondary-fixed': '#d5e3ff', 'on-surface': '#1b1c19', 'on-primary-container': '#fffbff', 'on-tertiary-fixed': '#390724', 'border-muted': '#E8E8E8', 'surface-bright': '#fbf9f4', 'on-background': '#1b1c19', 'aurora-soft-l': '#CFC8EF', 'on-tertiary': '#ffffff', 'border-default': '#DCDCDC', 'primary-container': '#7569bc', 'ink-disabled': '#A5A5A5', 'surface-container-lowest': '#ffffff', 'status-danger-surface': '#FDF6F6', 'on-secondary-container': '#00356a', 'outline-variant': '#c9c4d2', 'status-danger-border': '#C98A8A', 'inverse-primary': '#c8bfff', 'status-success-border': '#B0CDB4', 'primary': '#5c50a1', 'background': '#fbf9f4', 'selection-blue': '#2A78D6', 'surface-container-highest': '#e4e2dd', 'status-warning': '#8A6A2A', 'surface-tint': '#5f53a4', 'on-primary': '#ffffff', 'error': '#ba1a1a', 'on-surface-variant': '#484551', 'inverse-surface': '#30312d', 'status-warning-border': '#DCD0B0', 'surface-variant': '#e4e2dd', 'border-strong': '#1A1A1A', 'surface': '#fbf9f4' }, borderRadius: { DEFAULT: '0.25rem', lg: '0.5rem', xl: '0.75rem', full: '9999px' }, spacing: { 'space-md': '1rem', 'margin-sm': '0.875rem', 'gutter': '1rem', 'margin': '1rem', 'space-lg': '1.25rem', 'margin-lg': '1.5rem', 'space-xl': '1.5rem', 'gutter-sm': '0.75rem', 'gutter-lg': '1.5rem', 'space-xs': '0.25rem', 'space-sm': '0.5rem' }, fontFamily: { 'label-lg': ['Inter'], 'display-xl': ['Epilogue'], 'body-lg': ['Inter'], 'body-md': ['Inter'], 'headline-md': ['Epilogue'], 'headline-sm': ['Epilogue'], 'display-xl-mobile': ['Epilogue'], 'headline-lg': ['Epilogue'], 'label-md': ['JetBrains Mono'], 'label-sm': ['JetBrains Mono'], 'body-sm': ['Inter'] }, fontSize: { 'label-lg': ['14px', { lineHeight: '20px', fontWeight: '500' }], 'display-xl': ['36px', { lineHeight: '44px', letterSpacing: '-0.02em', fontWeight: '700' }], 'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }], 'body-md': ['14px', { lineHeight: '20px', fontWeight: '400' }], 'headline-md': ['22px', { lineHeight: '30px', fontWeight: '600' }], 'headline-sm': ['18px', { lineHeight: '24px', fontWeight: '600' }], 'display-xl-mobile': ['30px', { lineHeight: '38px', letterSpacing: '-0.02em', fontWeight: '700' }], 'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.01em', fontWeight: '600' }], 'label-md': ['12px', { lineHeight: '16px', fontWeight: '500' }], 'label-sm': ['10px', { lineHeight: '14px', letterSpacing: '0.02em', fontWeight: '500' }], 'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }] } } } };</script><style>@layer base{html,body{width:100%;margin:0;padding:0;}body{overscroll-behavior-y:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen antialiased"><header class="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_12px_rgba(26,26,26,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="A modern geometric server NAS emblem for VaultBox. Stylized storage vault cube box with subtle network pulse signal lines, rendered with soft lavender and violet aurora accents and crisp ink borders. Clean vector icon, perfectly centered.. Design context: - Primary color: #8f83d8
+- Font: epilogue
+- Mode: light
+- Roundness: rounded-md
+. The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XFa-uWEsGJPgdLDzAOo7A0aej7Tu1EA-aPNPuKD3u556Cv3c39haZ4T7BqCw4jnYpkWgsZPjsINsWzOouij-4DG3Cbi7Fgr9mpIxiRwvrmaGL0Ubd-PxA8OW3f9dt74s7O9tkigKcIkulCHst4kr4KWX_9ArAErbPl1DOf4NQqUZu8a_DxX9ouOWO_l0EJy1fRNdFQO8reujt8MlLgs_TNlhLubtUjTytYFPUtxFs10rKncpmO3hpsppQ"/><div class="flex items-center gap-space-xs min-w-0"><span class="font-headline-sm text-headline-sm text-ink-primary tracking-tight truncate">VaultBox</span><div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-primary text-status-success shadow-[0_0_0_1.5px_#B0CDB4] shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span><span class="font-label-sm text-label-sm">Live</span></div></div></div><div class="flex items-center gap-space-xs shrink-0"><span class="hidden xs:inline-block font-label-md text-label-md text-ink-secondary truncate max-w-[80px]">Shared Shares</span><button aria-label="Quick Actions" class="w-11 h-11 flex items-center justify-center rounded-full text-ink-primary hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">tune</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full px-margin pt-16 pb-36 bg-surface"><div class="flex flex-col w-full space-y-space-md">
+<!-- Top Action & Context Navigation Bar -->
+<div class="flex items-center justify-between gap-space-sm pt-space-xs">
+<div class="flex items-center gap-space-sm min-w-0">
+<a class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-ink-primary hover:bg-surface-container-high transition-colors" data-path="shared-shares" href="#">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</a>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-ink-primary truncate">Share Details</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary truncate">ID: VBX-NODE-7721</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs shrink-0">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-primary shadow-sm text-status-success">
+<span class="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>
+<span class="font-label-sm text-label-sm font-semibold">Active &amp; Healthy</span>
+</div>
+<button aria-label="Share Options" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-ink-primary hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Share Hero Card -->
+<div class="relative overflow-hidden rounded-xl bg-surface-primary shadow-sm p-space-md flex flex-col gap-space-md">
+<!-- Ambient Aurora Gradient Accent -->
+<div class="absolute -top-12 -right-12 w-36 h-36 rounded-full bg-gradient-to-br from-aurora-soft-l/40 via-aurora-mid/20 to-aurora-soft-p/30 blur-2xl pointer-events-none"></div>
+<div class="flex items-start gap-space-sm relative z-10">
+<div class="w-12 h-12 rounded-lg bg-gradient-to-br from-aurora-soft-l to-aurora-soft-p flex items-center justify-center text-ink-primary shadow-sm shrink-0">
+<span class="material-symbols-outlined text-[26px]">folder_shared</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center gap-2">
+<h2 class="font-headline-md text-headline-md text-ink-primary truncate">Selects_Final</h2>
+<span class="px-2 py-0.5 rounded bg-surface-container text-ink-secondary font-label-sm text-label-sm">SMB / HTTP</span>
+</div>
+<div class="flex items-center gap-1 text-ink-secondary mt-0.5 min-w-0">
+<span class="material-symbols-outlined text-[14px] shrink-0 text-ink-tertiary">folder</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary truncate">/DCIM/Raw Camera 2026/Selects_Final</span>
+</div>
+</div>
+</div>
+<!-- Quick Share URL Component -->
+<div class="flex flex-col gap-1.5 relative z-10">
+<label class="font-label-sm text-label-sm text-ink-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-ink-tertiary">link</span>
+<span>Dedicated Local Share Link</span>
+</label>
+<div class="flex items-center gap-2 p-1.5 pl-3 rounded-lg bg-surface-container min-w-0">
+<span class="font-label-sm text-label-sm text-ink-primary font-mono truncate select-all flex-1">https://vaultbox.local:8443/s/vbx-9941a</span>
+<button class="h-9 px-3.5 rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-label-lg text-label-lg font-semibold flex items-center gap-1.5 shadow-sm active:scale-95 transition-all" id="copy-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+<span>Copy</span>
+</button>
+</div>
+</div>
+<!-- Folder Quick Peek Gallery Placeholders -->
+<div class="pt-1 flex items-center gap-2">
+<div class="relative w-16 h-12 rounded-md overflow-hidden bg-surface-container shrink-0">
+<img class="w-full h-full object-cover" data-alt="Cinematic raw golden hour landscape shot inside studio photography staging area with gentle purple light leakage, subtle film grain." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgHjYRtdm4as8iXszluXIJZSC-RuxRGMNbgFCVzLrwneTwWP-VY9MqOtGpIo6QOniIJwo9AlzxFdwVZuQIbNUhszXEzDLqcVNTrPbLapu0qxgE9NgBGLzNCoHkZy8IXh2pz1HUtb9G4C16iICBOwOS8Y5m6JFnh6Gle7FVTVYwgw3PtlpYQ-6-MPVL5041qVADi3WCYxalbf0vXLhlHjgMjJwROqJdID8ISpMLuG0ewEVNXZB5Gb5Uhg"/>
+</div>
+<div class="relative w-16 h-12 rounded-md overflow-hidden bg-surface-container shrink-0">
+<img class="w-full h-full object-cover" data-alt="High resolution studio portrait photography session contact sheet preview with color gradient calibration bars and camera EXIF metrics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXI3PocwAD38_wT7IF5Yg5ZmAxdXjD0rvY7QCf3AgNOVccBztSox8_H7X5X_sjU4oUMMGf3t47JBV1p1VsdQtFzrGXlQReOtmmc4bUStyTLa573hdmVg39a_LeBq8nsByfIHO71aNAjXGiCTHk_4TelFKSfKsxDZrRd7rW3v2onfukYTnPGRG0fHyeyh1C9He5SZh4fGBa3XdatkJD5xurG8zHRKtXKa4VHxHVFHhmV9PPRfnL1aLW6w"/>
+</div>
+<div class="relative w-16 h-12 rounded-md overflow-hidden bg-surface-container shrink-0">
+<img class="w-full h-full object-cover" data-alt="Professional architectural studio interior capture with soft ambient luminescence and violet accent lights on matte concrete desk." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDM5G_RTVpT2oUXPs7lEbS-qrN3mxxyzwEoFOi9qDbmlFi7K2F4ofPonzgIEH5Tb5NiFrezHDFl3__Jnx8Lhc3trcIEmj0NrigaweoPm5iT5FIh5ITc5zTJLruYfdWVpxnWtjnp18eweeaiGD5--OhR-65REtUKzIRCTqqTu6StjvkQrd-na7dZuUcrn2OsuMEBhwuV1rRzU35UiNvV191kCYb_MyKTVIz2-HwmPOCqYS6eI7Vc_nCKsQ"/>
+</div>
+<div class="flex-1 h-12 rounded-md bg-surface-container-low flex flex-col justify-center px-2.5">
+<span class="font-label-sm text-label-sm text-ink-primary font-semibold truncate">38 Raw Assets</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary truncate">12.8 GB total size</span>
+</div>
+</div>
+</div>
+<!-- Real-Time Transfer & Traffic Metrics -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-secondary">speed</span>
+<h3 class="font-headline-sm text-headline-sm text-ink-primary">Real-Time Traffic</h3>
+</div>
+<span class="font-label-sm text-label-sm text-status-success font-medium">● 42.1 MB/s Peak</span>
+</div>
+<div class="grid grid-cols-3 gap-space-xs">
+<!-- Downloads Metric -->
+<div class="rounded-xl bg-surface-primary p-3 flex flex-col justify-between shadow-sm min-w-0">
+<div class="flex items-center justify-between text-ink-secondary mb-2">
+<span class="font-label-sm text-label-sm text-ink-tertiary">Downloads</span>
+<span class="material-symbols-outlined text-[16px] text-ink-tertiary">download</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="font-headline-md text-headline-md text-ink-primary">4</span>
+<span class="font-label-sm text-label-sm text-ink-secondary font-mono">/ 10 max</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container mt-2 overflow-hidden">
+<div class="h-full rounded-full bg-gradient-to-r from-aurora-lavender to-aurora-pink w-[40%]"></div>
+</div>
+</div>
+<!-- Bandwidth Metric -->
+<div class="rounded-xl bg-surface-primary p-3 flex flex-col justify-between shadow-sm min-w-0">
+<div class="flex items-center justify-between text-ink-secondary mb-2">
+<span class="font-label-sm text-label-sm text-ink-tertiary">Bandwidth</span>
+<span class="material-symbols-outlined text-[16px] text-ink-tertiary">data_usage</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="font-headline-md text-headline-md text-ink-primary">4.4</span>
+<span class="font-label-sm text-label-sm text-ink-secondary font-mono">GB</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container mt-2 overflow-hidden">
+<div class="h-full rounded-full bg-secondary w-[34%]"></div>
+</div>
+</div>
+<!-- Active Guests Metric -->
+<div class="rounded-xl bg-surface-primary p-3 flex flex-col justify-between shadow-sm min-w-0">
+<div class="flex items-center justify-between text-ink-secondary mb-2">
+<span class="font-label-sm text-label-sm text-ink-tertiary">Guests</span>
+<span class="material-symbols-outlined text-[16px] text-status-success">group</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="font-headline-md text-headline-md text-ink-primary">2</span>
+<span class="font-label-sm text-label-sm text-status-success font-medium">live</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container mt-2 overflow-hidden">
+<div class="h-full rounded-full bg-status-success w-[70%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Live Access Controls & Configuration -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">security</span>
+<h3 class="font-headline-sm text-headline-sm text-ink-primary">Access &amp; Security Controls</h3>
+</div>
+<span class="font-label-sm text-label-sm text-ink-tertiary">VaultPolicy v2</span>
+</div>
+<div class="rounded-xl bg-surface-primary shadow-sm overflow-hidden flex flex-col">
+<!-- Master Toggle Row -->
+<div class="p-3.5 flex items-center justify-between bg-surface-primary hover:bg-surface-secondary transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-ink-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]">toggle_on</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-ink-primary font-semibold truncate">Share Enabled</span>
+<span class="font-label-sm text-label-sm text-ink-secondary truncate">Broadcast node beacon on local subnet</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Access Permission Setting -->
+<div class="p-3.5 flex items-center justify-between bg-surface-secondary/60 hover:bg-surface-secondary transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-ink-primary shrink-0">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase tracking-wider">Access Permission</span>
+<span class="font-body-md text-body-md text-ink-primary font-medium truncate">Download Permitted</span>
+</div>
+</div>
+<button class="px-3 py-1 rounded-full bg-surface-container text-ink-primary font-label-sm text-label-sm font-semibold hover:bg-surface-container-high transition-colors shrink-0" type="button">
+          Edit
+        </button>
+</div>
+<!-- Password Protection Setting -->
+<div class="p-3.5 flex items-center justify-between bg-surface-primary hover:bg-surface-secondary transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-ink-primary shrink-0">
+<span class="material-symbols-outlined text-[18px]">key</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase tracking-wider">Password Protection</span>
+<div class="flex items-center gap-1.5">
+<span class="font-body-md text-body-md text-ink-primary font-medium">Enabled</span>
+<span class="font-label-sm text-label-sm text-ink-secondary font-mono bg-surface-container px-1.5 py-0.5 rounded">vbx-9941a</span>
+</div>
+</div>
+</div>
+<button class="px-3 py-1 rounded-full bg-surface-container text-ink-primary font-label-sm text-label-sm font-semibold hover:bg-surface-container-high transition-colors shrink-0" type="button">
+          Rotate
+        </button>
+</div>
+<!-- Expiry Date Setting -->
+<div class="p-3.5 flex items-center justify-between bg-surface-secondary/60 hover:bg-surface-secondary transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-ink-primary shrink-0">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase tracking-wider">Expiry Date</span>
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-body-md text-body-md text-ink-primary font-medium">Oct 26, 2026 · 14:00</span>
+<span class="font-label-sm text-label-sm text-status-warning font-mono bg-surface-container px-1.5 py-0.5 rounded">1d 22h left</span>
+</div>
+</div>
+</div>
+<button aria-label="Adjust Expiry" class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-ink-primary hover:bg-surface-container-high transition-colors shrink-0" type="button">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+</button>
+</div>
+<!-- Network Scope Setting -->
+<div class="p-3.5 flex items-center justify-between bg-surface-primary hover:bg-surface-secondary transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-ink-primary shrink-0">
+<span class="material-symbols-outlined text-[18px]">wifi_tethering</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase tracking-wider">Network Scope</span>
+<span class="font-body-md text-body-md text-ink-primary font-medium truncate">LAN Only (HomeStudio_5G)</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-selection-soft text-selection-blue font-label-sm text-label-sm font-semibold shrink-0">
+          Isolated
+        </span>
+</div>
+</div>
+</div>
+<!-- Recent Activity / Audit Log -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-ink-secondary">history</span>
+<h3 class="font-headline-sm text-headline-sm text-ink-primary">Access Log</h3>
+</div>
+<span class="font-label-sm text-label-sm text-ink-secondary">Live Tail</span>
+</div>
+<div class="rounded-xl bg-surface-primary shadow-sm p-3.5 flex flex-col space-y-3">
+<!-- Item 1 -->
+<div class="flex items-start gap-2.5 min-w-0">
+<div class="w-2 h-2 rounded-full bg-status-success mt-1.5 shrink-0"></div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-sm text-label-sm text-ink-secondary font-mono">14:22:10</span>
+<span class="font-label-sm text-label-sm text-status-success font-mono font-medium">200 OK</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-primary font-mono truncate">
+            192.168.1.44 (MacBook Pro)
+          </p>
+<span class="font-label-sm text-label-sm text-ink-tertiary truncate">
+            downloaded <span class="text-ink-secondary font-medium">DSC_0982_Master.dng</span> (1.4 GB)
+          </span>
+</div>
+</div>
+<div class="w-full h-px bg-surface-container"></div>
+<!-- Item 2 -->
+<div class="flex items-start gap-2.5 min-w-0">
+<div class="w-2 h-2 rounded-full bg-secondary shrink-0 mt-1.5"></div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-sm text-label-sm text-ink-secondary font-mono">14:18:05</span>
+<span class="font-label-sm text-label-sm text-secondary font-mono font-medium">PROPFIND</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-primary font-mono truncate">
+            192.168.1.52 (iPad Pro)
+          </p>
+<span class="font-label-sm text-label-sm text-ink-tertiary truncate">
+            previewed folder catalog
+          </span>
+</div>
+</div>
+<div class="w-full h-px bg-surface-container"></div>
+<!-- Item 3 -->
+<div class="flex items-start gap-2.5 min-w-0">
+<div class="w-2 h-2 rounded-full bg-primary shrink-0 mt-1.5"></div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-sm text-label-sm text-ink-secondary font-mono">14:02:00</span>
+<span class="font-label-sm text-label-sm text-primary font-mono font-medium">INIT</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-primary font-mono truncate">
+            Share link created by admin
+          </p>
+<span class="font-label-sm text-label-sm text-ink-tertiary truncate">
+            via VaultBox Android Node Dashboard
+          </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Danger Zone -->
+<div class="rounded-xl bg-status-danger-surface p-space-md flex flex-col gap-space-sm">
+<div class="flex items-center gap-2 text-status-danger">
+<span class="material-symbols-outlined text-[20px]">warning</span>
+<h4 class="font-headline-sm text-headline-sm font-semibold">Danger Zone</h4>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary">
+      Instantly breaks existing download links and terminates guest access. Connected devices will lose access to <span class="font-mono text-ink-primary font-medium">Selects_Final</span> immediately.
+    </p>
+<button class="w-full h-12 rounded-full bg-surface-primary shadow-sm text-status-danger font-label-lg text-label-lg font-semibold flex items-center justify-center gap-2 hover:bg-status-danger-surface active:scale-98 transition-all" id="revoke-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">link_off</span>
+<span>Revoke Share &amp; Expire Immediately</span>
+</button>
+</div>
+</div>
+<script>
+  (function() {
+    // Synchronize bottom dock 'Share' tab active state
+    try {
+      var navLinks = document.querySelectorAll('nav a');
+      navLinks.forEach(function(link) {
+        if (link.getAttribute('data-path') === 'shared-shares') {
+          link.className = 'flex flex-col items-center justify-center flex-1 h-full rounded-full gap-0.5 bg-gradient-to-r from-aurora-soft-l to-aurora-soft-p text-ink-primary font-semibold shadow-sm transition-all';
+        } else {
+          link.className = 'flex flex-col items-center justify-center flex-1 h-full rounded-full gap-0.5 text-ink-secondary hover:text-ink-primary transition-all';
+        }
+      });
+    } catch (e) {}
+
+    // Copy to clipboard interaction
+    var copyBtn = document.getElementById('copy-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function() {
+        var originalText = copyBtn.innerHTML;
+        navigator.clipboard.writeText('https://vaultbox.local:8443/s/vbx-9941a').catch(function() {});
+        copyBtn.innerHTML = '<span class="material-symbols-outlined text-[16px]">done</span><span>Copied!</span>';
+        setTimeout(function() {
+          copyBtn.innerHTML = originalText;
+        }, 1800);
+      });
+    }
+
+    // Revoke share 3-tier lifecycle micro-interaction
+    var revokeBtn = document.getElementById('revoke-btn');
+    if (revokeBtn) {
+      var stage = 0;
+      revokeBtn.addEventListener('click', function() {
+        stage++;
+        if (stage === 1) {
+          revokeBtn.classList.remove('bg-surface-primary', 'text-status-danger');
+          revokeBtn.classList.add('bg-error-container', 'text-on-error-container');
+          revokeBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">report</span><span>Confirm Immediate Revocation</span>';
+        } else if (stage >= 2) {
+          revokeBtn.classList.remove('bg-error-container', 'text-on-error-container');
+          revokeBtn.classList.add('bg-status-danger', 'text-white');
+          revokeBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">lock</span><span>Link Revoked &amp; Locked</span>';
+          revokeBtn.disabled = true;
+        }
+      });
+    }
+  })();
+</script></main><div class="fixed bottom-0 inset-x-0 z-50 pointer-events-none pb-safe"><div class="px-margin pb-4 w-full flex justify-center"><nav class="pointer-events-auto h-[74px] w-full max-w-[420px] rounded-full bg-surface-primary/80 backdrop-blur-xl shadow-[0_8px_32px_rgba(26,26,26,0.08),0_0_0_1.5px_#DCDCDC] p-1.5 flex items-center justify-between" data-active-classes="bg-gradient-to-r from-aurora-soft-l to-aurora-soft-p text-ink-primary shadow-[0_0_0_1.5px_#1A1A1A] font-semibold"><a class="flex flex-col items-center justify-center flex-1 h-full rounded-full gap-0.5 text-ink-secondary hover:text-ink-primary transition-all" data-path="dashboard-nodes" href="#"><span class="material-symbols-outlined text-[22px]">dns</span><span class="font-label-sm text-label-sm">Home</span></a><a class="flex flex-col items-center justify-center flex-1 h-full rounded-full gap-0.5 text-ink-secondary hover:text-ink-primary transition-all" data-path="storage-explorer" href="#"><span class="material-symbols-outlined text-[22px]">folder</span><span class="font-label-sm text-label-sm">Files</span></a><a aria-current="page" class="flex flex-col items-center justify-center flex-1 h-full rounded-full gap-0.5 transition-all bg-gradient-to-r from-aurora-soft-l to-aurora-soft-p text-ink-primary shadow-[0_0_0_1.5px_#1A1A1A] font-semibold" data-path="shared-shares" href="#"><span class="material-symbols-outlined text-[22px]">share</span><span class="font-label-sm text-label-sm">Share</span></a><a class="flex flex-col items-center justify-center flex-1 h-full rounded-full gap-0.5 text-ink-secondary hover:text-ink-primary transition-all" data-path="node-activity" href="#"><span class="material-symbols-outlined text-[22px]">swap_vert</span><span class="font-label-sm text-label-sm">Activity</span></a><a class="flex flex-col items-center justify-center flex-1 h-full rounded-full gap-0.5 text-ink-secondary hover:text-ink-primary transition-all" data-path="server-settings" href="#"><span class="material-symbols-outlined text-[22px]">settings</span><span class="font-label-sm text-label-sm">Settings</span></a></nav></div></div></body></html>

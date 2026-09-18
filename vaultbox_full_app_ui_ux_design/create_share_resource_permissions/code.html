@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'on-tertiary-container': '#fffbff', 'surface-dim': '#dcdad5', 'aurora-mid': '#B58FD0', 'on-error-container': '#93000a', 'inverse-on-surface': '#f3f1eb', 'aurora-pink': '#D98FB0', 'aurora-soft-p': '#EEC9D6', 'surface-container-high': '#eae8e3', 'primary-fixed-dim': '#c8bfff', 'outline': '#797582', 'ink-tertiary': '#8A8A8A', 'tertiary-container': '#a2607f', 'on-secondary-fixed-variant': '#00468a', 'secondary-container': '#5a9fff', 'status-success': '#3A7A4A', 'on-error': '#ffffff', 'on-secondary-fixed': '#001b3c', 'surface-container-low': '#f5f3ee', 'surface-secondary': '#FAFAFA', 'secondary': '#005eb4', 'on-secondary': '#ffffff', 'on-primary-fixed': '#1a045e', 'ink-primary': '#1A1A1A', 'surface-tertiary': '#F7F7F5', 'on-tertiary-fixed-variant': '#6d3350', 'error-container': '#ffdad6', 'primary-fixed': '#e5deff', 'on-primary-fixed-variant': '#473a8a', 'tertiary-fixed': '#ffd8e7', 'selection-soft': '#EEF3FB', 'aurora-lavender': '#8F83D8', 'tertiary-fixed-dim': '#feb0d2', 'secondary-fixed-dim': '#a8c8ff', 'surface-container': '#f0eee9', 'status-danger': '#A34A4A', 'ink-secondary': '#666666', 'tertiary': '#864866', 'surface-primary': '#FFFFFF', 'secondary-fixed': '#d5e3ff', 'on-surface': '#1b1c19', 'on-primary-container': '#fffbff', 'on-tertiary-fixed': '#390724', 'border-muted': '#E8E8E8', 'surface-bright': '#fbf9f4', 'on-background': '#1b1c19', 'aurora-soft-l': '#CFC8EF', 'on-tertiary': '#ffffff', 'border-default': '#DCDCDC', 'primary-container': '#7569bc', 'ink-disabled': '#A5A5A5', 'surface-container-lowest': '#ffffff', 'status-danger-surface': '#FDF6F6', 'on-secondary-container': '#00356a', 'outline-variant': '#c9c4d2', 'status-danger-border': '#C98A8A', 'inverse-primary': '#c8bfff', 'status-success-border': '#B0CDB4', 'primary': '#5c50a1', 'background': '#fbf9f4', 'selection-blue': '#2A78D6', 'surface-container-highest': '#e4e2dd', 'status-warning': '#8A6A2A', 'surface-tint': '#5f53a4', 'on-primary': '#ffffff', 'error': '#ba1a1a', 'on-surface-variant': '#484551', 'inverse-surface': '#30312d', 'status-warning-border': '#DCD0B0', 'surface-variant': '#e4e2dd', 'border-strong': '#1A1A1A', 'surface': '#fbf9f4' }, borderRadius: { DEFAULT: '0.25rem', lg: '0.5rem', xl: '0.75rem', full: '9999px' }, spacing: { 'space-md': '1rem', 'margin-sm': '0.875rem', 'gutter': '1rem', 'margin': '1rem', 'space-lg': '1.25rem', 'margin-lg': '1.5rem', 'space-xl': '1.5rem', 'gutter-sm': '0.75rem', 'gutter-lg': '1.5rem', 'space-xs': '0.25rem', 'space-sm': '0.5rem' }, fontFamily: { 'label-lg': ['Inter'], 'display-xl': ['Epilogue'], 'body-lg': ['Inter'], 'body-md': ['Inter'], 'headline-md': ['Epilogue'], 'headline-sm': ['Epilogue'], 'display-xl-mobile': ['Epilogue'], 'headline-lg': ['Epilogue'], 'label-md': ['JetBrains Mono'], 'label-sm': ['JetBrains Mono'], 'body-sm': ['Inter'] }, fontSize: { 'label-lg': ['14px', { lineHeight: '20px', fontWeight: '500' }], 'display-xl': ['36px', { lineHeight: '44px', letterSpacing: '-0.02em', fontWeight: '700' }], 'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }], 'body-md': ['14px', { lineHeight: '20px', fontWeight: '400' }], 'headline-md': ['22px', { lineHeight: '30px', fontWeight: '600' }], 'headline-sm': ['18px', { lineHeight: '24px', fontWeight: '600' }], 'display-xl-mobile': ['30px', { lineHeight: '38px', letterSpacing: '-0.02em', fontWeight: '700' }], 'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.01em', fontWeight: '600' }], 'label-md': ['12px', { lineHeight: '16px', fontWeight: '500' }], 'label-sm': ['10px', { lineHeight: '14px', letterSpacing: '0.02em', fontWeight: '500' }], 'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }] } } } };</script><style>@layer base{html,body{width:100%;margin:0;padding:0;}body{overscroll-behavior-y:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen antialiased"><header class="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_12px_rgba(26,26,26,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go Back" class="w-11 h-11 -ml-2 flex items-center justify-center rounded-full text-ink-primary hover:bg-surface-container transition-colors shrink-0" onclick="history.back()" type="button"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><img alt="A modern geometric server NAS emblem for VaultBox. Stylized storage vault cube box with subtle network pulse signal lines, rendered with soft lavender and violet aurora accents and crisp ink borders. Clean vector icon, perfectly centered.. Design context: - Primary color: #8f83d8
+- Font: epilogue
+- Mode: light
+- Roundness: rounded-md
+. The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XFa-uWEsGJPgdLDzAOo7A0aej7Tu1EA-aPNPuKD3u556Cv3c39haZ4T7BqCw4jnYpkWgsZPjsINsWzOouij-4DG3Cbi7Fgr9mpIxiRwvrmaGL0Ubd-PxA8OW3f9dt74s7O9tkigKcIkulCHst4kr4KWX_9ArAErbPl1DOf4NQqUZu8a_DxX9ouOWO_l0EJy1fRNdFQO8reujt8MlLgs_TNlhLubtUjTytYFPUtxFs10rKncpmO3hpsppQ"/><h1 class="font-headline-sm text-headline-sm text-ink-primary tracking-tight truncate">Create Share Link</h1></div><div class="flex items-center gap-space-xs shrink-0"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full px-margin pt-16 pb-8 bg-surface"><div class="flex flex-col w-full pb-10 space-y-5">
+<!-- Progress Ribbon & Step Context -->
+<div class="flex items-center justify-between gap-space-sm bg-surface-container p-3 rounded-xl">
+<div class="flex items-center gap-space-xs min-w-0">
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-on-primary font-label-md text-label-md">1-2</span>
+<span class="font-body-md text-body-md text-ink-primary font-medium truncate">Resource &amp; Permissions</span>
+</div>
+<div class="flex items-center gap-1.5 shrink-0">
+<div class="w-7 h-1.5 rounded-full bg-primary"></div>
+<div class="w-7 h-1.5 rounded-full bg-aurora-lavender"></div>
+<div class="w-4 h-1.5 rounded-full bg-surface-variant"></div>
+</div>
+</div>
+<!-- Step 1: Selected Resource Unit -->
+<section class="flex flex-col space-y-2">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-headline-sm text-headline-sm text-ink-primary tracking-tight">1. Target Resource</h2>
+<span class="font-label-sm text-label-sm text-status-success font-medium bg-surface-container-lowest px-2 py-0.5 rounded-full">READY</span>
+</div>
+<!-- Selected Folder Card -->
+<div class="relative bg-surface-container-lowest rounded-xl p-4 shadow-sm transition-all duration-200 hover:shadow-md">
+<div class="flex items-start gap-3.5">
+<div class="w-12 h-12 rounded-lg bg-selection-soft text-selection-blue flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">folder_zip</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-ink-primary truncate font-semibold">Selects_Final</span>
+<span class="px-1.5 py-0.2 bg-surface-container text-ink-secondary rounded font-label-sm text-label-sm uppercase tracking-wider">LOCKED-TREE</span>
+</div>
+<p class="font-label-sm text-label-sm text-ink-tertiary truncate mt-0.5 font-mono">
+            /DCIM/Raw Camera 2026/Selects_Final
+          </p>
+<div class="flex flex-wrap items-center gap-2 mt-3">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-low text-ink-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[14px]">photo_library</span>
+              14 files
+            </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-low text-ink-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[14px]">storage</span>
+              1.1 GB total
+            </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-surface-secondary text-ink-secondary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[13px] text-status-success">verified_user</span>
+              Btrfs Hash Synced
+            </span>
+</div>
+</div>
+</div>
+<!-- Change Resource Trigger -->
+<div class="mt-4 pt-3 flex items-center justify-between bg-surface-container-low -mx-4 -mb-4 px-4 py-2.5 rounded-b-xl">
+<span class="font-body-sm text-body-sm text-ink-secondary">Want to share a different volume or folder?</span>
+<button class="inline-flex items-center gap-1 text-primary font-label-lg text-label-lg font-semibold hover:text-primary-container transition-colors py-1 px-2 rounded hover:bg-surface-container" type="button">
+<span>Change</span>
+<span class="material-symbols-outlined text-[16px]">swap_horiz</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Step 2: Permissions Configuration -->
+<section class="flex flex-col space-y-3">
+<div class="flex items-baseline justify-between px-1">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-ink-primary tracking-tight">2. Permission Tier</h2>
+<p class="font-body-sm text-body-sm text-ink-secondary">Define guest privilege bounds for this share link</p>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-semibold bg-primary-fixed px-2 py-0.5 rounded-full">STEP 2 OF 3</span>
+</div>
+<!-- Permission Options List (Interactive Radio Group) -->
+<div class="space-y-2.5" id="permission-group">
+<!-- Option 1: Preview Only -->
+<label class="permission-option relative flex items-start gap-3 p-3.5 rounded-xl cursor-pointer transition-all duration-200 bg-surface-container-lowest hover:bg-surface-container-low shadow-sm">
+<input class="sr-only" name="permission_level" type="radio" value="preview"/>
+<div class="radio-indicator w-5 h-5 rounded-full bg-surface-container flex items-center justify-center mt-0.5 shrink-0 transition-all">
+<div class="dot w-2 h-2 rounded-full bg-transparent"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-lg text-label-lg text-ink-primary font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-ink-secondary">visibility</span>
+              View &amp; Preview Only
+            </span>
+<span class="font-label-sm text-label-sm text-ink-tertiary bg-surface-container px-2 py-0.5 rounded">READ</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-1 leading-relaxed">
+            Recipients can browse thumbnails and stream previews without direct download authorization.
+          </p>
+</div>
+</label>
+<!-- Option 2: Download Permitted (Default Selected) -->
+<label class="permission-option active relative flex items-start gap-3 p-3.5 rounded-xl cursor-pointer transition-all duration-200 bg-selection-soft shadow-sm ring-1 ring-selection-blue">
+<input checked="" class="sr-only" name="permission_level" type="radio" value="download"/>
+<div class="radio-indicator w-5 h-5 rounded-full bg-selection-blue flex items-center justify-center mt-0.5 shrink-0 transition-all">
+<div class="dot w-2 h-2 rounded-full bg-surface-container-lowest"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-1.5">
+<span class="font-label-lg text-label-lg text-ink-primary font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-selection-blue">cloud_download</span>
+                Download Permitted
+              </span>
+<span class="bg-primary text-on-primary text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded font-label-sm">RECOMMENDED</span>
+</div>
+<span class="font-label-sm text-label-sm text-selection-blue font-semibold bg-surface-container-lowest px-2 py-0.5 rounded">STREAM+GET</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-1 leading-relaxed">
+            Recipients can stream multimedia and save bit-perfect full-resolution assets to their local devices.
+          </p>
+</div>
+</label>
+<!-- Option 3: Upload Only (Blind Drop) -->
+<label class="permission-option relative flex items-start gap-3 p-3.5 rounded-xl cursor-pointer transition-all duration-200 bg-surface-container-lowest hover:bg-surface-container-low shadow-sm">
+<input class="sr-only" name="permission_level" type="radio" value="upload"/>
+<div class="radio-indicator w-5 h-5 rounded-full bg-surface-container flex items-center justify-center mt-0.5 shrink-0 transition-all">
+<div class="dot w-2 h-2 rounded-full bg-transparent"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-lg text-label-lg text-ink-primary font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-ink-secondary">drive_folder_upload</span>
+              Upload Only (Drop Box)
+            </span>
+<span class="font-label-sm text-label-sm text-ink-tertiary bg-surface-container px-2 py-0.5 rounded">BLIND PUSH</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-1 leading-relaxed">
+            Blind contribution bucket. External guests may push files into this folder but cannot view existing files.
+          </p>
+</div>
+</label>
+<!-- Option 4: Full Read & Write -->
+<label class="permission-option relative flex items-start gap-3 p-3.5 rounded-xl cursor-pointer transition-all duration-200 bg-surface-container-lowest hover:bg-surface-container-low shadow-sm">
+<input class="sr-only" name="permission_level" type="radio" value="full"/>
+<div class="radio-indicator w-5 h-5 rounded-full bg-surface-container flex items-center justify-center mt-0.5 shrink-0 transition-all">
+<div class="dot w-2 h-2 rounded-full bg-transparent"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-lg text-label-lg text-ink-primary font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-ink-secondary">sync_alt</span>
+              Read &amp; Write
+            </span>
+<span class="font-label-sm text-label-sm text-status-warning font-semibold bg-surface-container px-2 py-0.5 rounded">COLLAB</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-1 leading-relaxed">
+            Full synchronization collaboration. Guests are authorized to both download contents and write new files.
+          </p>
+</div>
+</label>
+</div>
+<!-- Advanced Capability Flags (Collapsible Drawer) -->
+<div class="mt-2 bg-surface-container-low rounded-xl p-3.5 shadow-sm">
+<div class="flex items-center justify-between mb-3 cursor-pointer" id="toggle-advanced-btn">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-ink-secondary text-[18px]">tune</span>
+<span class="font-label-lg text-label-lg text-ink-primary font-semibold">Fine-grained Capabilities</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-medium" id="toggle-advanced-label">3 options active</span>
+</div>
+<div class="space-y-2.5 pt-1" id="advanced-toggles-container">
+<!-- Capability 1: Active -->
+<label class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest cursor-pointer">
+<div class="flex items-center gap-2.5 min-w-0 pr-2">
+<span class="material-symbols-outlined text-primary text-[18px]">account_tree</span>
+<div class="min-w-0">
+<p class="font-body-md text-body-md text-ink-primary font-medium truncate">Allow subfolder tree navigation</p>
+<p class="font-label-sm text-label-sm text-ink-tertiary">Recipients can traverse nested child directories</p>
+</div>
+</div>
+<input checked="" class="w-5 h-5 rounded text-primary focus:ring-0 focus:outline-none accent-primary" type="checkbox"/>
+</label>
+<!-- Capability 2: Media Streaming Active -->
+<label class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest cursor-pointer">
+<div class="flex items-center gap-2.5 min-w-0 pr-2">
+<span class="material-symbols-outlined text-primary text-[18px]">play_circle</span>
+<div class="min-w-0">
+<p class="font-body-md text-body-md text-ink-primary font-medium truncate">Direct in-browser media stream</p>
+<p class="font-label-sm text-label-sm text-ink-tertiary">Transcode raw HEVC/ProRes via Vault hardware acceleration</p>
+</div>
+</div>
+<input checked="" class="w-5 h-5 rounded text-primary focus:ring-0 focus:outline-none accent-primary" type="checkbox"/>
+</label>
+<!-- Capability 3: Disabled by Policy -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container opacity-60 cursor-not-allowed">
+<div class="flex items-center gap-2.5 min-w-0 pr-2">
+<span class="material-symbols-outlined text-ink-disabled text-[18px]">auto_delete</span>
+<div class="min-w-0">
+<p class="font-body-md text-body-md text-ink-disabled font-medium truncate">Allow file delete / destructive edit</p>
+<p class="font-label-sm text-label-sm text-ink-disabled">Disabled: Requires authenticated root credentials</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-ink-disabled text-[20px]">lock</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Live Protocol Compatibility Matrix -->
+<section class="bg-surface-container-lowest rounded-xl p-3.5 shadow-sm space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-ink-secondary uppercase tracking-wider font-semibold">Broadcasting Protocol Matrix</span>
+<span class="font-label-sm text-label-sm text-status-success flex items-center gap-1 font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+        NODE TLS: ACTIVE
+      </span>
+</div>
+<div class="flex flex-wrap gap-2">
+<div class="px-2.5 py-1 rounded bg-surface-secondary text-ink-secondary font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-primary">lan</span>
+        WEBDAV /v1/share
+      </div>
+<div class="px-2.5 py-1 rounded bg-surface-secondary text-ink-secondary font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-selection-blue">terminal</span>
+        SFTP chroot
+      </div>
+<div class="px-2.5 py-1 rounded bg-surface-secondary text-ink-secondary font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-tertiary">public</span>
+        HTTPS Direct Lens
+      </div>
+</div>
+</section>
+<!-- Sticky Bottom Flow Controls -->
+<div class="pt-4 flex flex-col gap-3">
+<!-- Aurora Luminescent Action Button -->
+<button class="w-full h-12 rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-headline-sm text-headline-sm font-semibold flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-transform active:scale-[0.98]" id="continue-step-btn" type="button">
+<span>Continue to Security &amp; Expiry</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<!-- Secondary Safe Dismissal Action -->
+<button class="w-full h-11 rounded-full bg-surface-container text-ink-secondary hover:text-ink-primary font-label-lg text-label-lg font-medium flex items-center justify-center transition-colors" onclick="history.back()" type="button">
+      Cancel &amp; Discard Draft
+    </button>
+</div>
+</div>
+<script>
+  // Simple micro-interaction for radio card selection and visual state change
+  const permissionOptions = document.querySelectorAll('.permission-option');
+  
+  permissionOptions.forEach(card => {
+    card.addEventListener('click', () => {
+      // Clear previous active styles
+      permissionOptions.forEach(opt => {
+        opt.classList.remove('active', 'bg-selection-soft', 'ring-1', 'ring-selection-blue');
+        opt.classList.add('bg-surface-container-lowest');
+        
+        const indicator = opt.querySelector('.radio-indicator');
+        const dot = opt.querySelector('.dot');
+        if (indicator && dot) {
+          indicator.classList.remove('bg-selection-blue');
+          indicator.classList.add('bg-surface-container');
+          dot.classList.remove('bg-surface-container-lowest');
+          dot.classList.add('bg-transparent');
+        }
+      });
+
+      // Apply active style to clicked card
+      card.classList.add('active', 'bg-selection-soft', 'ring-1', 'ring-selection-blue');
+      card.classList.remove('bg-surface-container-lowest');
+
+      const radio = card.querySelector('input[type="radio"]');
+      if (radio) radio.checked = true;
+
+      const activeIndicator = card.querySelector('.radio-indicator');
+      const activeDot = card.querySelector('.dot');
+      if (activeIndicator && activeDot) {
+        activeIndicator.classList.add('bg-selection-blue');
+        activeIndicator.classList.remove('bg-surface-container');
+        activeDot.classList.add('bg-surface-container-lowest');
+        activeDot.classList.remove('bg-transparent');
+      }
+    });
+  });
+
+  // Toggle Advanced Capabilities Drawer
+  const toggleBtn = document.getElementById('toggle-advanced-btn');
+  const togglesContainer = document.getElementById('advanced-toggles-container');
+  if (toggleBtn && togglesContainer) {
+    toggleBtn.addEventListener('click', () => {
+      togglesContainer.classList.toggle('hidden');
+    });
+  }
+
+  // Continue CTA Feedback
+  const continueBtn = document.getElementById('continue-step-btn');
+  if (continueBtn) {
+    continueBtn.addEventListener('click', () => {
+      const selectedValue = document.querySelector('input[name="permission_level"]:checked')?.value || 'download';
+      continueBtn.innerHTML = `
+        <span class="material-symbols-outlined animate-spin text-[20px]">sync</span>
+        <span>Configuring Access Tokens...</span>
+      `;
+      setTimeout(() => {
+        continueBtn.innerHTML = `
+          <span>Step 3: Security &amp; Expiry</span>
+          <span class="material-symbols-outlined text-[20px]">done</span>
+        `;
+      }, 700);
+    });
+  }
+</script></main></body></html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "selection-soft": "#EEF3FB", "status-success": "#3A7A4A", "tertiary": "#864866", "surface-bright": "#fbf9f4", "border-default": "#DCDCDC", "on-primary-fixed-variant": "#473a8a", "error-container": "#ffdad6", "border-strong": "#1A1A1A", "primary-fixed": "#e5deff", "surface-container-high": "#eae8e3", "on-secondary-fixed": "#001b3c", "on-primary-container": "#fffbff", "ink-primary": "#1A1A1A", "on-error": "#ffffff", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#c8bfff", "on-secondary-fixed-variant": "#00468a", "outline-variant": "#c9c4d2", "status-danger": "#A34A4A", "on-tertiary-container": "#fffbff", "on-primary-fixed": "#1a045e", "on-error-container": "#93000a", "status-warning-border": "#DCD0B0", "primary": "#5c50a1", "on-surface-variant": "#484551", "tertiary-container": "#a2607f", "on-tertiary-fixed": "#390724", "inverse-surface": "#30312d", "on-secondary": "#ffffff", "status-danger-surface": "#FDF6F6", "inverse-on-surface": "#f3f1eb", "secondary": "#005eb4", "background": "#fbf9f4", "aurora-soft-l": "#CFC8EF", "on-tertiary-fixed-variant": "#6d3350", "secondary-container": "#5a9fff", "aurora-pink": "#D98FB0", "aurora-soft-p": "#EEC9D6", "on-secondary-container": "#00356a", "border-muted": "#E8E8E8", "on-surface": "#1b1c19", "surface-container-low": "#f5f3ee", "inverse-primary": "#c8bfff", "tertiary-fixed-dim": "#feb0d2", "surface-dim": "#dcdad5", "ink-disabled": "#A5A5A5", "tertiary-fixed": "#ffd8e7", "surface-tint": "#5f53a4", "surface-variant": "#e4e2dd", "on-primary": "#ffffff", "primary-container": "#7569bc", "ink-tertiary": "#8A8A8A", "surface-secondary": "#FAFAFA", "surface": "#fbf9f4", "secondary-fixed": "#d5e3ff", "status-warning": "#8A6A2A", "status-success-border": "#B0CDB4", "selection-blue": "#2A78D6", "aurora-lavender": "#8F83D8", "surface-primary": "#FFFFFF", "aurora-mid": "#B58FD0", "outline": "#797582", "error": "#ba1a1a", "surface-container-highest": "#e4e2dd", "on-tertiary": "#ffffff", "on-background": "#1b1c19", "surface-tertiary": "#F7F7F5", "surface-container": "#f0eee9", "secondary-fixed-dim": "#a8c8ff", "ink-secondary": "#666666", "status-danger-border": "#C98A8A" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xl": "1.5rem", "space-sm": "0.5rem", "gutter-sm": "0.75rem", "margin-lg": "1.5rem", "gutter": "1rem", "space-md": "1rem", "space-xs": "0.25rem", "margin-sm": "0.875rem", "gutter-lg": "1.5rem", "margin": "1rem", "space-lg": "1.25rem" }, "fontFamily": { "label-lg": ["Inter"], "label-md": ["JetBrains Mono"], "label-sm": ["JetBrains Mono"], "display-xl": ["Epilogue"], "display-xl-mobile": ["Epilogue"], "headline-md": ["Epilogue"], "body-md": ["Inter"], "body-sm": ["Inter"], "body-lg": ["Inter"], "headline-lg": ["Epilogue"], "headline-sm": ["Epilogue"] }, "fontSize": { "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "display-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }] } } } };</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; min-height: 100vh; background-color: #fbf9f4; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style></head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0 flex-1"><img alt="A modern geometric server NAS emblem for VaultBox. Stylized storage vault cube box with subtle network pulse signal lines, rendered with soft lavender and violet aurora accents and crisp ink borders. Clean vector icon, perfectly centered.. Design context: - Primary color: #8f83d8 - Font: epilogue - Mode: light - Roundness: rounded-md . The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XFa-uWEsGJPgdLDzAOo7A0aej7Tu1EA-aPNPuKD3u556Cv3c39haZ4T7BqCw4jnYpkWgsZPjsINsWzOouij-4DG3Cbi7Fgr9mpIxiRwvrmaGL0Ubd-PxA8OW3f9dt74s7O9tkigKcIkulCHst4kr4KWX_9ArAErbPl1DOf4NQqUZu8a_DxX9ouOWO_l0EJy1fRNdFQO8reujt8MlLgs_TNlhLubtUjTytYFPUtxFs10rKncpmO3hpsppQ"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-ink-primary tracking-tight truncate">VaultBox</span><span class="px-space-xs py-[2px] rounded-full bg-surface-primary text-status-success font-label-sm text-label-sm flex items-center gap-1 shadow-[0_0_0_1.5px_#B0CDB4]"><span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>Live</span></div><span class="font-label-sm text-label-sm text-ink-secondary truncate">Settings</span></div></div><div class="flex items-center gap-space-xs shrink-0"><a aria-label="Settings" class="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink-primary hover:bg-surface-container transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[20px]">settings</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-32 px-margin bg-surface"><div class="flex flex-col w-full pb-8">
+<!-- Interactive Form / Modal Container -->
+<div class="w-full flex flex-col gap-space-md">
+<!-- Screen Title Bar & Metadata Header -->
+<div class="flex items-start justify-between gap-space-sm bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-start gap-space-sm min-w-0">
+<a aria-label="Go Back" class="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full bg-surface-container flex items-center justify-center text-ink-primary hover:bg-surface-variant transition-colors" data-path="settings" href="#">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</a>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs flex-wrap">
+<h1 class="font-headline-sm text-headline-sm text-ink-primary">Create API Token</h1>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm">v2.4 Core</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Scoped Programmatic Credential • Section 76</p>
+</div>
+</div>
+<a aria-label="Close dialog" class="w-9 h-9 min-w-[36px] min-h-[36px] rounded-full bg-surface-container hover:bg-surface-variant flex items-center justify-center text-ink-secondary hover:text-ink-primary transition-colors" data-path="settings" href="#">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</a>
+</div>
+<!-- Friendly Server Node Persona Card (Delight Moment) -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
+<div class="absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-gradient-to-br from-aurora-lavender/25 via-aurora-mid/15 to-aurora-pink/25 pointer-events-none blur-xl"></div>
+<div class="flex items-center gap-space-md relative z-10">
+<div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center text-primary shrink-0 shadow-inner">
+<span class="material-symbols-outlined text-[28px]">key</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center gap-1.5">
+<span class="font-label-md text-label-md text-ink-primary font-semibold">Node Security Dispatcher</span>
+<span class="w-2 h-2 rounded-full bg-status-success animate-ping"></span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary line-clamp-2">
+            API tokens allow remote automations, Daemons, and mobile workers to interact with your VaultBox drives without entering passwords.
+          </p>
+</div>
+</div>
+</div>
+<!-- Form Section -->
+<form class="flex flex-col gap-space-md" id="api-token-form" onsubmit="event.preventDefault();">
+<!-- Field 1: Token Name / Label -->
+<div class="flex flex-col gap-space-xs bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<label class="font-headline-sm text-headline-sm text-ink-primary flex items-center justify-between" for="token-name">
+<span>Token Label <span class="text-status-danger">*</span></span>
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase tracking-wider">Unique</span>
+</label>
+<p class="font-body-sm text-body-sm text-ink-secondary mb-1">
+          Give this token a recognizable name describing its client or integration.
+        </p>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-ink-tertiary text-[20px] pointer-events-none">terminal</span>
+<input class="w-full h-12 pl-10 pr-3 rounded-lg bg-surface-container-low text-ink-primary font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary transition-all placeholder:text-ink-disabled" id="token-name" name="token_name" placeholder="e.g., Plex Transcoder or RClone Backup" required="" type="text" value="Lightroom Ingest Bot"/>
+</div>
+<div class="flex items-center gap-1.5 mt-1">
+<span class="material-symbols-outlined text-status-success text-[16px]">check_circle</span>
+<span class="font-label-sm text-label-sm text-status-success">Available identifier in local keyring</span>
+</div>
+</div>
+<!-- Field 2: Expiration Selector -->
+<div class="flex flex-col gap-space-xs bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-center justify-between">
+<label class="font-headline-sm text-headline-sm text-ink-primary">Token Lifetime</label>
+<span class="font-label-sm text-label-sm text-ink-tertiary font-mono" id="selected-lifetime-display">Default: 90 Days</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mb-2">
+          Scheduled expiration prevents forgotten scripts from maintaining persistent filesystem ingress.
+        </p>
+<!-- Segmented pill selector (Scrollable on small viewports) -->
+<div aria-label="Token Lifetime" class="grid grid-cols-2 sm:grid-cols-5 gap-1.5" role="radiogroup">
+<button class="lifetime-btn h-10 px-2 rounded-lg font-label-md text-label-md text-ink-secondary bg-surface-container-low hover:bg-surface-container transition-all flex items-center justify-center" data-val="30d" onclick="setExpiration('30d', '30 Days')" type="button">
+            30 Days
+          </button>
+<button class="lifetime-btn h-10 px-2 rounded-lg font-label-md text-label-md text-ink-secondary bg-surface-container-low hover:bg-surface-container transition-all flex items-center justify-center" data-val="60d" onclick="setExpiration('60d', '60 Days')" type="button">
+            60 Days
+          </button>
+<button class="lifetime-btn active-pill h-10 px-2 rounded-lg font-label-md text-label-md text-ink-primary bg-gradient-to-r from-aurora-lavender/30 to-aurora-pink/30 font-semibold transition-all flex items-center justify-center shadow-xs" data-val="90d" onclick="setExpiration('90d', '90 Days')" type="button">
+            90 Days
+          </button>
+<button class="lifetime-btn h-10 px-2 rounded-lg font-label-md text-label-md text-ink-secondary bg-surface-container-low hover:bg-surface-container transition-all flex items-center justify-center" data-val="1y" onclick="setExpiration('1y', '1 Year')" type="button">
+            1 Year
+          </button>
+<button class="lifetime-btn col-span-2 sm:col-span-1 h-10 px-2 rounded-lg font-label-md text-label-md text-status-warning bg-status-warning-border/20 hover:bg-status-warning-border/40 transition-all flex items-center justify-center gap-1" data-val="never" onclick="setExpiration('never', 'No Expiration')" type="button">
+<span class="material-symbols-outlined text-[14px]">all_inclusive</span> No Exp.
+          </button>
+</div>
+<!-- Expiration warning notice -->
+<div class="mt-2 p-space-sm rounded-lg bg-surface-container-low flex items-start gap-2" id="expiration-notice">
+<span class="material-symbols-outlined text-ink-secondary text-[18px] shrink-0 mt-0.5">info</span>
+<p class="font-body-sm text-body-sm text-ink-secondary">
+            Tokens without expiration should be monitored and revoked when no longer needed.
+          </p>
+</div>
+</div>
+<!-- Field 3: Granular Permission Scopes -->
+<div class="flex flex-col gap-space-md bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-ink-primary">Granular Permission Scopes</h2>
+<p class="font-body-sm text-body-sm text-ink-secondary">Select fine-grained access capabilities for this token.</p>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-selection-soft text-selection-blue font-label-sm text-label-sm font-mono font-semibold" id="scope-counter">3 granted</span>
+</div>
+<!-- Group 1: Storage & Files -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[18px]">folder_special</span>
+<h3 class="font-headline-sm text-headline-sm text-ink-primary">1. Storage &amp; Files</h3>
+</div>
+<span class="font-label-sm text-label-sm text-ink-tertiary">POSIX FS layer</span>
+</div>
+<!-- Scope: files.read -->
+<label class="scope-card relative flex items-start gap-3 p-3 rounded-lg bg-selection-soft cursor-pointer transition-all">
+<input checked="" class="mt-0.5 w-4 h-4 rounded text-primary focus:ring-primary accent-primary" name="scopes" onchange="toggleScopeCard(this)" type="checkbox" value="files.read"/>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-md text-label-md text-ink-primary font-mono font-semibold">files.read</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-ink-secondary font-label-sm text-label-sm">Standard</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Read and list files, inspect metadata, stream media</p>
+</div>
+</label>
+<!-- Scope: files.write -->
+<label class="scope-card relative flex items-start gap-3 p-3 rounded-lg bg-selection-soft cursor-pointer transition-all">
+<input checked="" class="mt-0.5 w-4 h-4 rounded text-primary focus:ring-primary accent-primary" name="scopes" onchange="toggleScopeCard(this)" type="checkbox" value="files.write"/>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-md text-label-md text-ink-primary font-mono font-semibold">files.write</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-ink-secondary font-label-sm text-label-sm">Standard</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Upload, overwrite, move, and modify files</p>
+</div>
+</label>
+<!-- Scope: files.delete -->
+<label class="scope-card relative flex items-start gap-3 p-3 rounded-lg bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all">
+<input class="mt-0.5 w-4 h-4 rounded text-status-warning focus:ring-status-warning accent-status-warning" name="scopes" onchange="toggleScopeCard(this)" type="checkbox" value="files.delete"/>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-md text-label-md text-ink-primary font-mono font-semibold">files.delete</span>
+<span class="px-1.5 py-0.5 rounded bg-status-warning-border/40 text-status-warning font-label-sm text-label-sm font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">warning</span> Caution
+                </span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Move items to Recycle Bin or permanently purge</p>
+</div>
+</label>
+</div>
+<!-- Group 2: Sharing & Public Access -->
+<div class="flex flex-col gap-space-xs pt-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-[18px]">share</span>
+<h3 class="font-headline-sm text-headline-sm text-ink-primary">2. Sharing &amp; Public Access</h3>
+</div>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Web link portal</span>
+</div>
+<!-- Scope: shares.read -->
+<label class="scope-card relative flex items-start gap-3 p-3 rounded-lg bg-selection-soft cursor-pointer transition-all">
+<input checked="" class="mt-0.5 w-4 h-4 rounded text-primary focus:ring-primary accent-primary" name="scopes" onchange="toggleScopeCard(this)" type="checkbox" value="shares.read"/>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-md text-label-md text-ink-primary font-mono font-semibold">shares.read</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-ink-secondary font-label-sm text-label-sm">Auditor</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">List existing shares and inspect link statuses</p>
+</div>
+</label>
+<!-- Scope: shares.write -->
+<label class="scope-card relative flex items-start gap-3 p-3 rounded-lg bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all">
+<input class="mt-0.5 w-4 h-4 rounded text-primary focus:ring-primary accent-primary" name="scopes" onchange="toggleScopeCard(this)" type="checkbox" value="shares.write"/>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-md text-label-md text-ink-primary font-mono font-semibold">shares.write</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-ink-secondary font-label-sm text-label-sm">Publisher</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Generate new public links, QR codes, or upload requests</p>
+</div>
+</label>
+</div>
+<!-- Group 3: Server Administration -->
+<div class="flex flex-col gap-space-xs pt-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-status-danger text-[18px]">admin_panel_settings</span>
+<h3 class="font-headline-sm text-headline-sm text-ink-primary">3. Server Administration</h3>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-status-danger-surface text-status-danger font-label-sm text-label-sm font-semibold">High Privilege</span>
+</div>
+<!-- Scope: server.manage -->
+<label class="scope-card relative flex items-start gap-3 p-3 rounded-lg bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all">
+<input class="mt-0.5 w-4 h-4 rounded text-status-danger focus:ring-status-danger accent-status-danger" name="scopes" onchange="toggleScopeCard(this)" type="checkbox" value="server.manage"/>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between gap-2">
+<span class="font-label-md text-label-md text-status-danger font-mono font-semibold">server.manage</span>
+<span class="material-symbols-outlined text-status-danger text-[16px]">lock_reset</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Start, stop, rebind protocols, and restart server engine</p>
+</div>
+</label>
+</div>
+</div>
+<!-- Field 4: IP / Subnet CIDR Restriction (Optional) -->
+<div class="flex flex-col gap-space-xs bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-center justify-between">
+<label class="font-headline-sm text-headline-sm text-ink-primary flex items-center gap-2" for="cidr-input">
+<span>Allowed Subnet / IP</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary font-normal">(Optional)</span>
+</label>
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-sm text-label-sm text-ink-secondary font-mono">CIDR</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mb-1">
+          Restrict token execution to requests originating from specific local addresses.
+        </p>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-ink-tertiary text-[20px] pointer-events-none">lan</span>
+<input class="w-full h-12 pl-10 pr-3 rounded-lg bg-surface-container-low text-ink-primary font-label-md text-label-md focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary transition-all placeholder:text-ink-disabled font-mono" id="cidr-input" name="cidr_restriction" placeholder="192.168.1.0/24 (LAN only)" type="text" value=""/>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<button class="font-label-sm text-label-sm text-primary hover:underline font-mono" onclick="fillLanCidr('192.168.1.0/24')" type="button">
+            + Quick LAN Subnet (/24)
+          </button>
+<span class="text-ink-disabled font-label-sm text-label-sm">•</span>
+<button class="font-label-sm text-label-sm text-primary hover:underline font-mono" onclick="fillLanCidr('127.0.0.1/32')" type="button">
+            + Localhost only
+          </button>
+</div>
+</div>
+<!-- Delight Micro-Preview: Visual Token Badge -->
+<div class="p-space-md rounded-xl bg-gradient-to-r from-aurora-soft-l/40 via-surface-container-low to-aurora-soft-p/30 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow-xs">
+<span class="material-symbols-outlined text-[20px]">fingerprint</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-ink-secondary uppercase tracking-wider">Payload Signature</span>
+<span class="font-label-md text-label-md text-ink-primary font-mono truncate max-w-[200px]" id="token-slug-preview">vb_live_ingest_bot...</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-ink-tertiary text-[20px]">verified_user</span>
+</div>
+<!-- Action Buttons Container (Sticky Mobile Ergonomics) -->
+<div class="sticky bottom-24 z-30 pt-2 pb-1 bg-gradient-to-t from-surface via-surface/95 to-transparent">
+<div class="flex flex-col sm:flex-row items-center gap-2.5">
+<!-- Primary Aurora Gradient Button -->
+<button class="w-full sm:flex-1 h-12 rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-headline-sm text-headline-sm font-semibold hover:opacity-95 active:scale-[0.98] transition-all shadow-sm flex items-center justify-center gap-2" onclick="generateTokenSuccess()" type="button">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+<span>Generate API Token</span>
+</button>
+<!-- Secondary Outline Button -->
+<a class="w-full sm:w-auto px-6 h-12 rounded-full bg-surface-container-lowest text-ink-primary hover:bg-surface-container font-headline-sm text-headline-sm flex items-center justify-center transition-colors text-center" data-path="settings" href="#">
+            Cancel
+          </a>
+</div>
+</div>
+</form>
+</div>
+<!-- Success Modal Overlay (Hidden initially, triggered on generate) -->
+<div class="fixed inset-0 z-50 bg-ink-primary/40 backdrop-blur-md hidden flex items-center justify-center p-margin" id="success-token-modal">
+<div class="w-full max-w-md bg-surface-container-lowest rounded-xl p-space-lg shadow-2xl flex flex-col gap-space-md animate-in fade-in zoom-in duration-200">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-status-success">
+<span class="material-symbols-outlined text-[24px]">task_alt</span>
+<span class="font-headline-sm text-headline-sm font-semibold">Token Generated</span>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-ink-secondary hover:text-ink-primary" onclick="closeSuccessModal()" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary">
+        Make sure to copy your personal access token now. For your security, it will not be displayed again.
+      </p>
+<div class="flex flex-col gap-1.5">
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase tracking-wider">Bearer Credential</span>
+<div class="flex items-center gap-2 p-2.5 rounded-lg bg-surface-container-low font-mono text-label-md text-ink-primary select-all break-all">
+<span class="truncate flex-1" id="raw-generated-token">vb_live_9f83a48e71c94409bb1047fa58d20389</span>
+<button class="shrink-0 w-8 h-8 rounded bg-surface-container-lowest flex items-center justify-center text-ink-primary hover:bg-surface-variant transition-all shadow-xs" id="copy-btn" onclick="copyTokenToClipboard()" title="Copy Token" type="button">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+</div>
+</div>
+<div class="p-3 rounded-lg bg-status-warning-border/20 flex items-start gap-2">
+<span class="material-symbols-outlined text-status-warning text-[18px] shrink-0 mt-0.5">lock</span>
+<p class="font-body-sm text-body-sm text-status-warning">
+          Saved with 3 authorized scopes for <span class="font-semibold" id="final-token-label">Lightroom Ingest Bot</span>.
+        </p>
+</div>
+<div class="flex justify-end gap-2 pt-2">
+<a class="w-full h-11 rounded-full bg-primary text-on-primary font-headline-sm text-headline-sm flex items-center justify-center font-semibold hover:opacity-95 transition-all" data-path="settings" href="#">
+          Done &amp; Return to Settings
+        </a>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Highlighting settings tab in the navigation dock
+  (function initDockHighlight() {
+    const dockLinks = document.querySelectorAll('nav a');
+    dockLinks.forEach(link => {
+      if (link.getAttribute('data-path') === 'settings') {
+        link.classList.add('text-ink-primary', 'font-semibold');
+        link.classList.remove('text-ink-secondary');
+      }
+    });
+  })();
+
+  // Token lifetime picker state
+  function setExpiration(val, label) {
+    document.querySelectorAll('.lifetime-btn').forEach(btn => {
+      btn.classList.remove('active-pill', 'bg-gradient-to-r', 'from-aurora-lavender/30', 'to-aurora-pink/30', 'font-semibold', 'text-ink-primary');
+      btn.classList.add('text-ink-secondary', 'bg-surface-container-low');
+    });
+
+    const activeBtn = document.querySelector(`[data-val="${val}"]`);
+    if (activeBtn) {
+      activeBtn.classList.remove('text-ink-secondary', 'bg-surface-container-low');
+      activeBtn.classList.add('active-pill', 'bg-gradient-to-r', 'from-aurora-lavender/30', 'to-aurora-pink/30', 'font-semibold', 'text-ink-primary');
+    }
+
+    const display = document.getElementById('selected-lifetime-display');
+    if (display) display.textContent = 'Selected: ' + label;
+
+    const notice = document.getElementById('expiration-notice');
+    if (notice) {
+      if (val === 'never') {
+        notice.classList.remove('bg-surface-container-low');
+        notice.classList.add('bg-status-warning-border/30');
+        notice.querySelector('p').innerHTML = '<strong>Security Alert:</strong> Perpetual tokens do not expire. Revoke proactively if your client secret leaks.';
+      } else {
+        notice.classList.remove('bg-status-warning-border/30');
+        notice.classList.add('bg-surface-container-low');
+        notice.querySelector('p').innerHTML = 'Token will automatically deactivate after ' + label + '. Automatic renewals can be configured.';
+      }
+    }
+  }
+
+  // Scope checkbox micro-interaction
+  function toggleScopeCard(checkbox) {
+    const card = checkbox.closest('.scope-card');
+    if (checkbox.checked) {
+      card.classList.remove('bg-surface-container-low');
+      card.classList.add('bg-selection-soft');
+    } else {
+      card.classList.remove('bg-selection-soft');
+      card.classList.add('bg-surface-container-low');
+    }
+    updateScopeCount();
+  }
+
+  function updateScopeCount() {
+    const checked = document.querySelectorAll('input[name="scopes"]:checked').length;
+    const badge = document.getElementById('scope-counter');
+    if (badge) badge.textContent = checked + (checked === 1 ? ' granted' : ' granted');
+  }
+
+  // Quick helper for CIDR field
+  function fillLanCidr(cidr) {
+    const input = document.getElementById('cidr-input');
+    if (input) {
+      input.value = cidr;
+      input.focus();
+    }
+  }
+
+  // Live slug preview helper
+  const nameInput = document.getElementById('token-name');
+  if (nameInput) {
+    nameInput.addEventListener('input', (e) => {
+      const slug = e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 15);
+      const preview = document.getElementById('token-slug-preview');
+      if (preview) preview.textContent = 'vb_live_' + (slug || 'unnamed') + '...';
+    });
+  }
+
+  // Modal display logic
+  function generateTokenSuccess() {
+    const tokenName = document.getElementById('token-name').value || 'Unnamed Bot';
+    document.getElementById('final-token-label').textContent = tokenName;
+    const modal = document.getElementById('success-token-modal');
+    if (modal) modal.classList.remove('hidden');
+  }
+
+  function closeSuccessModal() {
+    const modal = document.getElementById('success-token-modal');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  function copyTokenToClipboard() {
+    const tokenText = document.getElementById('raw-generated-token').textContent;
+    navigator.clipboard.writeText(tokenText).then(() => {
+      const btn = document.getElementById('copy-btn');
+      btn.innerHTML = '<span class="material-symbols-outlined text-[18px] text-status-success">check</span>';
+      setTimeout(() => {
+        btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">content_copy</span>';
+      }, 1500);
+    });
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe pointer-events-none" data-active-classes="text-ink-primary bg-white/90 shadow-[0_2px_12px_rgba(143,131,216,0.25)] ring-[1.5px] ring-border-strong font-semibold"><div class="px-margin pb-space-sm pt-space-xs flex justify-center"><div class="w-full max-w-md h-[68px] bg-white/80 backdrop-blur-xl rounded-full shadow-[0_4px_20px_rgba(26,26,26,0.06)] ring-[1.5px] ring-border-default/80 p-1.5 flex items-center justify-between pointer-events-auto"><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[22px]">dns</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="file-browser" href="#"><span class="material-symbols-outlined text-[22px]">folder_open</span><span class="font-label-sm text-label-sm mt-0.5">Files</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="share-hub" href="#"><span class="material-symbols-outlined text-[22px]">share</span><span class="font-label-sm text-label-sm mt-0.5">Share</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="activity-monitor" href="#"><span class="material-symbols-outlined text-[22px]">monitoring</span><span class="font-label-sm text-label-sm mt-0.5">Activity</span></a><a aria-current="page" class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full transition-all duration-200 text-ink-primary bg-white/90 shadow-[0_2px_12px_rgba(143,131,216,0.25)] ring-[1.5px] ring-border-strong font-semibold" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-label-sm text-label-sm mt-0.5">Settings</span></a></div></div></nav></body></html>

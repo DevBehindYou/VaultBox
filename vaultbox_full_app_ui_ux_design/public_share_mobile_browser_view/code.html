@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"aurora-lavender":"#8F83D8","error":"#ba1a1a","inverse-surface":"#30312d","secondary-fixed-dim":"#a8c8ff","secondary-fixed":"#d5e3ff","on-tertiary-fixed":"#390724","status-warning":"#8A6A2A","tertiary-fixed-dim":"#feb0d2","on-error-container":"#93000a","surface":"#fbf9f4","aurora-soft-p":"#EEC9D6","status-warning-border":"#DCD0B0","surface-dim":"#dcdad5","ink-secondary":"#666666","tertiary":"#864866","on-secondary":"#ffffff","on-secondary-fixed-variant":"#00468a","on-tertiary":"#ffffff","surface-container-high":"#eae8e3","on-secondary-fixed":"#001b3c","on-primary-fixed-variant":"#473a8a","surface-container":"#f0eee9","surface-primary":"#FFFFFF","on-surface-variant":"#484551","on-primary-fixed":"#1a045e","surface-container-low":"#f5f3ee","primary":"#5c50a1","on-tertiary-fixed-variant":"#6d3350","error-container":"#ffdad6","status-danger-border":"#C98A8A","on-primary-container":"#fffbff","status-success":"#3A7A4A","aurora-mid":"#B58FD0","border-muted":"#E8E8E8","inverse-primary":"#c8bfff","on-secondary-container":"#00356a","outline-variant":"#c9c4d2","on-surface":"#1b1c19","secondary":"#005eb4","primary-fixed":"#e5deff","surface-variant":"#e4e2dd","status-danger":"#A34A4A","primary-container":"#7569bc","surface-tint":"#5f53a4","on-tertiary-container":"#fffbff","outline":"#797582","tertiary-container":"#a2607f","secondary-container":"#5a9fff","aurora-pink":"#D98FB0","border-default":"#DCDCDC","status-danger-surface":"#FDF6F6","aurora-soft-l":"#CFC8EF","ink-primary":"#1A1A1A","surface-tertiary":"#F7F7F5","on-background":"#1b1c19","surface-secondary":"#FAFAFA","inverse-on-surface":"#f3f1eb","surface-container-highest":"#e4e2dd","status-success-border":"#B0CDB4","selection-blue":"#2A78D6","on-error":"#ffffff","ink-disabled":"#A5A5A5","selection-soft":"#EEF3FB","background":"#fbf9f4","border-strong":"#1A1A1A","on-primary":"#ffffff","surface-container-lowest":"#ffffff","tertiary-fixed":"#ffd8e7","surface-bright":"#fbf9f4","ink-tertiary":"#8A8A8A","primary-fixed-dim":"#c8bfff"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-sm":"0.5rem","space-md":"1rem","space-xl":"1.5rem","space-lg":"1.25rem","gutter-lg":"1.5rem","margin":"1rem","margin-lg":"1.5rem","gutter-sm":"0.75rem","margin-sm":"0.875rem","gutter":"1rem","space-xs":"0.25rem"},fontFamily:{"label-sm":["JetBrains Mono"],"body-lg":["Inter"],"display-xl-mobile":["Epilogue"],"headline-md":["Epilogue"],"headline-sm":["Epilogue"],"body-md":["Inter"],"body-sm":["Inter"],"label-lg":["Inter"],"label-md":["JetBrains Mono"],"display-xl":["Epilogue"],"headline-lg":["Epilogue"]},fontSize:{"label-sm":["10px",{lineHeight:"14px",letterSpacing:"0.02em",fontWeight:"500"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"display-xl-mobile":["30px",{lineHeight:"38px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-md":["22px",{lineHeight:"30px",fontWeight:"600"}],"headline-sm":["18px",{lineHeight:"24px",fontWeight:"600"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"label-lg":["14px",{lineHeight:"20px",fontWeight:"500"}],"label-md":["12px",{lineHeight:"16px",fontWeight:"500"}],"display-xl":["36px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"600"}]}}}}</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface-container font-body-md text-on-surface antialiased"><header class="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between"><div class="flex items-center gap-space-md"><img alt="A modern geometric server NAS emblem for VaultBox. Stylized storage vault cube box with subtle network pulse signal lines, rendered with soft lavender and violet aurora accents and crisp ink borders. Clean vector icon, perfectly centered.. Design context: - Primary color: #8f83d8 - Font: epilogue - Mode: light - Roundness: rounded-md . The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XFa-uWEsGJPgdLDzAOo7A0aej7Tu1EA-aPNPuKD3u556Cv3c39haZ4T7BqCw4jnYpkWgsZPjsINsWzOouij-4DG3Cbi7Fgr9mpIxiRwvrmaGL0Ubd-PxA8OW3f9dt74s7O9tkigKcIkulCHst4kr4KWX_9ArAErbPl1DOf4NQqUZu8a_DxX9ouOWO_l0EJy1fRNdFQO8reujt8MlLgs_TNlhLubtUjTytYFPUtxFs10rKncpmO3hpsppQ"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-ink-primary tracking-tight">VaultBox Drop</span><span class="font-label-sm text-label-sm text-ink-tertiary">External Guest Portal</span></div></div><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-primary border-[1.5px] border-status-success-border text-status-success font-label-md text-label-md"><span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span><span>HTTPS Encrypted · Direct Node Link</span></div><div class="hidden md:flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-secondary border-[1.5px] border-border-default text-ink-secondary font-label-md text-label-md font-medium"><span class="text-ink-tertiary">Node:</span><span class="text-ink-primary">vb-alpha-7721</span></div><nav class="flex items-center gap-space-sm" data-active-classes="bg-primary-container text-on-primary-container font-bold rounded-lg"><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors px-space-sm py-1" data-path="shared-vault-download" href="#">Download</a><a aria-current="page" class="transition-colors px-space-sm py-1 bg-primary-container text-on-primary-container font-bold rounded-lg" data-path="guest-upload-drop" href="#">Upload</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors px-space-sm py-1" data-path="link-verification" href="#">Verify</a></nav><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface-container min-h-[calc(100vh-80px)]"><div class="flex flex-col w-full px-4 sm:px-6 max-w-2xl mx-auto pb-16 space-y-4">
+<!-- Mobile Guest Alert Notice -->
+<div class="w-full bg-surface-primary rounded-xl p-3.5 shadow-sm flex items-center justify-between gap-3">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-8 rounded-lg bg-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[18px]">lock_open_right</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm text-ink-primary truncate">Direct Node Transit</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-label-sm bg-selection-soft text-selection-blue">TLS 1.3</span>
+</div>
+<span class="font-body-sm text-body-sm text-ink-secondary truncate">External guest session · Read-only access</span>
+</div>
+</div>
+<div class="flex items-center shrink-0">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-low text-status-success font-label-sm text-label-sm font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>
+        Online
+      </span>
+</div>
+</div>
+<!-- Share Folder Overview Header Card -->
+<div class="w-full bg-surface-primary rounded-xl p-5 shadow-sm flex flex-col space-y-4">
+<!-- Badges Row -->
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="px-2 py-0.5 rounded font-label-sm text-label-sm uppercase bg-surface-container text-ink-primary font-semibold tracking-wider">Shared Folder</span>
+<span class="px-2 py-0.5 rounded font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">file_download</span>
+        Download Permitted
+      </span>
+<span class="px-2 py-0.5 rounded font-label-sm text-label-sm bg-surface-container text-ink-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">bolt</span>
+        Direct Stream
+      </span>
+</div>
+<!-- Title & Author -->
+<div class="flex flex-col space-y-1">
+<div class="flex items-baseline justify-between gap-2">
+<h1 class="font-headline-lg text-headline-lg text-ink-primary tracking-tight">Selects_Final</h1>
+<span class="font-label-md text-label-md text-ink-tertiary shrink-0">rev_3.2</span>
+</div>
+<p class="font-body-md text-body-md text-ink-secondary flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-ink-tertiary">person_outline</span>
+<span>Shared by <strong class="text-ink-primary font-medium">elena_editor</strong></span>
+</p>
+</div>
+<!-- Metadata Chips -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<div class="bg-surface-container-low rounded-lg p-2.5 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">folder_zip</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-ink-tertiary">Payload</span>
+<span class="font-label-md text-label-md text-ink-primary font-semibold">14 items · 1.1 GB</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-2.5 flex items-center gap-2">
+<span class="material-symbols-outlined text-status-warning text-[20px]">timer</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-ink-tertiary">Expiration</span>
+<span class="font-label-md text-label-md text-ink-primary font-semibold">42h (Oct 26, 14:00)</span>
+</div>
+</div>
+</div>
+<!-- Download Quota Bar -->
+<div class="bg-surface-container-low rounded-lg p-3 flex flex-col space-y-1.5">
+<div class="flex justify-between items-center text-ink-secondary font-label-sm text-label-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">data_usage</span>
+          Host Limit Quota
+        </span>
+<span class="text-ink-primary font-semibold">4 of 10 downloads remaining</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink rounded-full" style="width: 40%;"></div>
+</div>
+</div>
+<!-- Primary Action CTA Buttons -->
+<div class="flex flex-col sm:flex-row gap-2.5 pt-1">
+<button class="w-full sm:flex-1 h-12 rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-label-lg text-label-lg font-semibold flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-transform" id="btnDownloadAll">
+<span class="material-symbols-outlined text-[20px]">cloud_download</span>
+<span>Download All (.zip) · 1.1 GB</span>
+</button>
+<button class="w-full sm:w-auto px-5 h-12 rounded-full bg-surface-container text-ink-primary font-label-lg text-label-lg font-semibold flex items-center justify-center gap-2 active:bg-surface-container-high transition-colors" id="btnCopyLink">
+<span class="material-symbols-outlined text-[18px]">link</span>
+<span>Copy Share Link</span>
+</button>
+</div>
+</div>
+<!-- Content Filter, Search & View Controls -->
+<div class="w-full bg-surface-primary rounded-xl p-3 shadow-sm flex flex-col gap-2.5">
+<div class="flex items-center gap-2">
+<div class="flex-1 relative flex items-center">
+<span class="material-symbols-outlined text-ink-tertiary absolute left-3 text-[18px]">search</span>
+<input class="w-full h-10 pl-9 pr-3 rounded-lg bg-surface-container-low font-body-md text-body-md text-ink-primary placeholder:text-ink-tertiary focus:outline-none focus:bg-surface-secondary" id="searchInput" placeholder="Filter 14 files..." type="text"/>
+</div>
+<div class="flex items-center bg-surface-container-low rounded-lg p-1 shrink-0">
+<button class="p-1.5 rounded bg-surface-primary shadow-sm text-ink-primary" id="viewListBtn">
+<span class="material-symbols-outlined text-[18px] block">format_list_bulleted</span>
+</button>
+<button class="p-1.5 rounded text-ink-tertiary hover:text-ink-primary" id="viewGridBtn">
+<span class="material-symbols-outlined text-[18px] block">grid_view</span>
+</button>
+</div>
+</div>
+<!-- Filter Badges -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-1.5 overflow-x-auto py-0.5">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-low text-status-success font-label-sm text-label-sm font-medium shrink-0">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+          SHA-256 Verified
+        </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-ink-secondary font-label-sm text-label-sm shrink-0">
+          RAW/Images (8)
+        </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-ink-secondary font-label-sm text-label-sm shrink-0">
+          Video (2)
+        </span>
+</div>
+<div class="flex items-center gap-1 text-ink-tertiary font-label-sm text-label-sm pl-2 shrink-0">
+<span>Sort:</span>
+<span class="text-ink-primary font-medium">Newest</span>
+</div>
+</div>
+</div>
+<!-- Mobile Media & File List -->
+<div class="flex flex-col space-y-3" id="fileListContainer">
+<!-- Item 1: RAW Image -->
+<div class="w-full bg-surface-primary rounded-xl p-3.5 shadow-sm flex flex-col space-y-3">
+<div class="flex gap-3">
+<div class="w-20 h-20 rounded-lg overflow-hidden bg-surface-container shrink-0 relative">
+<img class="w-full h-full object-cover" data-alt="Breathtaking wide-angle cinematic mountain sunset photograph captured on full-frame camera with rich pink and lavender atmospheric sky lighting reflecting onto jagged alpine peaks. Clean composition, professional color graded master photograph with soft shadows and crisp focal highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVyqSHf-w4VKx23HYIQY-Fs0cpVniflwvCAIugdhLRkXaGAzgyzeh6WZvVwgbO0Ii8unjhvavNj7mgS7_z1ASEGEL0wFgW2EoNqcGtLLLnZzRdlkoj-B0fc-EGOkrGNB6VmGgacFsOFdPnJP5PNaQCnjg6C8ncwDMB5yKwa6rky9btJkzC2G_nhyOeLMhXj-v8NudJXDGGetYrV0G5oyMZYpxshO75hq4QENv2ywYhCJjh1_Qk64eH9g"/>
+<span class="absolute bottom-1 right-1 px-1 rounded bg-inverse-surface/80 text-inverse-on-surface text-[9px] font-label-sm">DNG</span>
+</div>
+<div class="flex flex-col justify-between flex-1 min-w-0">
+<div class="flex flex-col space-y-0.5">
+<div class="flex items-center justify-between gap-1">
+<span class="font-body-md text-body-md font-semibold text-ink-primary truncate">DSC_0982_Master.dng</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-label-sm bg-surface-container-low text-status-success font-medium flex items-center gap-0.5 shrink-0">
+<span class="material-symbols-outlined text-[11px]">check_circle</span>
+                SHA-256
+              </span>
+</div>
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-ink-tertiary">
+<span>42.4 MB</span>
+<span>•</span>
+<span>35mm · ISO 100 · f/2.8</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 pt-1">
+<span class="px-2 py-0.5 rounded font-label-sm text-label-sm bg-surface-container-low text-ink-secondary">Adobe RGB 1998</span>
+<span class="px-2 py-0.5 rounded font-label-sm text-label-sm bg-surface-container-low text-ink-secondary">Lossless</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-1">
+<button class="flex-1 h-9 rounded-lg bg-surface-container text-ink-primary font-label-md text-label-md font-medium flex items-center justify-center gap-1 active:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+          Inspect EXIF
+        </button>
+<button class="flex-1 h-9 rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md font-medium flex items-center justify-center gap-1 active:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[16px]">download</span>
+          Download (42MB)
+        </button>
+</div>
+</div>
+<!-- Item 2: Graded Photo -->
+<div class="w-full bg-surface-primary rounded-xl p-3.5 shadow-sm flex flex-col space-y-3">
+<div class="flex gap-3">
+<div class="w-20 h-20 rounded-lg overflow-hidden bg-surface-container shrink-0 relative">
+<img class="w-full h-full object-cover" data-alt="High-fashion studio editorial portrait with dramatic pastel neon rim lighting in soft aurora lavender and rosy tones. The model looks off-camera with a serene expression, crisp skin texture, and modern cinematic lighting aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSucP24ryEEODKRTSSyjgAAXX-nx2FfA7hAmNBXPJsJ5IRd5OKqdV56I2Xhm3lDrqQMQte_lHaZHLXAnUJAQ8SKegevve8euUZPqFElcci8L-4bIoO6VQ3loH7qPVyRztevU9AHLNWFlyj9lkAGfVDMcDI29b_uDNUirNijaas_rZ9HIEFPtU9_BUQQYrzS_zi-9TSWt4Rul8QyQvt_igzCpsPzcLQYsfw6hfxlucs2O5m6mo41ArbiQ"/>
+<span class="absolute bottom-1 right-1 px-1 rounded bg-inverse-surface/80 text-inverse-on-surface text-[9px] font-label-sm">TIFF</span>
+</div>
+<div class="flex flex-col justify-between flex-1 min-w-0">
+<div class="flex flex-col space-y-0.5">
+<div class="flex items-center justify-between gap-1">
+<span class="font-body-md text-body-md font-semibold text-ink-primary truncate">DSC_0983_Graded.tif</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-label-sm bg-secondary-fixed text-on-secondary-fixed-variant font-medium shrink-0">Color-Synced</span>
+</div>
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-ink-tertiary">
+<span>118.2 MB</span>
+<span>•</span>
+<span>16-bit ProPhoto</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 pt-1">
+<span class="px-2 py-0.5 rounded font-label-sm text-label-sm bg-surface-container-low text-ink-secondary">6000 × 4000 px</span>
+<span class="px-2 py-0.5 rounded font-label-sm text-label-sm bg-surface-container-low text-status-success font-medium">Verified Clean</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-1">
+<button class="w-full h-9 rounded-lg bg-surface-container text-ink-primary font-label-md text-label-md font-medium flex items-center justify-center gap-1.5 active:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[16px]">file_download</span>
+<span>Download Master TIFF (118.2 MB)</span>
+</button>
+</div>
+</div>
+<!-- Item 3: 4K Video Stream -->
+<div class="w-full bg-surface-primary rounded-xl p-3.5 shadow-sm flex flex-col space-y-3">
+<div class="relative w-full h-44 rounded-lg overflow-hidden bg-inverse-surface">
+<img class="w-full h-full object-cover opacity-85" data-alt="Dramatic high-altitude aerial drone perspective sweeping over misty Scandinavian fjords during golden hour twilight, showing reflective water channels with violet and golden ambient light hues. Hyper-detailed filmic landscape shot." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfQcIGDvIvQqGBlnqn5prLcyA9uQlf1k4IPGBzDlKQGhG-rusRwIxvPg2IV3f349ODTh_f6MFnvynu7J67n_zp1fjnxeCE8_N_JmSs8xMDlo7TAGv4jW1CkWW6AT0IU3j99vqHwSFoZLVq82IK1SkHls2DO__ifR5GbGCn672e4TsjIfg1drawkgafvUTcdXtphj8Sst9Whl9eGlK068vmYYuKyhV1HcQzT5ArLFqBEN4JBeIre_4G0Q"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent flex flex-col justify-between p-3">
+<div class="flex justify-between items-start">
+<span class="px-2 py-0.5 rounded bg-inverse-surface/90 text-inverse-on-surface font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-aurora-lavender text-[14px]">bolt</span>
+              Direct Stream Ready
+            </span>
+<span class="px-2 py-0.5 rounded bg-inverse-surface/90 text-inverse-on-surface font-label-sm text-label-sm font-semibold">
+              02:18
+            </span>
+</div>
+<div class="flex items-center justify-center">
+<button class="w-12 h-12 rounded-full bg-surface-primary/95 text-ink-primary shadow-lg flex items-center justify-center pl-0.5 hover:scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[28px] text-primary">play_arrow</span>
+</button>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-inverse-on-surface">3840×2160 · ProRes 422 HQ</span>
+<span class="font-label-sm text-label-sm text-inverse-on-surface font-medium">1.4 GB</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col space-y-1">
+<span class="font-body-md text-body-md font-semibold text-ink-primary">Drone_4K_Reel_04.mp4</span>
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-ink-tertiary">
+<span>60 FPS</span>
+<span>•</span>
+<span>H.265 Transcode Cached on Node</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="h-9 rounded-lg bg-surface-container text-ink-primary font-label-md text-label-md font-medium flex items-center justify-center gap-1 active:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[16px]">play_circle</span>
+          Stream Now
+        </button>
+<button class="h-9 rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md font-medium flex items-center justify-center gap-1 active:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[16px]">download</span>
+          Download File
+        </button>
+</div>
+</div>
+<!-- Item 4: Document PDF -->
+<div class="w-full bg-surface-primary rounded-xl p-3.5 shadow-sm flex items-center justify-between gap-3">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-12 h-12 rounded-lg bg-error-container text-on-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[26px]">picture_as_pdf</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md font-semibold text-ink-primary truncate">Client_Brief_Approved.pdf</span>
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-ink-tertiary">
+<span>4.2 MB</span>
+<span>•</span>
+<span>12 Pages</span>
+</div>
+<span class="font-label-sm text-label-sm text-status-success font-medium flex items-center gap-0.5 mt-0.5">
+<span class="material-symbols-outlined text-[12px]">draw</span>
+            Cryptographically Signed
+          </span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 shrink-0">
+<button class="w-9 h-9 rounded-lg bg-surface-container text-ink-primary flex items-center justify-center active:bg-surface-container-high">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="w-9 h-9 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center active:opacity-90">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+</div>
+<!-- Item 5: Spreadsheet -->
+<div class="w-full bg-surface-primary rounded-xl p-3.5 shadow-sm flex items-center justify-between gap-3">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-12 h-12 rounded-lg bg-status-success-border/30 text-status-success flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[26px]">table_chart</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md font-semibold text-ink-primary truncate">Production_Budget.xlsx</span>
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-ink-tertiary">
+<span>860 KB</span>
+<span>•</span>
+<span>4 Sheets</span>
+</div>
+<span class="font-label-sm text-label-sm text-ink-secondary flex items-center gap-0.5 mt-0.5">
+<span class="material-symbols-outlined text-[12px]">lock</span>
+            Locked Read-Only
+          </span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 shrink-0">
+<button class="h-9 px-3 rounded-lg bg-surface-container text-ink-primary font-label-md text-label-md font-medium flex items-center gap-1 active:bg-surface-container-high">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span>Get</span>
+</button>
+</div>
+</div>
+<!-- Item 6: Audio Stem -->
+<div class="w-full bg-surface-primary rounded-xl p-3.5 shadow-sm flex flex-col space-y-3">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">graphic_eq</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md font-semibold text-ink-primary truncate">Audio_Stems_Stem01.wav</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">88.4 MB · 24-bit 96kHz PCM</span>
+</div>
+</div>
+<button class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]">play_arrow</span>
+</button>
+</div>
+<!-- Audio Waveform Visualization -->
+<div class="w-full bg-surface-container-low rounded-lg p-2.5 flex items-center gap-1 h-12 overflow-hidden">
+<div class="w-1 h-3 rounded-full bg-primary/40"></div>
+<div class="w-1 h-5 rounded-full bg-primary/50"></div>
+<div class="w-1 h-8 rounded-full bg-primary/70"></div>
+<div class="w-1 h-4 rounded-full bg-primary/60"></div>
+<div class="w-1 h-9 rounded-full bg-primary"></div>
+<div class="w-1 h-6 rounded-full bg-primary"></div>
+<div class="w-1 h-10 rounded-full bg-primary"></div>
+<div class="w-1 h-7 rounded-full bg-primary"></div>
+<div class="w-1 h-4 rounded-full bg-primary/70"></div>
+<div class="w-1 h-8 rounded-full bg-primary/80"></div>
+<div class="w-1 h-9 rounded-full bg-primary"></div>
+<div class="w-1 h-6 rounded-full bg-primary/60"></div>
+<div class="w-1 h-3 rounded-full bg-ink-tertiary/40"></div>
+<div class="w-1 h-6 rounded-full bg-ink-tertiary/40"></div>
+<div class="w-1 h-8 rounded-full bg-ink-tertiary/40"></div>
+<div class="w-1 h-4 rounded-full bg-ink-tertiary/40"></div>
+<div class="w-1 h-7 rounded-full bg-ink-tertiary/40"></div>
+<div class="w-1 h-5 rounded-full bg-ink-tertiary/40"></div>
+<div class="w-1 h-9 rounded-full bg-ink-tertiary/40"></div>
+<div class="w-1 h-6 rounded-full bg-ink-tertiary/40"></div>
+<div class="w-1 h-4 rounded-full bg-ink-tertiary/40"></div>
+<div class="w-1 h-8 rounded-full bg-ink-tertiary/40"></div>
+<div class="w-1 h-3 rounded-full bg-ink-tertiary/40"></div>
+<div class="w-1 h-6 rounded-full bg-ink-tertiary/40"></div>
+<div class="w-1 h-5 rounded-full bg-ink-tertiary/40"></div>
+</div>
+<div class="flex items-center justify-between text-ink-tertiary font-label-sm text-label-sm">
+<span>00:44 / 03:12</span>
+<button class="text-primary font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">download</span>
+          Download WAV
+        </button>
+</div>
+</div>
+</div>
+<!-- Trust & Provenance Card -->
+<div class="w-full bg-surface-primary rounded-xl p-4 shadow-sm flex items-start gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center shrink-0 text-primary">
+<span class="material-symbols-outlined text-[20px]">shield</span>
+</div>
+<div class="flex flex-col space-y-1">
+<span class="font-headline-sm text-headline-sm text-ink-primary">Direct Node Provenance</span>
+<p class="font-body-sm text-body-sm text-ink-secondary leading-relaxed">
+        Served directly from private hardware node <code class="font-label-sm text-ink-primary bg-surface-container px-1 py-0.5 rounded">vb-alpha-7721</code> over TLS 1.3 direct stream. Zero-knowledge node transit without intermediary cloud hops.
+      </p>
+</div>
+</div>
+<!-- Mobile Browser Toast Notification (Interactive) -->
+<div class="fixed bottom-6 inset-x-4 max-w-sm mx-auto bg-inverse-surface text-inverse-on-surface rounded-xl p-3.5 shadow-xl flex items-center justify-between gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-50" id="toastNotification">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-aurora-lavender text-[18px]">check_circle</span>
+<span class="font-body-sm text-body-sm" id="toastMessage">Share link copied to clipboard!</span>
+</div>
+<button class="text-inverse-on-surface/70 hover:text-inverse-on-surface" id="toastClose">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+</div>
+<script>
+  (function() {
+    const copyBtn = document.getElementById('btnCopyLink');
+    const toast = document.getElementById('toastNotification');
+    const toastMsg = document.getElementById('toastMessage');
+    const toastClose = document.getElementById('toastClose');
+    const downloadAllBtn = document.getElementById('btnDownloadAll');
+
+    function showToast(text) {
+      if (!toast) return;
+      toastMsg.textContent = text;
+      toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      }, 3500);
+    }
+
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function() {
+        navigator.clipboard?.writeText(window.location.href);
+        showToast('Secure link copied to clipboard');
+      });
+    }
+
+    if (downloadAllBtn) {
+      downloadAllBtn.addEventListener('click', function() {
+        showToast('Archiving 14 files into .zip package...');
+      });
+    }
+
+    if (toastClose) {
+      toastClose.addEventListener('click', function() {
+        toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      });
+    }
+
+    // Search filter interaction demo
+    const searchInput = document.getElementById('searchInput');
+    const fileCards = document.querySelectorAll('#fileListContainer > div');
+    if (searchInput) {
+      searchInput.addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase();
+        fileCards.forEach(card => {
+          const text = card.textContent.toLowerCase();
+          card.style.display = text.includes(query) ? 'flex' : 'none';
+        });
+      });
+    }
+  })();
+</script></main><footer class="w-full bg-surface py-space-xl"><div class="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-space-md text-ink-tertiary font-label-md text-label-md"><div class="flex items-center gap-space-xs"><span>Powered by VaultBox NAS Node</span><span class="text-ink-disabled">•</span><span class="font-label-sm text-label-sm text-ink-secondary">vb-alpha-7721</span></div><div class="flex items-center gap-space-md"><span>Zero-Knowledge Node Transit</span><span class="text-ink-disabled">•</span><span>Expires per Host Policy</span></div></div></footer></body></html>

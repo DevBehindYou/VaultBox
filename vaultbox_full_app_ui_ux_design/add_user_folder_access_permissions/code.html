@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'on-tertiary-container': '#fffbff', 'surface-dim': '#dcdad5', 'aurora-mid': '#B58FD0', 'on-error-container': '#93000a', 'inverse-on-surface': '#f3f1eb', 'aurora-pink': '#D98FB0', 'aurora-soft-p': '#EEC9D6', 'surface-container-high': '#eae8e3', 'primary-fixed-dim': '#c8bfff', 'outline': '#797582', 'ink-tertiary': '#8A8A8A', 'tertiary-container': '#a2607f', 'on-secondary-fixed-variant': '#00468a', 'secondary-container': '#5a9fff', 'status-success': '#3A7A4A', 'on-error': '#ffffff', 'on-secondary-fixed': '#001b3c', 'surface-container-low': '#f5f3ee', 'surface-secondary': '#FAFAFA', 'secondary': '#005eb4', 'on-secondary': '#ffffff', 'on-primary-fixed': '#1a045e', 'ink-primary': '#1A1A1A', 'surface-tertiary': '#F7F7F5', 'on-tertiary-fixed-variant': '#6d3350', 'error-container': '#ffdad6', 'primary-fixed': '#e5deff', 'on-primary-fixed-variant': '#473a8a', 'tertiary-fixed': '#ffd8e7', 'selection-soft': '#EEF3FB', 'aurora-lavender': '#8F83D8', 'tertiary-fixed-dim': '#feb0d2', 'secondary-fixed-dim': '#a8c8ff', 'surface-container': '#f0eee9', 'status-danger': '#A34A4A', 'ink-secondary': '#666666', 'tertiary': '#864866', 'surface-primary': '#FFFFFF', 'secondary-fixed': '#d5e3ff', 'on-surface': '#1b1c19', 'on-primary-container': '#fffbff', 'on-tertiary-fixed': '#390724', 'border-muted': '#E8E8E8', 'surface-bright': '#fbf9f4', 'on-background': '#1b1c19', 'aurora-soft-l': '#CFC8EF', 'on-tertiary': '#ffffff', 'border-default': '#DCDCDC', 'primary-container': '#7569bc', 'ink-disabled': '#A5A5A5', 'surface-container-lowest': '#ffffff', 'status-danger-surface': '#FDF6F6', 'on-secondary-container': '#00356a', 'outline-variant': '#c9c4d2', 'status-danger-border': '#C98A8A', 'inverse-primary': '#c8bfff', 'status-success-border': '#B0CDB4', 'primary': '#5c50a1', 'background': '#fbf9f4', 'selection-blue': '#2A78D6', 'surface-container-highest': '#e4e2dd', 'status-warning': '#8A6A2A', 'surface-tint': '#5f53a4', 'on-primary': '#ffffff', 'error': '#ba1a1a', 'on-surface-variant': '#484551', 'inverse-surface': '#30312d', 'status-warning-border': '#DCD0B0', 'surface-variant': '#e4e2dd', 'border-strong': '#1A1A1A', 'surface': '#fbf9f4' }, borderRadius: { DEFAULT: '0.25rem', lg: '0.5rem', xl: '0.75rem', full: '9999px' }, spacing: { 'space-md': '1rem', 'margin-sm': '0.875rem', 'gutter': '1rem', 'margin': '1rem', 'space-lg': '1.25rem', 'margin-lg': '1.5rem', 'space-xl': '1.5rem', 'gutter-sm': '0.75rem', 'gutter-lg': '1.5rem', 'space-xs': '0.25rem', 'space-sm': '0.5rem' }, fontFamily: { 'label-lg': ['Inter'], 'display-xl': ['Epilogue'], 'body-lg': ['Inter'], 'body-md': ['Inter'], 'headline-md': ['Epilogue'], 'headline-sm': ['Epilogue'], 'display-xl-mobile': ['Epilogue'], 'headline-lg': ['Epilogue'], 'label-md': ['JetBrains Mono'], 'label-sm': ['JetBrains Mono'], 'body-sm': ['Inter'] }, fontSize: { 'label-lg': ['14px', { lineHeight: '20px', fontWeight: '500' }], 'display-xl': ['36px', { lineHeight: '44px', letterSpacing: '-0.02em', fontWeight: '700' }], 'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }], 'body-md': ['14px', { lineHeight: '20px', fontWeight: '400' }], 'headline-md': ['22px', { lineHeight: '30px', fontWeight: '600' }], 'headline-sm': ['18px', { lineHeight: '24px', fontWeight: '600' }], 'display-xl-mobile': ['30px', { lineHeight: '38px', letterSpacing: '-0.02em', fontWeight: '700' }], 'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.01em', fontWeight: '600' }], 'label-md': ['12px', { lineHeight: '16px', fontWeight: '500' }], 'label-sm': ['10px', { lineHeight: '14px', letterSpacing: '0.02em', fontWeight: '500' }], 'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }] } } } };</script><style>@layer base{html,body{width:100%;margin:0;padding:0;}body{overscroll-behavior-y:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style></head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen antialiased"><header class="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl pt-safe shadow-[0_1px_12px_rgba(26,26,26,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="A modern geometric server NAS emblem for VaultBox. Stylized storage vault cube box with subtle network pulse signal lines, rendered with soft lavender and violet aurora accents and crisp ink borders. Clean vector icon, perfectly centered.. Design context: - Primary color: #8f83d8
+- Font: epilogue
+- Mode: light
+- Roundness: rounded-md
+. The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XFa-uWEsGJPgdLDzAOo7A0aej7Tu1EA-aPNPuKD3u556Cv3c39haZ4T7BqCw4jnYpkWgsZPjsINsWzOouij-4DG3Cbi7Fgr9mpIxiRwvrmaGL0Ubd-PxA8OW3f9dt74s7O9tkigKcIkulCHst4kr4KWX_9ArAErbPl1DOf4NQqUZu8a_DxX9ouOWO_l0EJy1fRNdFQO8reujt8MlLgs_TNlhLubtUjTytYFPUtxFs10rKncpmO3hpsppQ"/><div class="flex items-center gap-space-xs min-w-0"><span class="font-headline-sm text-headline-sm text-ink-primary tracking-tight truncate">VaultBox</span><div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-primary text-status-success shadow-[0_0_0_1.5px_#B0CDB4] shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span><span class="font-label-sm text-label-sm">Live</span></div></div></div><div class="flex items-center gap-space-xs shrink-0"><span class="hidden xs:inline-block font-label-md text-label-md text-ink-secondary truncate max-w-[80px]">Shared Shares</span><button aria-label="Quick Actions" class="w-11 h-11 flex items-center justify-center rounded-full text-ink-primary hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">tune</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full px-margin pt-16 pb-36 bg-surface"><div class="flex flex-col w-full gap-space-lg pb-6">
+<!-- Sub-Header & Breadcrumb Bar -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-space-sm min-w-0">
+<button aria-label="Go Back" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-ink-primary hover:bg-surface-container-high transition-transform active:scale-95 shadow-sm shrink-0" type="button">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+<div class="flex flex-col min-w-0">
+<h1 class="font-headline-sm text-headline-sm text-ink-primary tracking-tight truncate">Add User Account</h1>
+<p class="font-body-sm text-body-sm text-ink-secondary truncate">Create credentials for WebDAV &amp; Web Portal</p>
+</div>
+</div>
+<div class="hidden xs:flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-ink-secondary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-aurora-lavender">shield_person</span>
+<span class="font-label-sm text-label-sm">Secured Node</span>
+</div>
+</div>
+<!-- Persona Avatar & Micro-Delight Preview -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
+<div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-gradient-to-br from-aurora-soft-l/40 to-aurora-soft-p/30 blur-2xl pointer-events-none"></div>
+<div class="flex items-center gap-space-md relative z-10">
+<div class="relative w-14 h-14 rounded-full bg-gradient-to-br from-aurora-lavender via-aurora-mid to-aurora-pink p-0.5 shadow-sm shrink-0">
+<img class="w-full h-full object-cover rounded-full bg-surface-container" data-alt="Warm modern portrait illustration of a creative female video editor named Elena with stylish glasses and soft ambient lilac studio backlighting in modern flat editorial style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMeSVwbYbh5WMGvGuSM_BjqI3bfuLteOE58wXpPl-0uOzn6bMDkBCx8ul7Zge-SsCUv5dzvJ8yftJSUJ402lA_I9icYTY_eUEaIdNEmjJEwG9vfFtHaTREatHq7reNFZkKAIMrAfO6oJnPXkFe3h21DuZdkl3nVlPVBUu38N5HRIegmQFo2SjaPdeEiAZ_pyOohJSPawwp-mwalMYyYmjaISHdDTkJ99yqVRm1uLdcvwwfMjs4wq_UZw"/>
+<span class="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-status-success shadow-sm flex items-center justify-center text-[10px] text-on-primary">
+<span class="material-symbols-outlined text-[12px]">check</span>
+</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-ink-primary truncate">elena_editor</span>
+<span class="px-2 py-0.5 rounded-full bg-selection-soft text-selection-blue font-label-sm text-label-sm font-semibold">New Profile</span>
+</div>
+<p class="font-label-sm text-label-sm text-ink-secondary">UID: 1044 • Node: /volumes/aurora-primary</p>
+</div>
+</div>
+</div>
+<!-- Account Credentials Card (Section 56) -->
+<section class="flex flex-col gap-space-md rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-primary">key</span>
+<h2 class="font-headline-sm text-headline-sm text-ink-primary">Authentication Credentials</h2>
+</div>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Passkey Ready</span>
+</div>
+<!-- Username Field -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-lg text-label-lg text-ink-primary flex items-center justify-between" for="username">
+<span>Username</span>
+<span class="font-label-sm text-label-sm text-status-success font-medium">Available</span>
+</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-[18px] text-ink-tertiary pointer-events-none">alternate_email</span>
+<input class="w-full h-12 pl-10 pr-4 rounded-lg bg-surface-container-low text-ink-primary font-body-md text-body-md focus:bg-surface-primary focus:outline-none transition-all" id="username" placeholder="Enter node username" type="text" value="elena_editor"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="font-label-lg text-label-lg text-ink-primary" for="password">Master Secret</label>
+<button class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary font-semibold hover:text-aurora-mid transition-colors" id="btn-generate-pass" type="button">
+<span class="material-symbols-outlined text-[14px]">auto_fix_high</span>
+          Generate Strong
+        </button>
+</div>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-[18px] text-ink-tertiary pointer-events-none">lock</span>
+<input class="w-full h-12 pl-10 pr-20 rounded-lg bg-surface-container-low text-ink-primary font-label-md text-label-md tracking-wider focus:bg-surface-primary focus:outline-none transition-all" id="password-input" type="password" value="VltBox_99#AuroraX"/>
+<button aria-label="Show or hide password" class="absolute right-2 px-2.5 py-1.5 rounded-lg text-ink-secondary hover:text-ink-primary hover:bg-surface-container transition-colors" id="btn-toggle-eye" type="button">
+<span class="material-symbols-outlined text-[18px]" id="eye-icon">visibility</span>
+</button>
+</div>
+<!-- Entropy meter -->
+<div class="flex items-center gap-2 pt-1">
+<div class="flex-1 h-1.5 rounded-full bg-surface-container overflow-hidden flex gap-1">
+<div class="h-full w-1/4 rounded-full bg-status-success"></div>
+<div class="h-full w-1/4 rounded-full bg-status-success"></div>
+<div class="h-full w-1/4 rounded-full bg-status-success"></div>
+<div class="h-full w-1/4 rounded-full bg-status-success"></div>
+</div>
+<span class="font-label-sm text-label-sm text-status-success font-medium">Very High (98 bits)</span>
+</div>
+</div>
+<!-- Confirm Password Field -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-lg text-label-lg text-ink-primary" for="confirm-password">Confirm Master Secret</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-[18px] text-ink-tertiary pointer-events-none">lock_reset</span>
+<input class="w-full h-12 pl-10 pr-4 rounded-lg bg-surface-container-low text-ink-primary font-label-md text-label-md tracking-wider focus:bg-surface-primary focus:outline-none transition-all" id="confirm-password" type="password" value="VltBox_99#AuroraX"/>
+</div>
+</div>
+<!-- Biometric & Public Network Security Toggle -->
+<label class="flex items-start gap-3 p-3 rounded-lg bg-surface-secondary cursor-pointer hover:bg-surface-container-low transition-colors">
+<input checked="" class="mt-0.5 h-4 w-4 rounded accent-primary text-primary focus:ring-0" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-ink-primary font-medium">Require 2FA on public Wi-Fi</span>
+<span class="font-body-sm text-body-sm text-ink-secondary">Prompts TOTP or hardware FIDO2 key when client IP is outside local subnet 192.168.1.0/24</span>
+</div>
+</label>
+</section>
+<!-- Role Selection (Section 56) -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-headline-sm text-headline-sm text-ink-primary">Select System Role</h2>
+<span class="font-label-sm text-label-sm text-ink-secondary">Scope Tier 2</span>
+</div>
+<div class="grid grid-cols-1 gap-2.5">
+<!-- 1. Administrator -->
+<label class="relative flex items-start gap-3 p-3.5 rounded-xl bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-colors shadow-sm">
+<input class="mt-1 h-4 w-4 accent-primary" name="user_role" type="radio" value="admin"/>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-ink-primary font-semibold">Administrator</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">UID 0-1000</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Full root access, daemon control, snapshot management, and system logs.</p>
+</div>
+</label>
+<!-- 2. Read & Write (SELECTED) -->
+<label class="relative flex items-start gap-3 p-3.5 rounded-xl bg-selection-soft cursor-pointer transition-all shadow-sm">
+<input checked="" class="mt-1 h-4 w-4 accent-selection-blue" name="user_role" type="radio" value="read_write"/>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-ink-primary font-semibold flex items-center gap-1.5">
+              Read &amp; Write
+              <span class="w-2 h-2 rounded-full bg-selection-blue"></span>
+</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-primary font-label-sm text-label-sm text-selection-blue font-semibold shadow-sm">Active Choice</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Can upload, download, move, tag, and organize files inside granted directories.</p>
+</div>
+</label>
+<!-- 3. Read Only -->
+<label class="relative flex items-start gap-3 p-3.5 rounded-xl bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-colors shadow-sm">
+<input class="mt-1 h-4 w-4 accent-primary" name="user_role" type="radio" value="read_only"/>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-ink-primary font-semibold">Read Only</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Safe Guest</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Can stream, view, and download files. Cannot delete or overwrite anything.</p>
+</div>
+</label>
+<!-- 4. Upload Only -->
+<label class="relative flex items-start gap-3 p-3.5 rounded-xl bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-colors shadow-sm">
+<input class="mt-1 h-4 w-4 accent-primary" name="user_role" type="radio" value="upload_only"/>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-ink-primary font-semibold">Upload Only</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Blind Drop</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Can drop files into assigned folders only; cannot view or download existing contents.</p>
+</div>
+</label>
+</div>
+</section>
+<!-- Storage Scope & Folder Access Section (Section 56) -->
+<section class="flex flex-col gap-space-md rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-aurora-lavender">folder_supervised</span>
+<h2 class="font-headline-sm text-headline-sm text-ink-primary">Storage Scope &amp; Folders</h2>
+</div>
+<span class="font-label-sm text-label-sm text-ink-tertiary">2 Selected</span>
+</div>
+<!-- Radio choice: Pools vs Folders -->
+<div class="grid grid-cols-2 gap-2 p-1 rounded-xl bg-surface-container-low">
+<label class="flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-ink-secondary hover:text-ink-primary cursor-pointer text-center transition-all">
+<input class="sr-only" name="scope_type" type="radio" value="all_pools"/>
+<span class="material-symbols-outlined text-[18px]">storage</span>
+<span class="font-label-md text-label-md">All Pools</span>
+</label>
+<label class="flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-surface-primary text-ink-primary shadow-sm cursor-pointer text-center transition-all">
+<input checked="" class="sr-only" name="scope_type" type="radio" value="selected_folders"/>
+<span class="material-symbols-outlined text-[18px] text-selection-blue">snippet_folder</span>
+<span class="font-label-md text-label-md font-semibold">Selected Folders</span>
+</label>
+</div>
+<!-- Folder Access Checklist -->
+<div class="flex flex-col gap-2">
+<!-- Folder 1: DCIM -->
+<label class="flex items-center justify-between p-3 rounded-lg bg-surface-secondary hover:bg-selection-soft cursor-pointer transition-colors group">
+<div class="flex items-center gap-3 min-w-0">
+<input checked="" class="h-4 w-4 rounded accent-selection-blue shrink-0" type="checkbox"/>
+<div class="w-8 h-8 rounded-lg bg-aurora-soft-l/50 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md text-ink-primary truncate font-medium">/DCIM/Raw Camera 2026</span>
+<span class="font-label-sm text-label-sm text-ink-secondary">ZFS Dataset • NVMe Pool</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-primary text-status-success font-label-sm text-label-sm font-semibold shrink-0 shadow-sm">Read/Write</span>
+</label>
+<!-- Folder 2: Work Archive -->
+<label class="flex items-center justify-between p-3 rounded-lg bg-surface-secondary hover:bg-selection-soft cursor-pointer transition-colors group">
+<div class="flex items-center gap-3 min-w-0">
+<input checked="" class="h-4 w-4 rounded accent-selection-blue shrink-0" type="checkbox"/>
+<div class="w-8 h-8 rounded-lg bg-secondary-fixed/50 flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[18px]">video_library</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md text-ink-primary truncate font-medium">/Work Archive/2026 Projects</span>
+<span class="font-label-sm text-label-sm text-ink-secondary">RAIDZ2 Volume • 14.8 TB</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-primary text-status-success font-label-sm text-label-sm font-semibold shrink-0 shadow-sm">Read/Write</span>
+</label>
+<!-- Folder 3: Vault Encrypted (Restricted) -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container opacity-60 cursor-not-allowed">
+<div class="flex items-center gap-3 min-w-0">
+<input class="h-4 w-4 rounded text-ink-disabled shrink-0 cursor-not-allowed" disabled="" type="checkbox"/>
+<div class="w-8 h-8 rounded-lg bg-surface-dim flex items-center justify-center text-ink-disabled shrink-0">
+<span class="material-symbols-outlined text-[18px]">lock_clock</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md text-ink-secondary truncate line-through">/Vault (Encrypted)</span>
+<span class="font-label-sm text-label-sm text-ink-disabled">Requires Root GPG Key</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-dim text-ink-secondary font-label-sm text-label-sm font-medium shrink-0">Restricted</span>
+</div>
+<!-- Add Folder Button -->
+<button class="w-full h-11 mt-1 rounded-full bg-surface-container flex items-center justify-center gap-2 text-ink-primary hover:bg-surface-container-high transition-transform active:scale-98 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">add_circle</span>
+<span class="font-label-lg text-label-lg font-medium">+ Add Accessible Folder</span>
+</button>
+</div>
+</section>
+<!-- Storage Quota Limit (Section 56 & 18.1) -->
+<section class="flex flex-col gap-space-md rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-aurora-pink">data_usage</span>
+<h2 class="font-headline-sm text-headline-sm text-ink-primary">Storage Quota Allocation</h2>
+</div>
+<span class="font-label-md text-label-md text-primary font-bold">500 GB</span>
+</div>
+<!-- Visual Bar & Slider -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between font-label-sm text-label-sm text-ink-secondary">
+<span>0 GB (Unlimited)</span>
+<span class="text-status-warning font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">warning</span> Alert at 90% (450 GB)
+        </span>
+<span>2 TB Max</span>
+</div>
+<!-- Linear visual track -->
+<div class="h-3 w-full rounded-full bg-surface-container overflow-hidden relative">
+<div class="h-full w-[25%] rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink shadow-sm"></div>
+</div>
+<input class="w-full accent-primary cursor-pointer mt-1" max="2000" min="50" step="50" type="range" value="500"/>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-secondary">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-ink-secondary">hard_drive</span>
+<span class="font-body-sm text-body-sm text-ink-primary">Hard Quota Action</span>
+</div>
+<span class="font-label-sm text-label-sm text-ink-secondary">Reject writes over 500GB</span>
+</div>
+</section>
+<!-- Protocol Access Permissions (Section 68) -->
+<section class="flex flex-col gap-space-sm rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-secondary">lan</span>
+<h2 class="font-headline-sm text-headline-sm text-ink-primary">Protocol Access</h2>
+</div>
+<span class="font-label-sm text-label-sm text-ink-secondary">Daemons Active</span>
+</div>
+<div class="flex flex-col gap-2.5 pt-1">
+<!-- Web Portal -->
+<label class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low hover:bg-selection-soft cursor-pointer transition-colors">
+<div class="flex items-center gap-3">
+<input checked="" class="h-4 w-4 rounded accent-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-ink-primary font-medium">Web Portal (Browser)</span>
+<span class="font-body-sm text-body-sm text-ink-secondary">HTTPS dashboard on port 8443</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-md bg-selection-soft text-selection-blue font-label-sm text-label-sm font-semibold">HTTPS</span>
+</label>
+<!-- WebDAV -->
+<label class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low hover:bg-selection-soft cursor-pointer transition-colors">
+<div class="flex items-center gap-3">
+<input checked="" class="h-4 w-4 rounded accent-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-ink-primary font-medium">WebDAV (Network Mount)</span>
+<span class="font-body-sm text-body-sm text-ink-secondary">Direct Finder / File Explorer mounting</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-md bg-selection-soft text-selection-blue font-label-sm text-label-sm font-semibold">WEBDAV</span>
+</label>
+<!-- FTPS -->
+<label class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low hover:bg-selection-soft cursor-pointer transition-colors">
+<div class="flex items-center gap-3">
+<input class="h-4 w-4 rounded accent-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-ink-primary font-medium">FTPS (Legacy Compatibility)</span>
+<span class="font-body-sm text-body-sm text-ink-secondary">Secure FTP with TLS over port 990</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-md bg-surface-container text-ink-tertiary font-label-sm text-label-sm">PORT 990</span>
+</label>
+</div>
+</section>
+<!-- Bottom CTA Actions -->
+<div class="flex flex-col gap-2.5 pt-2">
+<!-- Aurora Primary Action Button -->
+<button class="w-full h-12 rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-headline-sm text-headline-sm font-bold flex items-center justify-center gap-2 shadow-md hover:brightness-105 active:scale-95 transition-all" id="btn-create-user" type="button">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+<span>Create User &amp; Generate Credentials</span>
+</button>
+<!-- Outline Cancel Button -->
+<button class="w-full h-11 rounded-full bg-surface-container text-ink-primary font-label-lg text-label-lg font-semibold flex items-center justify-center hover:bg-surface-container-high transition-transform active:scale-98" type="button">
+      Cancel
+    </button>
+</div>
+<!-- Micro-Notification Toast Template for Delight -->
+<div class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-full bg-surface-primary/95 backdrop-blur-md shadow-xl flex items-center gap-2 text-ink-primary" id="toast-delight">
+<span class="material-symbols-outlined text-status-success text-[18px]">verified</span>
+<span class="font-body-sm text-body-sm font-medium" id="toast-msg">Strong passkey generated!</span>
+</div>
+</div>
+<script>
+  (function() {
+    // Show/Hide Password micro-interaction
+    const eyeBtn = document.getElementById('btn-toggle-eye');
+    const passInput = document.getElementById('password-input');
+    const eyeIcon = document.getElementById('eye-icon');
+    const toast = document.getElementById('toast-delight');
+    const toastMsg = document.getElementById('toast-msg');
+
+    function showToast(text) {
+      if (!toast) return;
+      toastMsg.textContent = text;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2600);
+    }
+
+    if (eyeBtn && passInput && eyeIcon) {
+      eyeBtn.addEventListener('click', () => {
+        const isPass = passInput.type === 'password';
+        passInput.type = isPass ? 'text' : 'password';
+        eyeIcon.textContent = isPass ? 'visibility_off' : 'visibility';
+      });
+    }
+
+    // Password generation micro-delight
+    const genBtn = document.getElementById('btn-generate-pass');
+    if (genBtn && passInput) {
+      genBtn.addEventListener('click', () => {
+        const adjectives = ['Aurora', 'ZFS', 'Quantum', 'Hyper', 'Velox', 'Stellar'];
+        const chars = '!@#$%^&*';
+        const randomPass = adjectives[Math.floor(Math.random() * adjectives.length)] + 
+          '_' + Math.floor(100 + Math.random() * 900) + 
+          chars[Math.floor(Math.random() * chars.length)] + 
+          'VaultNode';
+        passInput.value = randomPass;
+        const confirmInput = document.getElementById('confirm-password');
+        if (confirmInput) confirmInput.value = randomPass;
+        showToast('Generated robust 24-character node credential');
+      });
+    }
+
+    // Interactive Submit Simulation
+    const createBtn = document.getElementById('btn-create-user');
+    if (createBtn) {
+      createBtn.addEventListener('click', () => {
+        createBtn.innerHTML = '<span class="material-symbols-outlined text-[20px] animate-spin">progress_activity</span><span>Provisioning Dataset...</span>';
+        setTimeout(() => {
+          createBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">done_all</span><span>User Profile Active!</span>';
+          showToast('Elena editor account successfully provisioned on WebDAV');
+        }, 900);
+      });
+    }
+  })();
+</script></main><div class="fixed bottom-0 inset-x-0 z-50 pointer-events-none pb-safe"><div class="px-margin pb-4 w-full flex justify-center"><nav class="pointer-events-auto h-[74px] w-full max-w-[420px] rounded-full bg-surface-primary/80 backdrop-blur-xl shadow-[0_8px_32px_rgba(26,26,26,0.08),0_0_0_1.5px_#DCDCDC] p-1.5 flex items-center justify-between" data-active-classes="bg-gradient-to-r from-aurora-soft-l to-aurora-soft-p text-ink-primary shadow-[0_0_0_1.5px_#1A1A1A] font-semibold"><a class="flex flex-col items-center justify-center flex-1 h-full rounded-full gap-0.5 text-ink-secondary hover:text-ink-primary transition-all" data-path="dashboard-nodes" href="#"><span class="material-symbols-outlined text-[22px]">dns</span><span class="font-label-sm text-label-sm">Home</span></a><a class="flex flex-col items-center justify-center flex-1 h-full rounded-full gap-0.5 text-ink-secondary hover:text-ink-primary transition-all" data-path="storage-explorer" href="#"><span class="material-symbols-outlined text-[22px]">folder</span><span class="font-label-sm text-label-sm">Files</span></a><a aria-current="page" class="flex flex-col items-center justify-center flex-1 h-full rounded-full gap-0.5 transition-all bg-gradient-to-r from-aurora-soft-l to-aurora-soft-p text-ink-primary shadow-[0_0_0_1.5px_#1A1A1A] font-semibold" data-path="shared-shares" href="#"><span class="material-symbols-outlined text-[22px]">share</span><span class="font-label-sm text-label-sm">Share</span></a><a class="flex flex-col items-center justify-center flex-1 h-full rounded-full gap-0.5 text-ink-secondary hover:text-ink-primary transition-all" data-path="node-activity" href="#"><span class="material-symbols-outlined text-[22px]">swap_vert</span><span class="font-label-sm text-label-sm">Activity</span></a><a class="flex flex-col items-center justify-center flex-1 h-full rounded-full gap-0.5 text-ink-secondary hover:text-ink-primary transition-all" data-path="server-settings" href="#"><span class="material-symbols-outlined text-[22px]">settings</span><span class="font-label-sm text-label-sm">Settings</span></a></nav></div></div></body></html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary-fixed-dim": "#a8c8ff", "ink-disabled": "#A5A5A5", "surface": "#fbf9f4", "primary-container": "#7569bc", "on-error-container": "#93000a", "secondary-fixed": "#d5e3ff", "border-muted": "#E8E8E8", "outline-variant": "#c9c4d2", "aurora-pink": "#D98FB0", "status-warning": "#8A6A2A", "tertiary-fixed": "#ffd8e7", "secondary": "#005eb4", "surface-dim": "#dcdad5", "on-tertiary-fixed": "#390724", "outline": "#797582", "inverse-on-surface": "#f3f1eb", "on-primary-fixed-variant": "#473a8a", "tertiary-container": "#a2607f", "surface-primary": "#FFFFFF", "ink-secondary": "#666666", "inverse-primary": "#c8bfff", "on-primary": "#ffffff", "on-primary-fixed": "#1a045e", "status-success-border": "#B0CDB4", "status-success": "#3A7A4A", "surface-container": "#f0eee9", "error": "#ba1a1a", "surface-container-highest": "#e4e2dd", "status-danger-border": "#C98A8A", "surface-container-lowest": "#ffffff", "on-surface": "#1b1c19", "on-error": "#ffffff", "on-surface-variant": "#484551", "on-background": "#1b1c19", "ink-tertiary": "#8A8A8A", "status-danger": "#A34A4A", "on-secondary-fixed-variant": "#00468a", "on-secondary": "#ffffff", "tertiary-fixed-dim": "#feb0d2", "status-warning-border": "#DCD0B0", "on-secondary-container": "#00356a", "border-default": "#DCDCDC", "background": "#fbf9f4", "aurora-mid": "#B58FD0", "surface-tint": "#5f53a4", "on-primary-container": "#fffbff", "surface-tertiary": "#F7F7F5", "aurora-soft-l": "#CFC8EF", "selection-blue": "#2A78D6", "primary-fixed": "#e5deff", "on-tertiary-container": "#fffbff", "inverse-surface": "#30312d", "primary": "#5c50a1", "aurora-soft-p": "#EEC9D6", "tertiary": "#864866", "on-secondary-fixed": "#001b3c", "secondary-container": "#5a9fff", "border-strong": "#1A1A1A", "on-tertiary": "#ffffff", "surface-variant": "#e4e2dd", "selection-soft": "#EEF3FB", "primary-fixed-dim": "#c8bfff", "status-danger-surface": "#FDF6F6", "on-tertiary-fixed-variant": "#6d3350", "surface-container-high": "#eae8e3", "aurora-lavender": "#8F83D8", "surface-bright": "#fbf9f4", "surface-container-low": "#f5f3ee", "error-container": "#ffdad6", "ink-primary": "#1A1A1A", "surface-secondary": "#FAFAFA" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin": "1rem", "margin-lg": "1.5rem", "gutter-sm": "0.75rem", "space-xl": "1.5rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "margin-sm": "0.875rem", "space-md": "1rem", "gutter-lg": "1.5rem", "gutter": "1rem", "space-lg": "1.25rem" }, fontFamily: { "headline-sm": ["Epilogue"], "headline-md": ["Epilogue"], "label-lg": ["Inter"], "body-sm": ["Inter"], "headline-lg": ["Epilogue"], "label-sm": ["JetBrains Mono"], "body-md": ["Inter"], "display-xl": ["Epilogue"], "body-lg": ["Inter"], "label-md": ["JetBrains Mono"], "display-xl-mobile": ["Epilogue"] }, fontSize: { "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "display-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "display-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }] } } } };</script></head><body class="bg-surface text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="A modern geometric server NAS emblem for VaultBox. Stylized storage vault cube box with subtle network pulse signal lines, rendered with soft lavender and violet aurora accents and crisp ink borders. Clean vector icon, perfectly centered.. Design context: - Primary color: #8f83d8 - Font: epilogue - Mode: light - Roundness: rounded-md . The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XFa-uWEsGJPgdLDzAOo7A0aej7Tu1EA-aPNPuKD3u556Cv3c39haZ4T7BqCw4jnYpkWgsZPjsINsWzOouij-4DG3Cbi7Fgr9mpIxiRwvrmaGL0Ubd-PxA8OW3f9dt74s7O9tkigKcIkulCHst4kr4KWX_9ArAErbPl1DOf4NQqUZu8a_DxX9ouOWO_l0EJy1fRNdFQO8reujt8MlLgs_TNlhLubtUjTytYFPUtxFs10rKncpmO3hpsppQ"/><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-label-sm text-label-sm text-ink-tertiary uppercase tracking-wider">VaultBox</span><span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-status-success-border/30 text-status-success font-label-sm text-label-sm"><span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>Encrypted Store</span></div><h1 class="font-headline-sm text-headline-sm text-ink-primary">Vault</h1></div></div><div class="flex items-center gap-space-sm"><button aria-label="Search" class="w-11 h-11 flex items-center justify-center rounded-full text-ink-primary hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[22px]">search</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-32 bg-surface min-h-screen"><div class="flex flex-col w-full relative min-h-[calc(100vh-4rem)]">
+<!-- Blurred Contextual Background (Simulated Files Storage Explorer) -->
+<div aria-hidden="true" class="absolute inset-0 px-gutter pt-space-md opacity-40 blur-sm pointer-events-none select-none flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-ink-primary">Local Storage</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">/ Document Staging</span>
+</div>
+<div class="h-8 w-20 rounded-full bg-surface-container"></div>
+</div>
+<div class="h-14 rounded-xl bg-surface-primary shadow-sm flex items-center px-space-md justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-ink-secondary">folder</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-ink-primary">Archived Receipts</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">14 items · 182 MB</span>
+</div>
+</div>
+</div>
+<div class="h-14 rounded-xl bg-selection-soft shadow-sm flex items-center px-space-md justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">table_chart</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-ink-primary">Q3_Financial_Audit.xlsx</span>
+<span class="font-label-sm text-label-sm text-selection-blue">Selected for Vault</span>
+</div>
+</div>
+</div>
+<div class="h-14 rounded-xl bg-selection-soft shadow-sm flex items-center px-space-md justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">picture_as_pdf</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-ink-primary">Passport_BioScan_2026.pdf</span>
+<span class="font-label-sm text-label-sm text-selection-blue">Selected for Vault</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal Scrim & Focus Backdrop -->
+<div class="relative z-10 w-full flex flex-col justify-end px-margin pb-space-lg pt-space-xs">
+<!-- Modal Dialog Sheet -->
+<div class="w-full bg-surface-primary rounded-[20px] shadow-[0_12px_36px_-6px_rgba(26,26,26,0.18)] p-space-lg relative overflow-hidden transition-all duration-300">
+<!-- Top Soft Aurora Glow Beam -->
+<div class="absolute -top-16 left-1/2 -translate-x-1/2 w-64 h-32 bg-gradient-to-r from-aurora-lavender/30 via-aurora-mid/25 to-aurora-pink/30 rounded-full blur-2xl pointer-events-none"></div>
+<!-- Handle / Grab Pill -->
+<div class="w-10 h-1 rounded-full bg-surface-container-highest mx-auto mb-space-md"></div>
+<!-- Modal Header -->
+<div class="flex flex-col items-center text-center relative z-10 mb-space-md">
+<!-- Shield Badge with Radial Glow -->
+<div class="relative mb-space-sm flex items-center justify-center">
+<div class="absolute w-14 h-14 rounded-full bg-gradient-to-tr from-aurora-lavender/40 to-aurora-pink/40 blur-md animate-pulse"></div>
+<div class="relative w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-primary text-[26px]" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
+</div>
+</div>
+<h2 class="font-headline-md text-headline-md text-ink-primary tracking-tight">Move to Encrypted Vault</h2>
+<div class="flex items-center justify-center gap-space-xs mt-1">
+<span class="font-body-sm text-body-sm text-ink-secondary">Hardware-backed zero-knowledge store</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-status-success-border/30 text-status-success font-label-sm text-label-sm tracking-wide">
+            AES-256-GCM
+          </span>
+</div>
+</div>
+<!-- Selected Items Summary Card -->
+<div class="bg-surface-secondary rounded-xl p-space-md mb-space-md shadow-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-ink-secondary text-[18px]">inventory_2</span>
+<span class="font-label-lg text-label-lg text-ink-primary font-medium">Selected Files</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary bg-primary-fixed/60 px-2 py-0.5 rounded-full">
+            3 files · 48.6 MB
+          </span>
+</div>
+<!-- Scrollable Files List -->
+<div class="flex flex-col gap-1.5 mt-space-xs max-h-36 overflow-y-auto pr-0.5">
+<!-- Item 1 -->
+<div class="flex items-center justify-between py-1.5 px-space-xs rounded-lg bg-surface-primary shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+<div class="flex items-center gap-space-xs min-w-0">
+<div class="w-7 h-7 rounded-md bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-ink-secondary text-[16px]">table_chart</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-ink-primary truncate">Q3_Financial_Audit.xlsx</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Spreadsheet</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-ink-secondary shrink-0 pl-space-xs">16.8 MB</span>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center justify-between py-1.5 px-space-xs rounded-lg bg-surface-primary shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+<div class="flex items-center gap-space-xs min-w-0">
+<div class="w-7 h-7 rounded-md bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-ink-secondary text-[16px]">picture_as_pdf</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-ink-primary truncate">Passport_BioScan_2026.pdf</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Identity Doc</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-ink-secondary shrink-0 pl-space-xs">8.4 MB</span>
+</div>
+<!-- Item 3 -->
+<div class="flex items-center justify-between py-1.5 px-space-xs rounded-lg bg-surface-primary shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+<div class="flex items-center gap-space-xs min-w-0">
+<div class="w-7 h-7 rounded-md bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-ink-secondary text-[16px]">key</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-ink-primary truncate">Client_Passphrases_Backup.kdbx</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Password Safe</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-ink-secondary shrink-0 pl-space-xs">23.4 MB</span>
+</div>
+</div>
+</div>
+<!-- Target Vault Folder Selector -->
+<div class="bg-surface-container-low rounded-xl p-space-sm mb-space-md flex items-center justify-between">
+<div class="flex items-center gap-space-xs min-w-0">
+<div class="w-8 h-8 rounded-lg bg-surface-primary flex items-center justify-center shrink-0 text-primary">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase">Target Destination</span>
+<span class="font-body-sm text-body-sm text-ink-primary font-medium truncate">Vault / Financial &amp; Identity Records</span>
+</div>
+</div>
+<button class="font-label-sm text-label-sm text-primary hover:text-primary-container shrink-0 px-space-xs py-1 transition-colors" type="button">
+          Change
+        </button>
+</div>
+<!-- Educational & Risk Warning Section -->
+<div class="space-y-space-xs mb-space-md">
+<span class="font-label-sm text-label-sm text-ink-secondary uppercase tracking-wider block">Security Pipeline</span>
+<div class="space-y-2 bg-surface-secondary/70 rounded-xl p-space-sm">
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-status-success text-[16px] mt-0.5">verified_user</span>
+<p class="font-body-sm text-body-sm text-ink-secondary leading-snug">
+              Direct disk-level encryption orchestrated via local Keystore chip.
+            </p>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-status-success text-[16px] mt-0.5">visibility_off</span>
+<p class="font-body-sm text-body-sm text-ink-secondary leading-snug">
+              Metadata obfuscated; hidden from system scanners, gallery, and network shares.
+            </p>
+</div>
+</div>
+</div>
+<!-- Action Toggles -->
+<div class="space-y-space-xs mb-space-md">
+<!-- Toggle 1: Secure Shredding -->
+<label class="flex items-start justify-between gap-space-sm p-space-xs rounded-lg hover:bg-surface-container-low transition cursor-pointer select-none">
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-ink-primary">Shred original plaintext after verification</span>
+<span class="font-body-sm text-body-sm text-ink-tertiary leading-snug mt-0.5">Prevents forensic recovery from unallocated storage cells.</span>
+</div>
+<div class="relative inline-flex items-center shrink-0 mt-0.5">
+<input checked="" class="sr-only peer" id="toggle-shred" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</div>
+</label>
+<!-- Toggle 2: Biometric Requirement -->
+<label class="flex items-start justify-between gap-space-sm p-space-xs rounded-lg hover:bg-surface-container-low transition cursor-pointer select-none">
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-ink-primary">Require biometric lock for export</span>
+<span class="font-body-sm text-body-sm text-ink-tertiary leading-snug mt-0.5">Biometric verification required before viewing.</span>
+</div>
+<div class="relative inline-flex items-center shrink-0 mt-0.5">
+<input class="sr-only peer" id="toggle-auth" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</div>
+</label>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<!-- Primary Aurora Button -->
+<button class="w-full h-12 rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-headline-sm text-headline-sm flex items-center justify-center gap-space-xs shadow-sm active:scale-[0.98] transition-transform" id="btn-encrypt" type="button">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+<span>Encrypt &amp; Move to Vault</span>
+</button>
+<!-- Secondary Cancel Button -->
+<button class="w-full h-11 rounded-full bg-surface-container-low hover:bg-surface-container text-ink-secondary font-label-lg text-label-lg flex items-center justify-center transition-colors" id="btn-cancel" type="button">
+          Cancel
+        </button>
+</div>
+<!-- Bottom Microcopy Notice -->
+<p class="font-label-sm text-label-sm text-ink-tertiary text-center mt-space-sm leading-tight">
+        Vault encrypts raw blocks on disk. Recovery is impossible without your master credential.
+      </p>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    const encryptBtn = document.getElementById('btn-encrypt');
+    const cancelBtn = document.getElementById('btn-cancel');
+
+    if (encryptBtn) {
+      encryptBtn.addEventListener('click', function() {
+        this.innerHTML = `
+          <span class="material-symbols-outlined text-[20px] animate-spin">sync</span>
+          <span>Deriving Keys & Encrypting...</span>
+        `;
+        this.classList.add('opacity-90', 'pointer-events-none');
+        setTimeout(() => {
+          this.innerHTML = `
+            <span class="material-symbols-outlined text-[20px]">check_circle</span>
+            <span>Moved to Safe Vault</span>
+          `;
+          this.classList.remove('bg-gradient-to-r', 'from-aurora-lavender', 'via-aurora-mid', 'to-aurora-pink');
+          this.classList.add('bg-status-success', 'text-on-primary');
+        }, 1400);
+      });
+    }
+
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', function() {
+        window.history.back();
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe pointer-events-none" data-active-classes="text-primary font-bold"><div class="px-margin pb-space-md pt-space-xs pointer-events-auto"><div class="h-[74px] rounded-full bg-surface-primary/85 backdrop-blur-xl shadow-[0_8px_24px_-4px_rgba(26,26,26,0.08)] px-space-sm flex items-center justify-around"><a class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] text-on-surface-variant transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[22px]">home</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] transition-colors text-primary font-bold" data-path="vault" href="#"><span class="material-symbols-outlined text-[22px]">folder_supervised</span><span class="font-label-sm text-label-sm mt-0.5">Files</span></a><a class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] text-on-surface-variant transition-colors" data-path="share-center" href="#"><span class="material-symbols-outlined text-[22px]">share</span><span class="font-label-sm text-label-sm mt-0.5">Share</span></a><a class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] text-on-surface-variant transition-colors" data-path="activity-monitor" href="#"><span class="material-symbols-outlined text-[22px]">monitoring</span><span class="font-label-sm text-label-sm mt-0.5">Activity</span></a><a class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] text-on-surface-variant transition-colors" data-path="node-settings" href="#"><span class="material-symbols-outlined text-[22px]">settings</span><span class="font-label-sm text-label-sm mt-0.5">Settings</span></a></div></div></nav></body></html>

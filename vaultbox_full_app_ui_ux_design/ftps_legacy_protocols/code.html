@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "selection-soft": "#EEF3FB", "status-success": "#3A7A4A", "tertiary": "#864866", "surface-bright": "#fbf9f4", "border-default": "#DCDCDC", "on-primary-fixed-variant": "#473a8a", "error-container": "#ffdad6", "border-strong": "#1A1A1A", "primary-fixed": "#e5deff", "surface-container-high": "#eae8e3", "on-secondary-fixed": "#001b3c", "on-primary-container": "#fffbff", "ink-primary": "#1A1A1A", "on-error": "#ffffff", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#c8bfff", "on-secondary-fixed-variant": "#00468a", "outline-variant": "#c9c4d2", "status-danger": "#A34A4A", "on-tertiary-container": "#fffbff", "on-primary-fixed": "#1a045e", "on-error-container": "#93000a", "status-warning-border": "#DCD0B0", "primary": "#5c50a1", "on-surface-variant": "#484551", "tertiary-container": "#a2607f", "on-tertiary-fixed": "#390724", "inverse-surface": "#30312d", "on-secondary": "#ffffff", "status-danger-surface": "#FDF6F6", "inverse-on-surface": "#f3f1eb", "secondary": "#005eb4", "background": "#fbf9f4", "aurora-soft-l": "#CFC8EF", "on-tertiary-fixed-variant": "#6d3350", "secondary-container": "#5a9fff", "aurora-pink": "#D98FB0", "aurora-soft-p": "#EEC9D6", "on-secondary-container": "#00356a", "border-muted": "#E8E8E8", "on-surface": "#1b1c19", "surface-container-low": "#f5f3ee", "inverse-primary": "#c8bfff", "tertiary-fixed-dim": "#feb0d2", "surface-dim": "#dcdad5", "ink-disabled": "#A5A5A5", "tertiary-fixed": "#ffd8e7", "surface-tint": "#5f53a4", "surface-variant": "#e4e2dd", "on-primary": "#ffffff", "primary-container": "#7569bc", "ink-tertiary": "#8A8A8A", "surface-secondary": "#FAFAFA", "surface": "#fbf9f4", "secondary-fixed": "#d5e3ff", "status-warning": "#8A6A2A", "status-success-border": "#B0CDB4", "selection-blue": "#2A78D6", "aurora-lavender": "#8F83D8", "surface-primary": "#FFFFFF", "aurora-mid": "#B58FD0", "outline": "#797582", "error": "#ba1a1a", "surface-container-highest": "#e4e2dd", "on-tertiary": "#ffffff", "on-background": "#1b1c19", "surface-tertiary": "#F7F7F5", "surface-container": "#f0eee9", "secondary-fixed-dim": "#a8c8ff", "ink-secondary": "#666666", "status-danger-border": "#C98A8A" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xl": "1.5rem", "space-sm": "0.5rem", "gutter-sm": "0.75rem", "margin-lg": "1.5rem", "gutter": "1rem", "space-md": "1rem", "space-xs": "0.25rem", "margin-sm": "0.875rem", "gutter-lg": "1.5rem", "margin": "1rem", "space-lg": "1.25rem" }, "fontFamily": { "label-lg": ["Inter"], "label-md": ["JetBrains Mono"], "label-sm": ["JetBrains Mono"], "display-xl": ["Epilogue"], "display-xl-mobile": ["Epilogue"], "headline-md": ["Epilogue"], "body-md": ["Inter"], "body-sm": ["Inter"], "body-lg": ["Inter"], "headline-lg": ["Epilogue"], "headline-sm": ["Epilogue"] }, "fontSize": { "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "display-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }] } } } };</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; min-height: 100vh; background-color: #fbf9f4; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style></head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0 flex-1"><img alt="A modern geometric server NAS emblem for VaultBox. Stylized storage vault cube box with subtle network pulse signal lines, rendered with soft lavender and violet aurora accents and crisp ink borders. Clean vector icon, perfectly centered.. Design context: - Primary color: #8f83d8 - Font: epilogue - Mode: light - Roundness: rounded-md . The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XFa-uWEsGJPgdLDzAOo7A0aej7Tu1EA-aPNPuKD3u556Cv3c39haZ4T7BqCw4jnYpkWgsZPjsINsWzOouij-4DG3Cbi7Fgr9mpIxiRwvrmaGL0Ubd-PxA8OW3f9dt74s7O9tkigKcIkulCHst4kr4KWX_9ArAErbPl1DOf4NQqUZu8a_DxX9ouOWO_l0EJy1fRNdFQO8reujt8MlLgs_TNlhLubtUjTytYFPUtxFs10rKncpmO3hpsppQ"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-ink-primary tracking-tight truncate">VaultBox</span><span class="px-space-xs py-[2px] rounded-full bg-surface-primary text-status-success font-label-sm text-label-sm flex items-center gap-1 shadow-[0_0_0_1.5px_#B0CDB4]"><span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>Live</span></div><span class="font-label-sm text-label-sm text-ink-secondary truncate">Settings</span></div></div><div class="flex items-center gap-space-xs shrink-0"><a aria-label="Settings" class="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink-primary hover:bg-surface-container transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[20px]">settings</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-32 px-margin bg-surface"><div class="flex flex-col w-full gap-space-md">
+<!-- Top Navigation & Context Breadcrumb -->
+<div class="flex items-center justify-between">
+<a class="inline-flex items-center gap-space-xs text-on-surface-variant hover:text-ink-primary transition-colors py-1 group" data-path="settings" href="#">
+<span class="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
+<span class="font-label-md text-label-md uppercase tracking-wider text-ink-secondary group-hover:text-ink-primary">Protocols &amp; Services</span>
+</a>
+<span class="font-label-sm text-label-sm px-space-xs py-0.5 rounded bg-surface-container text-ink-secondary uppercase tracking-wider">Sec. 71 / 119</span>
+</div>
+<!-- Screen Identity Header -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-sm flex-wrap">
+<h1 class="font-headline-md text-headline-md text-ink-primary font-semibold tracking-tight">FTPS &amp; Legacy Protocols</h1>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-ink-secondary font-label-sm text-label-sm" id="daemonStatusBadge">
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+        FTPS Daemon Stopped
+      </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+      Compatibility mode for hardware mirrorless cameras, network scanners, and legacy backup automations.
+    </p>
+</div>
+<!-- Hero Warning & Compatibility Context Banner -->
+<div class="rounded-xl bg-surface-container-high p-space-md flex flex-col gap-space-sm shadow-sm relative overflow-hidden">
+<div class="flex items-start gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-status-warning shrink-0">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+</div>
+<div class="flex flex-col gap-1 min-w-0 flex-1">
+<span class="font-headline-sm text-headline-sm text-ink-primary">Legacy Compatibility Sandbox</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          FTPS (FTP over Explicit/Implicit TLS) is provided specifically for appliances lacking modern API support (Sony/Canon cameras, Fujitsu scanners, retro terminals). For mobile and workstation file sync, <span class="font-semibold text-ink-primary">WebDAV</span> and <span class="font-semibold text-ink-primary">HTTPS</span> are faster, authenticated, and hardened.
+        </p>
+</div>
+</div>
+<div class="flex items-center gap-space-xs pt-1 text-ink-tertiary">
+<span class="material-symbols-outlined text-[16px]">info</span>
+<span class="font-label-sm text-label-sm">TLS cipher suites enforced: ECDHE-RSA-AES256-GCM-SHA384 minimum.</span>
+</div>
+</div>
+<!-- Section 1: FTPS Server Daemon -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md flex flex-col gap-space-md shadow-sm">
+<div class="flex items-center justify-between pb-2 border-b border-surface-container-high">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">toggle_off</span>
+<span class="font-headline-sm text-headline-sm text-ink-primary">Daemon State &amp; Cryptography</span>
+</div>
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase">vsftpd-vault/3.0.5</span>
+</div>
+<!-- Master Switch -->
+<div class="flex items-center justify-between bg-surface-container-low p-space-sm rounded-lg">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-semibold text-ink-primary">Enable FTPS Service</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Listen for inbound legacy connection handshakes</span>
+</div>
+<button aria-pressed="false" class="w-12 h-7 rounded-full bg-surface-container-highest p-1 transition-colors focus:outline-none relative" id="masterToggle" type="button">
+<span class="block w-5 h-5 rounded-full bg-surface-container-lowest shadow-sm transition-transform duration-200" id="masterToggleDot"></span>
+</button>
+</div>
+<!-- Security Mode Selector -->
+<div class="flex flex-col gap-space-sm">
+<span class="font-label-md text-label-md text-ink-primary font-medium">Cryptographic Handshake Profile</span>
+<!-- Mode A: Explicit FTPS -->
+<label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container cursor-pointer transition-colors">
+<input class="mt-1 text-primary focus:ring-0" name="securityMode" type="radio" value="explicit"/>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-body-md text-body-md font-semibold text-ink-primary">Explicit FTPS (FTPES)</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container/40 text-on-secondary-container font-label-sm text-label-sm font-medium">Standard Port 21</span>
+<span class="px-2 py-0.5 rounded-full bg-status-success-border/30 text-status-success font-label-sm text-label-sm">Best Compatibility</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Initial plaintext negotiation upgraded via <code class="font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded">AUTH TLS</code> command. Universal camera support.</span>
+</div>
+</label>
+<!-- Mode B: Implicit FTPS (Selected default) -->
+<label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-selection-soft cursor-pointer transition-colors shadow-sm">
+<input checked="" class="mt-1 text-primary focus:ring-0" name="securityMode" type="radio" value="implicit"/>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-body-md text-body-md font-semibold text-ink-primary">Implicit FTPS (Direct TLS)</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm font-medium">Port 990</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-fixed-dim/30 text-primary font-label-sm text-label-sm">Secured from Byte 0</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Socket tunnel establishes TLS immediately before payload negotiation. Highest data integrity.</span>
+</div>
+</label>
+<!-- Mode C: Insecure Plain FTP -->
+<label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-status-danger-surface hover:bg-error-container/40 cursor-pointer transition-colors">
+<input class="mt-1 text-status-danger focus:ring-0" name="securityMode" type="radio" value="insecure"/>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-body-md text-body-md font-semibold text-status-danger">Plain FTP (No Encryption)</span>
+<span class="px-2 py-0.5 rounded-full bg-status-danger-border/40 text-status-danger font-label-sm text-label-sm font-medium">Port 2121</span>
+</div>
+<div class="mt-1 inline-flex items-center gap-1 text-status-danger font-label-sm text-label-sm bg-white/70 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+<span>Insecure Legacy Mode — Passwords &amp; data sent plaintext over LAN</span>
+</div>
+</div>
+</label>
+</div>
+</div>
+<!-- Section 2: Port & Passive Range Configuration -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md flex flex-col gap-space-md shadow-sm">
+<div class="flex items-center justify-between pb-2 border-b border-surface-container-high">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">lan</span>
+<span class="font-headline-sm text-headline-sm text-ink-primary">Network Routing &amp; PASV Allocation</span>
+</div>
+<span class="font-label-sm text-label-sm text-status-success font-medium">Dual-Stack IPv4/IPv6</span>
+</div>
+<div class="grid grid-cols-1 gap-space-sm">
+<!-- Command Control Port -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-ink-primary font-medium flex justify-between items-center">
+<span>Command Control Port</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">IANA Registered</span>
+</label>
+<div class="flex items-center bg-surface-container-low rounded-lg px-3 py-2.5">
+<span class="material-symbols-outlined text-ink-secondary text-[18px] mr-2">tag</span>
+<input class="bg-transparent font-label-md text-label-md text-ink-primary focus:outline-none w-full" readonly="" type="text" value="990"/>
+<span class="font-label-sm text-label-sm text-ink-disabled">TCP</span>
+</div>
+</div>
+<!-- Passive Mode Ports -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-ink-primary font-medium flex justify-between items-center">
+<span>Passive (PASV) Port Range</span>
+<span class="font-label-sm text-label-sm text-status-success">50 sockets pool</span>
+</label>
+<div class="flex items-center bg-surface-container-low rounded-lg px-3 py-2.5">
+<span class="material-symbols-outlined text-ink-secondary text-[18px] mr-2">swap_horiz</span>
+<input class="bg-transparent font-label-md text-label-md text-ink-primary focus:outline-none w-full" type="text" value="50000 - 50050"/>
+<span class="font-label-sm text-label-sm text-ink-secondary">Ephemerals</span>
+</div>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Allocates 50 concurrent high-order sockets for hardware multi-shutter burst transfers.</span>
+</div>
+<!-- LAN Bound IP -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-ink-primary font-medium flex justify-between items-center">
+<span>Advertised PASV IP</span>
+<span class="font-label-sm text-label-sm text-secondary font-medium">Auto-detected LAN</span>
+</label>
+<div class="flex items-center bg-surface-container-low rounded-lg px-3 py-2.5">
+<span class="material-symbols-outlined text-ink-secondary text-[18px] mr-2">cell_tower</span>
+<input class="bg-transparent font-label-md text-label-md text-ink-primary focus:outline-none w-full" readonly="" type="text" value="192.168.1.41"/>
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 3: Authentication & Root Chroot -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md flex flex-col gap-space-md shadow-sm">
+<div class="flex items-center justify-between pb-2 border-b border-surface-container-high">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">folder_supervised</span>
+<span class="font-headline-sm text-headline-sm text-ink-primary">Jails &amp; Character Encodings</span>
+</div>
+<span class="font-label-sm text-label-sm text-ink-tertiary">POSIX Access Control</span>
+</div>
+<!-- Chroot Jail -->
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg">
+<div class="flex flex-col pr-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="font-body-md text-body-md font-semibold text-ink-primary">User Chroot Jail</span>
+<span class="material-symbols-outlined text-primary text-[16px]">lock</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Confines FTP clients inside their home directory (`/vault/shares/camera-inbox`). Prevents traversal into host root.</span>
+</div>
+<button class="w-12 h-7 rounded-full bg-primary p-1 transition-colors focus:outline-none relative shrink-0" type="button">
+<span class="block w-5 h-5 rounded-full bg-surface-container-lowest shadow-sm translate-x-5 transition-transform duration-200"></span>
+</button>
+</div>
+<!-- Anonymous FTP (Locked) -->
+<div class="flex items-center justify-between p-space-sm bg-surface-container-high rounded-lg opacity-85">
+<div class="flex flex-col pr-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="font-body-md text-body-md font-semibold text-ink-secondary">Anonymous Guest Access</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-ink-disabled font-label-sm text-label-sm uppercase">Locked</span>
+</div>
+<span class="font-body-sm text-body-sm text-ink-secondary">Disabled by system policy. Only authenticated VaultBox users can establish control sessions.</span>
+</div>
+<button class="w-12 h-7 rounded-full bg-outline-variant p-1 cursor-not-allowed opacity-60 shrink-0" disabled="" type="button">
+<span class="block w-5 h-5 rounded-full bg-surface-container-low shadow-sm"></span>
+</button>
+</div>
+<!-- UTF-8 Filename Encoding -->
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg">
+<div class="flex flex-col pr-space-sm">
+<span class="font-body-md text-body-md font-semibold text-ink-primary">Allow UTF-8 Filename Encoding</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Transliterate non-ASCII Japanese and European camera metadata file paths gracefully.</span>
+</div>
+<button class="w-12 h-7 rounded-full bg-primary p-1 transition-colors focus:outline-none relative shrink-0" type="button">
+<span class="block w-5 h-5 rounded-full bg-surface-container-lowest shadow-sm translate-x-5 transition-transform duration-200"></span>
+</button>
+</div>
+</div>
+<!-- Section 4: Bandwidth & Transfer Throttling -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md flex flex-col gap-space-md shadow-sm">
+<div class="flex items-center justify-between pb-2 border-b border-surface-container-high">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">speed</span>
+<span class="font-headline-sm text-headline-sm text-ink-primary">Bandwidth &amp; Resource Throttling</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-medium">QoS Active</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+<div class="p-space-sm bg-surface-container-low rounded-lg flex flex-col justify-between gap-2">
+<div>
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase">Download Rate per Session</span>
+<p class="font-headline-sm text-headline-sm text-ink-primary font-semibold mt-0.5">LAN Speed</p>
+</div>
+<span class="font-label-sm text-label-sm text-status-success font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">all_inclusive</span>
+          Unlimited hardware burst
+        </span>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-lg flex flex-col justify-between gap-2">
+<div>
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase">Concurrent Connections</span>
+<p class="font-headline-sm text-headline-sm text-ink-primary font-semibold mt-0.5">4 Streams</p>
+</div>
+<span class="font-label-sm text-label-sm text-ink-secondary">Protects RAM &amp; Flash I/O</span>
+</div>
+</div>
+</div>
+<!-- Action Controls -->
+<div class="flex flex-col gap-space-sm pt-2">
+<button class="w-full h-12 rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-headline-sm text-headline-sm font-semibold flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-transform" id="primaryActionBtn" type="button">
+<span class="material-symbols-outlined text-[20px]">power_settings_new</span>
+<span>Enable FTPS Daemon</span>
+</button>
+<button class="w-full h-12 rounded-full bg-surface-container-lowest hover:bg-surface-container text-ink-primary font-headline-sm text-headline-sm font-medium flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-all" id="testBindBtn" type="button">
+<span class="material-symbols-outlined text-[20px] text-primary">sensors</span>
+<span>Test Local Port Binding</span>
+</button>
+</div>
+<!-- Toast Notification Overlay Container -->
+<div class="hidden p-space-sm rounded-lg bg-inverse-surface text-inverse-on-surface items-center justify-between shadow-lg" id="statusToast">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-status-success text-[20px]">check_circle</span>
+<span class="font-body-sm text-body-sm" id="toastMessage">Sockets 990 &amp; 50000-50050 bound to 192.168.1.41.</span>
+</div>
+<button class="text-inverse-on-surface/70 hover:text-inverse-on-surface" onclick="document.getElementById('statusToast').classList.add('hidden')" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<script>
+  (function() {
+    const masterToggle = document.getElementById('masterToggle');
+    const masterToggleDot = document.getElementById('masterToggleDot');
+    const primaryActionBtn = document.getElementById('primaryActionBtn');
+    const testBindBtn = document.getElementById('testBindBtn');
+    const daemonStatusBadge = document.getElementById('daemonStatusBadge');
+    const statusToast = document.getElementById('statusToast');
+    const toastMessage = document.getElementById('toastMessage');
+
+    let isDaemonRunning = false;
+
+    function renderDaemonState() {
+      if (isDaemonRunning) {
+        masterToggle.classList.remove('bg-surface-container-highest');
+        masterToggle.classList.add('bg-primary');
+        masterToggleDot.classList.add('translate-x-5');
+        masterToggle.setAttribute('aria-pressed', 'true');
+
+        daemonStatusBadge.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-status-success-border/30 text-status-success font-label-sm text-label-sm";
+        daemonStatusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-status-success animate-pulse"></span> FTPS Daemon Live';
+
+        primaryActionBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">stop_circle</span><span>Stop FTPS Daemon</span>';
+        primaryActionBtn.classList.remove('from-aurora-lavender', 'via-aurora-mid', 'to-aurora-pink');
+        primaryActionBtn.classList.add('bg-status-danger-surface', 'text-status-danger');
+      } else {
+        masterToggle.classList.add('bg-surface-container-highest');
+        masterToggle.classList.remove('bg-primary');
+        masterToggleDot.classList.remove('translate-x-5');
+        masterToggle.setAttribute('aria-pressed', 'false');
+
+        daemonStatusBadge.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-ink-secondary font-label-sm text-label-sm";
+        daemonStatusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-outline-variant"></span> FTPS Daemon Stopped';
+
+        primaryActionBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">power_settings_new</span><span>Enable FTPS Daemon</span>';
+        primaryActionBtn.classList.remove('bg-status-danger-surface', 'text-status-danger');
+        primaryActionBtn.classList.add('from-aurora-lavender', 'via-aurora-mid', 'to-aurora-pink');
+      }
+    }
+
+    function showToast(msg) {
+      toastMessage.textContent = msg;
+      statusToast.classList.remove('hidden');
+      statusToast.classList.add('flex');
+      setTimeout(() => {
+        statusToast.classList.add('hidden');
+        statusToast.classList.remove('flex');
+      }, 4200);
+    }
+
+    masterToggle.addEventListener('click', () => {
+      isDaemonRunning = !isDaemonRunning;
+      renderDaemonState();
+      showToast(isDaemonRunning ? "FTPS Daemon initialized on implicit port 990." : "FTPS Daemon socket listener released.");
+    });
+
+    primaryActionBtn.addEventListener('click', () => {
+      isDaemonRunning = !isDaemonRunning;
+      renderDaemonState();
+      showToast(isDaemonRunning ? "Implicit FTPS daemon running. Ready for incoming camera handshakes." : "FTPS daemon stopped.");
+    });
+
+    testBindBtn.addEventListener('click', () => {
+      showToast("Port probe passed: 990 & PASV [50000..50050] reachable via 192.168.1.41.");
+    });
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe pointer-events-none" data-active-classes="text-ink-primary bg-white/90 shadow-[0_2px_12px_rgba(143,131,216,0.25)] ring-[1.5px] ring-border-strong font-semibold"><div class="px-margin pb-space-sm pt-space-xs flex justify-center"><div class="w-full max-w-md h-[68px] bg-white/80 backdrop-blur-xl rounded-full shadow-[0_4px_20px_rgba(26,26,26,0.06)] ring-[1.5px] ring-border-default/80 p-1.5 flex items-center justify-between pointer-events-auto"><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[22px]">dns</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="file-browser" href="#"><span class="material-symbols-outlined text-[22px]">folder_open</span><span class="font-label-sm text-label-sm mt-0.5">Files</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="share-hub" href="#"><span class="material-symbols-outlined text-[22px]">share</span><span class="font-label-sm text-label-sm mt-0.5">Share</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="activity-monitor" href="#"><span class="material-symbols-outlined text-[22px]">monitoring</span><span class="font-label-sm text-label-sm mt-0.5">Activity</span></a><a aria-current="page" class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full transition-all duration-200 text-ink-primary bg-white/90 shadow-[0_2px_12px_rgba(143,131,216,0.25)] ring-[1.5px] ring-border-strong font-semibold" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-label-sm text-label-sm mt-0.5">Settings</span></a></div></div></nav></body></html>

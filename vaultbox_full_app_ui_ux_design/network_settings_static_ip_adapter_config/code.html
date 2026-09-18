@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "selection-soft": "#EEF3FB", "status-success": "#3A7A4A", "tertiary": "#864866", "surface-bright": "#fbf9f4", "border-default": "#DCDCDC", "on-primary-fixed-variant": "#473a8a", "error-container": "#ffdad6", "border-strong": "#1A1A1A", "primary-fixed": "#e5deff", "surface-container-high": "#eae8e3", "on-secondary-fixed": "#001b3c", "on-primary-container": "#fffbff", "ink-primary": "#1A1A1A", "on-error": "#ffffff", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#c8bfff", "on-secondary-fixed-variant": "#00468a", "outline-variant": "#c9c4d2", "status-danger": "#A34A4A", "on-tertiary-container": "#fffbff", "on-primary-fixed": "#1a045e", "on-error-container": "#93000a", "status-warning-border": "#DCD0B0", "primary": "#5c50a1", "on-surface-variant": "#484551", "tertiary-container": "#a2607f", "on-tertiary-fixed": "#390724", "inverse-surface": "#30312d", "on-secondary": "#ffffff", "status-danger-surface": "#FDF6F6", "inverse-on-surface": "#f3f1eb", "secondary": "#005eb4", "background": "#fbf9f4", "aurora-soft-l": "#CFC8EF", "on-tertiary-fixed-variant": "#6d3350", "secondary-container": "#5a9fff", "aurora-pink": "#D98FB0", "aurora-soft-p": "#EEC9D6", "on-secondary-container": "#00356a", "border-muted": "#E8E8E8", "on-surface": "#1b1c19", "surface-container-low": "#f5f3ee", "inverse-primary": "#c8bfff", "tertiary-fixed-dim": "#feb0d2", "surface-dim": "#dcdad5", "ink-disabled": "#A5A5A5", "tertiary-fixed": "#ffd8e7", "surface-tint": "#5f53a4", "surface-variant": "#e4e2dd", "on-primary": "#ffffff", "primary-container": "#7569bc", "ink-tertiary": "#8A8A8A", "surface-secondary": "#FAFAFA", "surface": "#fbf9f4", "secondary-fixed": "#d5e3ff", "status-warning": "#8A6A2A", "status-success-border": "#B0CDB4", "selection-blue": "#2A78D6", "aurora-lavender": "#8F83D8", "surface-primary": "#FFFFFF", "aurora-mid": "#B58FD0", "outline": "#797582", "error": "#ba1a1a", "surface-container-highest": "#e4e2dd", "on-tertiary": "#ffffff", "on-background": "#1b1c19", "surface-tertiary": "#F7F7F5", "surface-container": "#f0eee9", "secondary-fixed-dim": "#a8c8ff", "ink-secondary": "#666666", "status-danger-border": "#C98A8A" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xl": "1.5rem", "space-sm": "0.5rem", "gutter-sm": "0.75rem", "margin-lg": "1.5rem", "gutter": "1rem", "space-md": "1rem", "space-xs": "0.25rem", "margin-sm": "0.875rem", "gutter-lg": "1.5rem", "margin": "1rem", "space-lg": "1.25rem" }, "fontFamily": { "label-lg": ["Inter"], "label-md": ["JetBrains Mono"], "label-sm": ["JetBrains Mono"], "display-xl": ["Epilogue"], "display-xl-mobile": ["Epilogue"], "headline-md": ["Epilogue"], "body-md": ["Inter"], "body-sm": ["Inter"], "body-lg": ["Inter"], "headline-lg": ["Epilogue"], "headline-sm": ["Epilogue"] }, "fontSize": { "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "display-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }] } } } };</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; min-height: 100vh; background-color: #fbf9f4; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style></head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0 flex-1"><img alt="A modern geometric server NAS emblem for VaultBox. Stylized storage vault cube box with subtle network pulse signal lines, rendered with soft lavender and violet aurora accents and crisp ink borders. Clean vector icon, perfectly centered.. Design context: - Primary color: #8f83d8 - Font: epilogue - Mode: light - Roundness: rounded-md . The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XFa-uWEsGJPgdLDzAOo7A0aej7Tu1EA-aPNPuKD3u556Cv3c39haZ4T7BqCw4jnYpkWgsZPjsINsWzOouij-4DG3Cbi7Fgr9mpIxiRwvrmaGL0Ubd-PxA8OW3f9dt74s7O9tkigKcIkulCHst4kr4KWX_9ArAErbPl1DOf4NQqUZu8a_DxX9ouOWO_l0EJy1fRNdFQO8reujt8MlLgs_TNlhLubtUjTytYFPUtxFs10rKncpmO3hpsppQ"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-ink-primary tracking-tight truncate">VaultBox</span><span class="px-space-xs py-[2px] rounded-full bg-surface-primary text-status-success font-label-sm text-label-sm flex items-center gap-1 shadow-[0_0_0_1.5px_#B0CDB4]"><span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>Live</span></div><span class="font-label-sm text-label-sm text-ink-secondary truncate">Settings</span></div></div><div class="flex items-center gap-space-xs shrink-0"><a aria-label="Settings" class="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink-primary hover:bg-surface-container transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[20px]">settings</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-32 px-margin bg-surface"><div class="flex flex-col w-full space-y-space-md">
+<!-- Top Navigation & Context Bar -->
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-sm">
+<a aria-label="Return to Settings" class="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl bg-surface-container hover:bg-surface-container-high transition-colors shadow-sm text-ink-primary" data-path="settings" href="#">
+<span class="material-symbols-outlined text-[22px]">arrow_back</span>
+</a>
+<div class="flex flex-col">
+<h1 class="font-headline-sm text-headline-sm text-ink-primary tracking-tight">Static IP &amp; Network Config</h1>
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm text-ink-secondary">
+<span>Interface <code class="text-primary font-label-sm">wlan0</code></span>
+<span>•</span>
+<span class="truncate max-w-[140px]">HomeStudio_5G</span>
+</div>
+</div>
+</div>
+<button class="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl bg-surface-container hover:bg-surface-container-high transition-colors text-ink-secondary" title="Network manual &amp; routing help" type="button">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+</button>
+</div>
+<!-- Hardware Interface Live Status Banner -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container p-space-md shadow-sm">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-lg bg-surface-primary flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[18px]">wifi</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-[15px] leading-tight text-ink-primary">wlan0 (Wi-Fi 6 802.11ax)</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-primary text-status-success font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>
+                540 Mbps
+              </span>
+</div>
+<p class="font-label-sm text-label-sm text-ink-tertiary">Channel 48 · 5.240 GHz · MIMO 2x2</p>
+</div>
+</div>
+<div class="px-2.5 py-1 rounded-md bg-surface-primary shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-status-success text-[14px]">shield</span>
+<span class="font-label-sm text-label-sm text-ink-secondary font-medium">WPA3-SAE</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-surface-container-high">
+<div class="bg-surface-primary/70 rounded-lg p-2 flex flex-col">
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase">Hardware MAC</span>
+<span class="font-label-sm text-label-sm text-ink-primary font-medium tracking-wide">74:83:C2:59:1E:8A</span>
+</div>
+<div class="bg-surface-primary/70 rounded-lg p-2 flex flex-col">
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase">DHCP Lease Expiry</span>
+<span class="font-label-sm text-label-sm text-status-warning font-medium tracking-wide">13h 42m remaining</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Assignment Mode Selector -->
+<div class="bg-surface-primary rounded-xl p-space-md shadow-sm space-y-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-[16px] text-ink-primary">IP Assignment Mode</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Protocol layer IPv4</span>
+</div>
+<div class="grid grid-cols-1 gap-2.5" id="ip-mode-group">
+<!-- DHCP Option (Inactive) -->
+<label class="group relative flex items-start gap-3 p-3 rounded-lg bg-surface-container-low hover:bg-surface-container transition-all cursor-pointer">
+<input class="mt-1 text-primary focus:ring-0 w-4 h-4 cursor-pointer accent-primary" name="ip-mode" type="radio" value="dhcp"/>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-[15px] text-ink-primary">DHCP (Dynamic)</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Current: 192.168.1.41</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Leased automatically by local wireless router or upstream DHCP pool.</p>
+</div>
+</label>
+<!-- Static Option (Selected) -->
+<label class="group relative flex items-start gap-3 p-3 rounded-lg bg-selection-soft transition-all cursor-pointer shadow-sm">
+<input checked="" class="mt-1 text-primary focus:ring-0 w-4 h-4 cursor-pointer accent-primary" name="ip-mode" type="radio" value="static"/>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-[15px] text-ink-primary">Static IP (Manual)</span>
+<span class="px-1.5 py-0.5 rounded bg-primary text-on-primary font-label-sm text-label-sm tracking-wider uppercase">Active</span>
+</div>
+<span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Lock internal IP endpoint so file shares, WebDAV, and media hubs stay reachable on router restart.</p>
+</div>
+</label>
+</div>
+</div>
+<!-- IPv4 Static Addressing Configuration Card -->
+<div class="bg-surface-primary rounded-xl p-space-md shadow-sm space-y-space-md">
+<div class="flex items-center justify-between pb-1 border-b border-surface-container">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">lan</span>
+<h2 class="font-headline-sm text-[16px] text-ink-primary">IPv4 Network Parameters</h2>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-container font-label-sm text-label-sm text-ink-secondary">Subnet /24</span>
+</div>
+<div class="space-y-space-sm">
+<!-- Host IP Field -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="font-label-lg text-label-sm text-ink-primary font-medium flex items-center gap-1">
+            Host Static IP Address
+            <span class="text-error">*</span>
+</label>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-status-success/10 text-status-success font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[12px]">verified</span>
+            Available (No ARP conflict)
+          </span>
+</div>
+<div class="relative flex items-center">
+<span class="absolute left-3 font-label-md text-label-md text-ink-tertiary">IPv4</span>
+<input class="w-full h-12 pl-14 pr-10 rounded-lg bg-surface-container-low font-label-md text-label-md text-ink-primary focus:bg-surface-primary focus:outline-none transition-all" spellcheck="false" type="text" value="192.168.1.150"/>
+<button class="absolute right-2 p-1.5 text-ink-tertiary hover:text-ink-primary transition-colors" onclick="navigator.clipboard.writeText('192.168.1.150')" title="Copy Host Address" type="button">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-ink-tertiary mt-1">Suggested range on HomeStudio_5G: <code class="font-label-sm text-label-sm">192.168.1.120 - .200</code></p>
+</div>
+<!-- Subnet Mask & Gateway Split -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+<div>
+<label class="font-label-lg text-label-sm text-ink-primary font-medium block mb-1.5">Subnet Mask &amp; CIDR</label>
+<div class="relative flex items-center">
+<input class="w-full h-12 px-3 rounded-lg bg-surface-container-low font-label-md text-label-md text-ink-primary focus:bg-surface-primary focus:outline-none transition-all" spellcheck="false" type="text" value="255.255.255.0"/>
+<span class="absolute right-3 px-1.5 py-0.5 rounded bg-surface-container text-ink-secondary font-label-sm text-label-sm">/24</span>
+</div>
+</div>
+<div>
+<label class="font-label-lg text-label-sm text-ink-primary font-medium block mb-1.5">Default Gateway</label>
+<div class="relative flex items-center">
+<input class="w-full h-12 px-3 rounded-lg bg-surface-container-low font-label-md text-label-md text-ink-primary focus:bg-surface-primary focus:outline-none transition-all" spellcheck="false" type="text" value="192.168.1.1"/>
+<span class="absolute right-3 font-label-sm text-label-sm text-ink-tertiary">Router</span>
+</div>
+</div>
+</div>
+<!-- DNS Pair -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+<div>
+<label class="font-label-lg text-label-sm text-ink-primary font-medium block mb-1.5">Primary Resolver (DNS 1)</label>
+<div class="relative flex items-center">
+<input class="w-full h-12 px-3 rounded-lg bg-surface-container-low font-label-md text-label-md text-ink-primary focus:bg-surface-primary focus:outline-none transition-all" spellcheck="false" type="text" value="1.1.1.1"/>
+<span class="absolute right-3 font-label-sm text-label-sm text-primary">Cloudflare</span>
+</div>
+</div>
+<div>
+<label class="font-label-lg text-label-sm text-ink-primary font-medium block mb-1.5">Fallback Resolver (DNS 2)</label>
+<div class="relative flex items-center">
+<input class="w-full h-12 px-3 rounded-lg bg-surface-container-low font-label-md text-label-md text-ink-primary focus:bg-surface-primary focus:outline-none transition-all" spellcheck="false" type="text" value="192.168.1.1"/>
+<span class="absolute right-3 font-label-sm text-label-sm text-ink-tertiary">Local AP</span>
+</div>
+</div>
+</div>
+<!-- Static Host Reservation via mDNS Toggle -->
+<div class="pt-2 border-t border-surface-container">
+<label class="flex items-center justify-between cursor-pointer py-1">
+<div class="flex flex-col pr-4">
+<span class="font-label-lg text-body-md text-ink-primary font-medium">Broadcast Static Host via mDNS / Zeroconf</span>
+<span class="font-body-sm text-body-sm text-ink-secondary">Binds <code class="font-label-sm text-label-sm text-primary">vaultbox.local</code> persistently to this host address for instant discovery.</span>
+</div>
+<div class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- IPv6 Settings Card (Collapsible / Expandable) -->
+<div class="bg-surface-primary rounded-xl p-space-md shadow-sm space-y-space-sm" id="ipv6-card">
+<div class="flex items-center justify-between cursor-pointer" onclick="document.getElementById('ipv6-body').classList.toggle('hidden'); document.getElementById('ipv6-chevron').classList.toggle('rotate-180')">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-ink-secondary text-[20px]">public</span>
+<div>
+<h2 class="font-headline-sm text-[16px] text-ink-primary">IPv6 Dual-Stack Addressing</h2>
+<p class="font-label-sm text-label-sm text-ink-tertiary">SLAAC &amp; Unique Local Address (ULA)</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-full bg-status-success/10 text-status-success font-label-sm text-label-sm">Active</span>
+<span class="material-symbols-outlined text-ink-secondary text-[20px] transition-transform duration-200" id="ipv6-chevron">expand_more</span>
+</div>
+</div>
+<div class="space-y-space-sm pt-2 border-t border-surface-container" id="ipv6-body">
+<!-- SLAAC Toggle -->
+<label class="flex items-center justify-between cursor-pointer py-1">
+<div class="flex flex-col pr-4">
+<span class="font-body-md text-body-md text-ink-primary font-medium">Automatic SLAAC Routing</span>
+<span class="font-body-sm text-body-sm text-ink-secondary">Obtain global unicast routing prefix from router advertisement (RA).</span>
+</div>
+<div class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</div>
+</label>
+<!-- Link Local Address Display -->
+<div class="bg-surface-container-low rounded-lg p-3 space-y-1">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase">Link-Local Address (fe80::/64)</span>
+<button class="text-primary hover:text-primary-container font-label-sm text-label-sm flex items-center gap-0.5" onclick="navigator.clipboard.writeText('fe80::9a2b:81ff:fe34:d79/64')" type="button">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+            Copy
+          </button>
+</div>
+<div class="font-label-sm text-label-sm text-ink-primary break-all">
+          fe80::9a2b:81ff:fe34:d79/64
+        </div>
+</div>
+<!-- Static ULA Toggle -->
+<label class="flex items-center justify-between cursor-pointer py-1">
+<div class="flex flex-col pr-4">
+<span class="font-body-md text-body-md text-ink-primary font-medium">Assign Unique Local IPv6 (fd00::/8)</span>
+<span class="font-body-sm text-body-sm text-ink-tertiary">Deterministic mesh address across local site VPN nodes.</span>
+</div>
+<div class="relative inline-flex items-center cursor-pointer shrink-0">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</div>
+</label>
+</div>
+</div>
+<!-- Diagnostic & Conflict Safeguard Banner -->
+<div class="rounded-xl bg-surface-container-high p-space-md shadow-sm space-y-2">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-status-warning text-[22px] shrink-0 mt-0.5">info</span>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-[15px] text-ink-primary">Pre-flight ARP Verification Passed</span>
+<span class="inline-flex items-center px-1.5 py-0.2 rounded bg-status-success/15 text-status-success font-label-sm text-label-sm">0 Conflicts</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary leading-relaxed">
+          Broadcast probing confirmed that <code class="font-label-sm text-label-sm text-ink-primary bg-surface-primary px-1 rounded">192.168.1.150</code> is currently vacant on local collision domains.
+        </p>
+<p class="font-body-sm text-body-sm text-ink-tertiary pt-1 border-t border-surface-container leading-relaxed">
+<strong>Socket Notice:</strong> Committing static routing restarts listener Daemons (SMB3, WebDAV, SSH). Active network sync bursts will pause momentarily for ~1.2s.
+        </p>
+</div>
+</div>
+</div>
+<!-- Primary & Secondary Actions -->
+<div class="flex flex-col gap-2.5 pt-space-xs pb-6">
+<!-- Aurora Primary Gradient Button -->
+<button class="w-full h-12 px-6 rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-headline-sm text-[15px] flex items-center justify-center gap-2 shadow-md hover:opacity-95 active:scale-[0.98] transition-all" id="apply-btn" onclick="applySettings(this)" type="button">
+<span class="material-symbols-outlined text-[20px]">sync</span>
+<span>Apply Static IP &amp; Rebind Sockets</span>
+</button>
+<div class="grid grid-cols-2 gap-2">
+<button class="h-11 px-4 rounded-full bg-surface-primary hover:bg-surface-container text-ink-primary font-body-md text-body-sm flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px]">network_ping</span>
+<span>Ping Gateway</span>
+</button>
+<button class="h-11 px-4 rounded-full bg-surface-primary hover:bg-surface-container text-ink-secondary hover:text-ink-primary font-body-md text-body-sm flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px]">restart_alt</span>
+<span>Revert to DHCP</span>
+</button>
+</div>
+</div>
+<!-- Toast / Notification container -->
+<div class="fixed top-20 left-1/2 -translate-x-1/2 w-[90%] max-w-sm px-4 py-3 rounded-xl bg-inverse-surface text-inverse-on-surface shadow-xl flex items-center gap-3 transition-all duration-300 opacity-0 pointer-events-none translate-y-[-10px] z-50" id="status-toast">
+<span class="material-symbols-outlined text-status-success text-[20px]">task_alt</span>
+<span class="font-body-sm text-body-sm flex-1" id="toast-text">IP configured successfully. Sockets rebound.</span>
+</div>
+</div>
+<script>
+  function applySettings(btn) {
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined text-[20px] animate-spin">refresh</span><span>Rebinding Interfaces...</span>';
+    
+    setTimeout(() => {
+      btn.innerHTML = '<span class="material-symbols-outlined text-[20px]">check</span><span>Applied &amp; Synchronized!</span>';
+      
+      const toast = document.getElementById('status-toast');
+      toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-[-10px]');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-[-10px]');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }, 2500);
+    }, 1400);
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe pointer-events-none" data-active-classes="text-ink-primary bg-white/90 shadow-[0_2px_12px_rgba(143,131,216,0.25)] ring-[1.5px] ring-border-strong font-semibold"><div class="px-margin pb-space-sm pt-space-xs flex justify-center"><div class="w-full max-w-md h-[68px] bg-white/80 backdrop-blur-xl rounded-full shadow-[0_4px_20px_rgba(26,26,26,0.06)] ring-[1.5px] ring-border-default/80 p-1.5 flex items-center justify-between pointer-events-auto"><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[22px]">dns</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="file-browser" href="#"><span class="material-symbols-outlined text-[22px]">folder_open</span><span class="font-label-sm text-label-sm mt-0.5">Files</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="share-hub" href="#"><span class="material-symbols-outlined text-[22px]">share</span><span class="font-label-sm text-label-sm mt-0.5">Share</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="activity-monitor" href="#"><span class="material-symbols-outlined text-[22px]">monitoring</span><span class="font-label-sm text-label-sm mt-0.5">Activity</span></a><a aria-current="page" class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full transition-all duration-200 text-ink-primary bg-white/90 shadow-[0_2px_12px_rgba(143,131,216,0.25)] ring-[1.5px] ring-border-strong font-semibold" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-label-sm text-label-sm mt-0.5">Settings</span></a></div></div></nav></body></html>

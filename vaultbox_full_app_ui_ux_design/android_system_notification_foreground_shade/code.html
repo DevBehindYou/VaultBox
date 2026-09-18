@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><title>VaultBox</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#fbf9f4;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "status-warning-border": "#DCD0B0", "on-primary-fixed": "#1a045e", "inverse-primary": "#c8bfff", "on-secondary": "#ffffff", "inverse-surface": "#30312d", "status-danger-surface": "#FDF6F6", "error-container": "#ffdad6", "secondary-container": "#5a9fff", "outline": "#797582", "ink-tertiary": "#8A8A8A", "aurora-soft-l": "#CFC8EF", "surface": "#fbf9f4", "primary-fixed-dim": "#c8bfff", "aurora-lavender": "#8F83D8", "on-tertiary-container": "#fffbff", "surface-container-low": "#f5f3ee", "ink-primary": "#1A1A1A", "secondary": "#005eb4", "on-primary-fixed-variant": "#473a8a", "status-danger-border": "#C98A8A", "on-tertiary": "#ffffff", "border-default": "#DCDCDC", "outline-variant": "#c9c4d2", "on-error": "#ffffff", "selection-soft": "#EEF3FB", "on-primary-container": "#fffbff", "on-surface": "#1b1c19", "status-success-border": "#B0CDB4", "error": "#ba1a1a", "tertiary-fixed-dim": "#feb0d2", "surface-tertiary": "#F7F7F5", "on-tertiary-fixed-variant": "#6d3350", "ink-secondary": "#666666", "surface-tint": "#5f53a4", "border-strong": "#1A1A1A", "background": "#fbf9f4", "border-muted": "#E8E8E8", "tertiary-fixed": "#ffd8e7", "on-secondary-fixed-variant": "#00468a", "ink-disabled": "#A5A5A5", "on-surface-variant": "#484551", "selection-blue": "#2A78D6", "tertiary": "#864866", "primary-container": "#7569bc", "surface-variant": "#e4e2dd", "surface-primary": "#FFFFFF", "surface-container-high": "#eae8e3", "inverse-on-surface": "#f3f1eb", "surface-container-highest": "#e4e2dd", "aurora-pink": "#D98FB0", "surface-container-lowest": "#ffffff", "aurora-mid": "#B58FD0", "surface-secondary": "#FAFAFA", "status-success": "#3A7A4A", "on-error-container": "#93000a", "on-tertiary-fixed": "#390724", "status-danger": "A34A4A", "aurora-soft-p": "#EEC9D6", "on-secondary-container": "#00356a", "status-warning": "#8A6A2A", "primary-fixed": "#e5deff", "on-secondary-fixed": "#001b3c", "on-background": "#1b1c19", "tertiary-container": "#a2607f", "surface-dim": "#dcdad5", "primary": "#5c50a1", "surface-bright": "#fbf9f4", "secondary-fixed-dim": "#a8c8ff", "surface-container": "#f0eee9", "on-primary": "#ffffff", "secondary-fixed": "#d5e3ff" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "gutter-lg": "1.5rem", "margin-lg": "1.5rem", "gutter": "1rem", "space-lg": "1.25rem", "space-xl": "1.5rem", "space-md": "1rem", "margin": "1rem", "space-sm": "0.5rem", "gutter-sm": "0.75rem", "margin-sm": "0.875rem", "space-xs": "0.25rem" }, fontFamily: { "label-lg": ["Inter"], "body-lg": ["Inter"], "headline-lg": ["Epilogue"], "headline-md": ["Epilogue"], "headline-sm": ["Epilogue"], "display-xl-mobile": ["Epilogue"], "body-md": ["Inter"], "label-md": ["JetBrains Mono"], "display-xl": ["Epilogue"], "label-sm": ["JetBrains Mono"], "body-sm": ["Inter"] }, fontSize: { "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "display-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "display-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }] } } } }</script></head><body class="bg-surface text-on-surface font-body-md text-body-md antialiased min-h-screen flex flex-col"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0 flex-shrink"><img alt="A modern geometric server NAS emblem for VaultBox. Stylized storage vault cube box with subtle network pulse signal lines, rendered with soft lavender and violet aurora accents and crisp ink borders. Clean vector icon, perfectly centered.. Design context: - Primary color: #8f83d8 - Font: epilogue - Mode: light - Roundness: rounded-md . The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XFa-uWEsGJPgdLDzAOo7A0aej7Tu1EA-aPNPuKD3u556Cv3c39haZ4T7BqCw4jnYpkWgsZPjsINsWzOouij-4DG3Cbi7Fgr9mpIxiRwvrmaGL0Ubd-PxA8OW3f9dt74s7O9tkigKcIkulCHst4kr4KWX_9ArAErbPl1DOf4NQqUZu8a_DxX9ouOWO_l0EJy1fRNdFQO8reujt8MlLgs_TNlhLubtUjTytYFPUtxFs10rKncpmO3hpsppQ"/><div class="flex flex-col truncate"><span class="font-headline-sm text-headline-sm tracking-tight text-ink-primary truncate">VaultBox</span><span class="font-label-sm text-label-sm text-ink-tertiary truncate uppercase tracking-wider">Node Activity</span></div></div><div class="flex items-center gap-space-sm flex-shrink-0"><div class="h-7 px-2.5 rounded-full bg-surface-primary flex items-center gap-1.5 shadow-[0_1px_4px_rgba(0,0,0,0.04)]"><span class="w-2 h-2 rounded-full bg-status-success animate-pulse"></span><span class="font-label-sm text-label-sm text-status-success">LIVE</span></div><a aria-label="Settings" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-ink-primary hover:bg-surface-secondary transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[20px]">tune</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 shadow-[0_2px_6px_rgba(92,80,161,0.25)]"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-28 bg-surface"><div class="flex flex-col w-full relative select-none">
+<!-- Frosted Dashboard Preview Layer in Background -->
+<div aria-hidden="true" class="absolute inset-0 pointer-events-none opacity-25 filter blur-[3px] overflow-hidden flex flex-col gap-space-md px-margin pt-space-xs">
+<div class="h-28 w-full rounded-xl bg-surface-container-high shadow-sm p-4 flex flex-col justify-between">
+<div class="h-4 w-32 bg-outline-variant rounded-full"></div>
+<div class="h-8 w-48 bg-primary/20 rounded-lg"></div>
+<div class="h-3 w-full bg-outline-variant rounded-full"></div>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<div class="h-24 rounded-lg bg-surface-container shadow-sm p-3">
+<div class="h-3 w-16 bg-outline-variant rounded-full mb-2"></div>
+<div class="h-6 w-20 bg-ink-primary/20 rounded"></div>
+</div>
+<div class="h-24 rounded-lg bg-surface-container shadow-sm p-3">
+<div class="h-3 w-16 bg-outline-variant rounded-full mb-2"></div>
+<div class="h-6 w-20 bg-ink-primary/20 rounded"></div>
+</div>
+</div>
+<div class="h-36 rounded-xl bg-surface-container shadow-sm p-4">
+<div class="h-4 w-40 bg-outline-variant rounded-full mb-4"></div>
+<div class="space-y-2">
+<div class="h-3 w-full bg-surface-variant rounded"></div>
+<div class="h-3 w-4/5 bg-surface-variant rounded"></div>
+<div class="h-3 w-2/3 bg-surface-variant rounded"></div>
+</div>
+</div>
+</div>
+<!-- Android System Notification Pulldown Shade Overlay -->
+<div class="relative z-10 w-full flex flex-col min-w-0">
+<!-- Android OS 14/15 Ambient Status Bar Shelf -->
+<div class="w-full px-margin py-2 flex items-center justify-between text-ink-primary">
+<!-- Left: Clock & Server Indicator Glyphs -->
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md tracking-tight font-semibold">14:48</span>
+<div class="flex items-center gap-1 pl-1">
+<!-- Active VaultBox Micro Glyph -->
+<div class="w-4 h-4 rounded bg-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-on-primary text-[11px]">dns</span>
+</div>
+<!-- Tiny Socket Sync Micro Indicator -->
+<span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>
+</div>
+</div>
+<!-- Right: OS Telemetry (5G, Wi-Fi 6, Battery) -->
+<div class="flex items-center gap-2 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[15px] text-ink-secondary">wifi</span>
+<span class="font-label-sm text-[11px] font-semibold text-ink-primary">5G</span>
+<div class="flex items-center gap-1 bg-surface-container-high px-1.5 py-0.5 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-[13px] text-status-success">battery_charging_80</span>
+<span class="font-label-sm text-[10px] font-semibold text-ink-primary">88%</span>
+</div>
+</div>
+</div>
+<!-- Quick Settings Drag Handle & Date Header -->
+<div class="px-margin pt-1 pb-2 flex items-center justify-between text-ink-tertiary">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-ink-primary">Thursday</span>
+<span class="font-label-md text-label-md text-ink-secondary mt-0.5">Oct 24</span>
+</div>
+<div class="flex items-center gap-1.5">
+<button aria-label="Quick Settings Toggle" class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-ink-primary shadow-sm active:scale-95 transition-transform" id="silence-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+</button>
+<button aria-label="Clear dismissed notices" class="px-2.5 h-8 rounded-full bg-surface-container-high flex items-center text-ink-primary shadow-sm active:scale-95 transition-transform" id="clear-all-btn" type="button">
+<span class="font-label-sm text-label-sm">Clear</span>
+</button>
+</div>
+</div>
+<!-- Primary Shade Stream Container -->
+<div class="px-margin flex flex-col gap-space-md pb-6">
+<!-- SECTION 98/99: Ongoing Foreground Server Service Notification Card -->
+<article class="w-full rounded-xl bg-surface-container-lowest shadow-md overflow-hidden flex flex-col transition-all duration-200">
+<!-- Subdued Aurora Edge Rim Accent -->
+<div class="h-1 w-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink"></div>
+<!-- Notification Tray Identity Header -->
+<div class="p-3.5 pb-2 flex items-center justify-between">
+<div class="flex items-center gap-2 min-w-0">
+<!-- App Icon with Pill Badge -->
+<div class="w-6 h-6 rounded-lg bg-primary flex items-center justify-center shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-on-primary text-[14px]">dns</span>
+</div>
+<span class="font-label-sm text-label-sm font-semibold text-ink-primary truncate tracking-tight">VaultBox Storage Node</span>
+<span class="text-ink-tertiary text-[10px]">·</span>
+<span class="font-label-sm text-[10px] text-ink-secondary truncate">Foreground Service</span>
+</div>
+<div class="flex items-center gap-1.5 flex-shrink-0">
+<span class="font-label-sm text-[11px] text-ink-tertiary">14m</span>
+<button aria-label="Expand Notification" class="w-6 h-6 rounded-full flex items-center justify-center text-ink-secondary hover:bg-surface-container" type="button">
+<span class="material-symbols-outlined text-[18px]">expand_less</span>
+</button>
+</div>
+</div>
+<!-- Prominent Server State Card Body -->
+<div class="px-3.5 pb-3 flex flex-col gap-3">
+<!-- Server Status & Pulsing State -->
+<div class="flex items-center justify-between bg-surface-container-low rounded-lg p-2.5">
+<div class="flex items-center gap-2">
+<span class="relative flex h-2.5 w-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-success opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-success"></span>
+</span>
+<span class="font-label-md text-label-md text-status-success font-semibold tracking-wide">SERVER LIVE &amp; SERVING</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-selection-soft text-selection-blue">
+<span class="material-symbols-outlined text-[12px]">security</span>
+<span class="font-label-sm text-[10px] font-semibold uppercase tracking-wider">TLS 1.3</span>
+</div>
+</div>
+<!-- Network Endpoint Box -->
+<div class="bg-surface-secondary rounded-lg p-3 flex flex-col gap-2">
+<div class="flex items-center justify-between gap-2">
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-[10px] text-ink-tertiary uppercase tracking-wider">Primary Endpoint (mDNS)</span>
+<span class="font-label-md text-label-md text-selection-blue font-semibold truncate tracking-tight" id="endpoint-url">https://vaultbox.local:8443</span>
+</div>
+<button aria-label="Copy primary endpoint URL" class="px-2.5 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container text-ink-primary font-label-sm text-label-sm flex items-center gap-1 shadow-sm active:scale-95 transition-all flex-shrink-0" id="copy-endpoint-btn" type="button">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span id="copy-btn-label">Copy</span>
+</button>
+</div>
+<!-- LAN Fallback IP Row -->
+<div class="pt-1.5 flex items-center justify-between text-ink-secondary">
+<span class="font-label-sm text-[11px] text-ink-tertiary">Fallback LAN Socket:</span>
+<span class="font-label-sm text-label-sm font-semibold text-ink-primary">192.168.1.41:8443</span>
+</div>
+</div>
+<!-- Real-Time Node Telemetry Grid -->
+<div class="grid grid-cols-3 gap-2">
+<!-- Metric 1: Transfer Throughput -->
+<div class="bg-surface-container-low rounded-lg p-2 flex flex-col">
+<div class="flex items-center gap-1 text-ink-tertiary mb-1">
+<span class="material-symbols-outlined text-[13px] text-aurora-lavender">swap_vert</span>
+<span class="font-label-sm text-[9px] uppercase tracking-wider">Transfers</span>
+</div>
+<span class="font-label-sm text-label-sm font-semibold text-ink-primary truncate">2 Active</span>
+<span class="font-label-sm text-[10px] text-status-success font-semibold">18.4 MB/s</span>
+</div>
+<!-- Metric 2: Connected Clients -->
+<div class="bg-surface-container-low rounded-lg p-2 flex flex-col">
+<div class="flex items-center gap-1 text-ink-tertiary mb-1">
+<span class="material-symbols-outlined text-[13px] text-secondary">devices</span>
+<span class="font-label-sm text-[9px] uppercase tracking-wider">Clients</span>
+</div>
+<span class="font-label-sm text-label-sm font-semibold text-ink-primary truncate">4 Peered</span>
+<span class="font-label-sm text-[10px] text-ink-secondary">SMB &amp; WebDAV</span>
+</div>
+<!-- Metric 3: Storage Reservoir -->
+<div class="bg-surface-container-low rounded-lg p-2 flex flex-col">
+<div class="flex items-center gap-1 text-ink-tertiary mb-1">
+<span class="material-symbols-outlined text-[13px] text-tertiary">hard_drive</span>
+<span class="font-label-sm text-[9px] uppercase tracking-wider">Capacity</span>
+</div>
+<span class="font-label-sm text-label-sm font-semibold text-ink-primary truncate">82.4 GB</span>
+<span class="font-label-sm text-[10px] text-ink-secondary">Free Disk</span>
+</div>
+</div>
+<!-- Micro Transfer Progress Line (Active throughput indicator) -->
+<div class="flex flex-col gap-1 pt-0.5">
+<div class="flex items-center justify-between text-ink-tertiary font-label-sm text-[10px]">
+<span>Syncing internal SSD pool</span>
+<span>Bus: NVMe OTG Gen3</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink rounded-full w-[64%] animate-pulse"></div>
+</div>
+</div>
+<!-- Embedded Quick Notification Action Pills -->
+<div class="pt-2 flex flex-wrap items-center gap-2">
+<!-- Action 1: Graceful Shutdown (Danger action) -->
+<button class="flex-1 min-w-[120px] h-10 px-3 rounded-full bg-status-danger-surface hover:bg-red-100 text-status-danger flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-transform" id="btn-stop-server" type="button">
+<span class="material-symbols-outlined text-[16px]">power_settings_new</span>
+<span class="font-label-sm text-label-sm font-semibold whitespace-nowrap">Stop Node</span>
+</button>
+<!-- Action 2: Copy WebDAV URL -->
+<button class="flex-1 min-w-[120px] h-10 px-3 rounded-full bg-surface-container-high hover:bg-surface-container text-ink-primary flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-transform" id="btn-copy-webdav" type="button">
+<span class="material-symbols-outlined text-[16px]">link</span>
+<span class="font-label-sm text-label-sm font-semibold whitespace-nowrap">WebDAV URL</span>
+</button>
+<!-- Action 3: Open App Dashboard (Aurora Gradient Pill) -->
+<a class="w-full h-11 px-4 rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary flex items-center justify-center gap-2 shadow-sm font-semibold active:scale-[0.98] transition-transform" data-path="home-dashboard" href="#">
+<span class="material-symbols-outlined text-[18px]">space_dashboard</span>
+<span class="font-label-md text-label-md tracking-tight">Open Node Dashboard</span>
+</a>
+</div>
+</div>
+</article>
+<!-- SECONDARY NOTIFICATION 1: Transfer Complete -->
+<article class="w-full rounded-xl bg-surface-container-lowest shadow-sm p-3.5 flex flex-col gap-2.5 transition-all">
+<!-- Notification Header -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-5 h-5 rounded-full bg-status-success-border/40 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-status-success text-[14px]">check_circle</span>
+</div>
+<span class="font-label-sm text-label-sm font-semibold text-ink-primary">Batch Transfer Complete</span>
+</div>
+<span class="font-label-sm text-[11px] text-ink-tertiary">2m ago</span>
+</div>
+<!-- Body Content -->
+<p class="font-body-sm text-body-sm text-ink-secondary leading-relaxed pl-7">
+<span class="font-semibold text-ink-primary">Studio_Shoot_Selects.zip</span> (3.8 GB) downloaded by <span class="font-label-sm text-[11px] text-ink-primary font-medium">MacBook Pro 16"</span>. Checksum SHA-256 verified.
+        </p>
+<!-- Secondary Inline Action -->
+<div class="pl-7 pt-0.5 flex items-center gap-3">
+<button class="font-label-sm text-label-sm text-selection-blue font-semibold hover:underline" type="button">Inspect Audit Log</button>
+<span class="text-ink-tertiary text-[10px]">·</span>
+<button class="font-label-sm text-label-sm text-ink-secondary hover:text-ink-primary" type="button">Dismiss</button>
+</div>
+</article>
+<!-- SECONDARY NOTIFICATION 2: Android System WakeLock Safeguard -->
+<article class="w-full rounded-xl bg-surface-container-lowest shadow-sm p-3.5 flex flex-col gap-2 transition-all">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-5 h-5 rounded-full bg-selection-soft flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-selection-blue text-[14px]">shield_with_heart</span>
+</div>
+<span class="font-label-sm text-label-sm font-semibold text-ink-primary">Foreground WakeLock Active</span>
+</div>
+<span class="font-label-sm text-[10px] uppercase font-semibold text-status-warning bg-status-warning-border/30 px-2 py-0.5 rounded-full">Non-Doze</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary leading-relaxed pl-7">
+          High-performance CPU core pinned for active WebDAV socket. Android Doze sleep bypass active until transfers conclude.
+        </p>
+</article>
+<!-- Quick Dismissal / Android Handle Bottom Bar -->
+<div class="w-full flex flex-col items-center justify-center pt-2">
+<div class="w-12 h-1 rounded-full bg-outline-variant"></div>
+<span class="font-label-sm text-[10px] text-ink-tertiary mt-2">Pull up to close notification shade</span>
+</div>
+</div>
+</div>
+<!-- Interactive Feedback Toast -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-inverse-surface text-inverse-on-surface shadow-xl flex items-center gap-2 pointer-events-none opacity-0 translate-y-3 transition-all duration-300" id="toast-bubble">
+<span class="material-symbols-outlined text-aurora-pink text-[18px]">verified</span>
+<span class="font-label-sm text-label-sm" id="toast-message">Copied to clipboard</span>
+</div>
+</div>
+<script>
+  (function initShadeInteractivity() {
+    const copyEndpointBtn = document.getElementById('copy-endpoint-btn');
+    const copyWebdavBtn = document.getElementById('btn-copy-webdav');
+    const stopServerBtn = document.getElementById('btn-stop-server');
+    const toast = document.getElementById('toast-bubble');
+    const toastMsg = document.getElementById('toast-message');
+
+    let toastTimer = null;
+    function triggerToast(text) {
+      if (!toast || !toastMsg) return;
+      toastMsg.textContent = text;
+      toast.classList.remove('opacity-0', 'translate-y-3');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-3');
+      }, 2200);
+    }
+
+    if (copyEndpointBtn) {
+      copyEndpointBtn.addEventListener('click', () => {
+        navigator.clipboard?.writeText('https://vaultbox.local:8443').catch(() => {});
+        triggerToast('Primary node address copied');
+      });
+    }
+
+    if (copyWebdavBtn) {
+      copyWebdavBtn.addEventListener('click', () => {
+        navigator.clipboard?.writeText('webdav://vaultbox.local:8443/shares').catch(() => {});
+        triggerToast('WebDAV socket URL copied');
+      });
+    }
+
+    if (stopServerBtn) {
+      stopServerBtn.addEventListener('click', () => {
+        const confirmHalt = confirm('Stop VaultBox server? Active client transfers will be safely terminated.');
+        if (confirmHalt) {
+          triggerToast('Broadcasting graceful shutdown signal...');
+        }
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe pointer-events-none" data-active-classes="bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-semibold shadow-[0_2px_10px_rgba(143,131,216,0.3)]"><div class="px-margin pb-space-sm"><div class="pointer-events-auto h-[66px] rounded-full bg-surface-primary/85 backdrop-blur-xl shadow-[0_8px_30px_rgba(26,26,26,0.08)] flex items-center justify-around px-space-xs"><a class="flex flex-col items-center justify-center min-w-[54px] h-[52px] px-2 rounded-full text-on-surface-variant hover:text-ink-primary transition-all" data-path="home-dashboard" href="#"><span class="material-symbols-outlined text-[22px]">dns</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a class="flex flex-col items-center justify-center min-w-[54px] h-[52px] px-2 rounded-full text-on-surface-variant hover:text-ink-primary transition-all" data-path="file-browser" href="#"><span class="material-symbols-outlined text-[22px]">folder_data</span><span class="font-label-sm text-label-sm mt-0.5">Files</span></a><a class="flex flex-col items-center justify-center min-w-[54px] h-[52px] px-2 rounded-full text-on-surface-variant hover:text-ink-primary transition-all" data-path="shared-links" href="#"><span class="material-symbols-outlined text-[22px]">share</span><span class="font-label-sm text-label-sm mt-0.5">Share</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[54px] h-[52px] px-2 rounded-full transition-all bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-semibold shadow-[0_2px_10px_rgba(143,131,216,0.3)]" data-path="node-activity" href="#"><span class="material-symbols-outlined text-[22px]">swap_calls</span><span class="font-label-sm text-label-sm mt-0.5">Activity</span></a><a class="flex flex-col items-center justify-center min-w-[54px] h-[52px] px-2 rounded-full text-on-surface-variant hover:text-ink-primary transition-all" data-path="server-settings" href="#"><span class="material-symbols-outlined text-[22px]">settings</span><span class="font-label-sm text-label-sm mt-0.5">Settings</span></a></div></div></nav></body></html>

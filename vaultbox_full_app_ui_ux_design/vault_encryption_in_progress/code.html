@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary-fixed-dim": "#a8c8ff", "ink-disabled": "#A5A5A5", "surface": "#fbf9f4", "primary-container": "#7569bc", "on-error-container": "#93000a", "secondary-fixed": "#d5e3ff", "border-muted": "#E8E8E8", "outline-variant": "#c9c4d2", "aurora-pink": "#D98FB0", "status-warning": "#8A6A2A", "tertiary-fixed": "#ffd8e7", "secondary": "#005eb4", "surface-dim": "#dcdad5", "on-tertiary-fixed": "#390724", "outline": "#797582", "inverse-on-surface": "#f3f1eb", "on-primary-fixed-variant": "#473a8a", "tertiary-container": "#a2607f", "surface-primary": "#FFFFFF", "ink-secondary": "#666666", "inverse-primary": "#c8bfff", "on-primary": "#ffffff", "on-primary-fixed": "#1a045e", "status-success-border": "#B0CDB4", "status-success": "#3A7A4A", "surface-container": "#f0eee9", "error": "#ba1a1a", "surface-container-highest": "#e4e2dd", "status-danger-border": "#C98A8A", "surface-container-lowest": "#ffffff", "on-surface": "#1b1c19", "on-error": "#ffffff", "on-surface-variant": "#484551", "on-background": "#1b1c19", "ink-tertiary": "#8A8A8A", "status-danger": "#A34A4A", "on-secondary-fixed-variant": "#00468a", "on-secondary": "#ffffff", "tertiary-fixed-dim": "#feb0d2", "status-warning-border": "#DCD0B0", "on-secondary-container": "#00356a", "border-default": "#DCDCDC", "background": "#fbf9f4", "aurora-mid": "#B58FD0", "surface-tint": "#5f53a4", "on-primary-container": "#fffbff", "surface-tertiary": "#F7F7F5", "aurora-soft-l": "#CFC8EF", "selection-blue": "#2A78D6", "primary-fixed": "#e5deff", "on-tertiary-container": "#fffbff", "inverse-surface": "#30312d", "primary": "#5c50a1", "aurora-soft-p": "#EEC9D6", "tertiary": "#864866", "on-secondary-fixed": "#001b3c", "secondary-container": "#5a9fff", "border-strong": "#1A1A1A", "on-tertiary": "#ffffff", "surface-variant": "#e4e2dd", "selection-soft": "#EEF3FB", "primary-fixed-dim": "#c8bfff", "status-danger-surface": "#FDF6F6", "on-tertiary-fixed-variant": "#6d3350", "surface-container-high": "#eae8e3", "aurora-lavender": "#8F83D8", "surface-bright": "#fbf9f4", "surface-container-low": "#f5f3ee", "error-container": "#ffdad6", "ink-primary": "#1A1A1A", "surface-secondary": "#FAFAFA" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin": "1rem", "margin-lg": "1.5rem", "gutter-sm": "0.75rem", "space-xl": "1.5rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "margin-sm": "0.875rem", "space-md": "1rem", "gutter-lg": "1.5rem", "gutter": "1rem", "space-lg": "1.25rem" }, fontFamily: { "headline-sm": ["Epilogue"], "headline-md": ["Epilogue"], "label-lg": ["Inter"], "body-sm": ["Inter"], "headline-lg": ["Epilogue"], "label-sm": ["JetBrains Mono"], "body-md": ["Inter"], "display-xl": ["Epilogue"], "body-lg": ["Inter"], "label-md": ["JetBrains Mono"], "display-xl-mobile": ["Epilogue"] }, fontSize: { "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "display-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "display-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }] } } } };</script></head><body class="bg-surface text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="A modern geometric server NAS emblem for VaultBox. Stylized storage vault cube box with subtle network pulse signal lines, rendered with soft lavender and violet aurora accents and crisp ink borders. Clean vector icon, perfectly centered.. Design context: - Primary color: #8f83d8 - Font: epilogue - Mode: light - Roundness: rounded-md . The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XFa-uWEsGJPgdLDzAOo7A0aej7Tu1EA-aPNPuKD3u556Cv3c39haZ4T7BqCw4jnYpkWgsZPjsINsWzOouij-4DG3Cbi7Fgr9mpIxiRwvrmaGL0Ubd-PxA8OW3f9dt74s7O9tkigKcIkulCHst4kr4KWX_9ArAErbPl1DOf4NQqUZu8a_DxX9ouOWO_l0EJy1fRNdFQO8reujt8MlLgs_TNlhLubtUjTytYFPUtxFs10rKncpmO3hpsppQ"/><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-label-sm text-label-sm text-ink-tertiary uppercase tracking-wider">VaultBox</span><span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-status-success-border/30 text-status-success font-label-sm text-label-sm"><span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>Encrypted Store</span></div><h1 class="font-headline-sm text-headline-sm text-ink-primary">Vault</h1></div></div><div class="flex items-center gap-space-sm"><button aria-label="Search" class="w-11 h-11 flex items-center justify-center rounded-full text-ink-primary hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[22px]">search</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-32 bg-surface min-h-screen"><div class="flex flex-col w-full px-margin space-y-space-md pb-12">
+<!-- Interactive Toast Notification Placeholder (Hidden initially) -->
+<div class="hidden fixed top-20 left-4 right-4 z-50 p-space-md rounded-xl bg-surface-primary shadow-xl border-2 border-border-strong flex items-center justify-between transition-all duration-300" id="bg-toast">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-aurora-lavender animate-spin">sync</span>
+<div>
+<p class="font-headline-sm text-headline-sm text-ink-primary">Crypto Daemon Pinned</p>
+<p class="font-body-sm text-body-sm text-ink-secondary">Pipeline continues in foreground service.</p>
+</div>
+</div>
+<button class="font-label-sm text-label-sm text-selection-blue uppercase tracking-wider font-bold" onclick="document.getElementById('bg-toast').classList.add('hidden')">Dismiss</button>
+</div>
+<!-- Sub-Header / Real-Time Meta Bar -->
+<div class="flex items-center justify-between pt-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-success opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-status-success"></span>
+</span>
+<span class="font-label-md text-label-md text-ink-primary uppercase tracking-wider font-semibold">Encrypting Batch (2 of 3)</span>
+</div>
+<button class="px-3 py-1.5 rounded-full bg-surface-secondary shadow-sm hover:bg-surface-container active:scale-95 transition-all flex items-center gap-1.5 text-ink-primary" id="btn-run-bg">
+<span class="material-symbols-outlined text-[16px] text-aurora-lavender">open_in_new</span>
+<span class="font-label-md text-label-md font-medium">Background</span>
+</button>
+</div>
+<!-- Monospace Hardware Engine Badge Bar -->
+<div class="flex items-center justify-between px-space-sm py-1.5 bg-surface-container rounded-lg">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-ink-secondary text-[16px]">security</span>
+<span class="font-label-sm text-label-sm text-ink-primary">AES-256-GCM · Keystore Pipe v2.4</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-primary text-status-success font-medium">TEE Sealed</span>
+</div>
+<!-- Hero Telemetry Card (Aurora Glass Aesthetic) -->
+<div class="rounded-xl bg-surface-primary p-space-md shadow-sm relative overflow-hidden">
+<!-- Atmospheric Aurora Gradient Accent Bar -->
+<div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink"></div>
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase tracking-wider">Overall Throughput</span>
+<div class="flex items-baseline gap-2 mt-0.5">
+<span class="font-display-xl-mobile text-display-xl-mobile text-ink-primary">68%</span>
+<span class="font-label-md text-label-md text-ink-secondary font-mono">33.2 / 48.6 MB</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[18px]">speed</span>
+<span class="font-label-md text-label-md font-bold font-mono">14.2 MB/s</span>
+</div>
+<span class="font-label-sm text-label-sm text-ink-tertiary font-mono">ETA ~2.1s</span>
+</div>
+</div>
+<!-- Master Progress Track -->
+<div class="w-full bg-surface-container h-3 rounded-full mt-space-sm overflow-hidden p-0.5">
+<div class="h-full rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink transition-all duration-500" style="width: 68%;"></div>
+</div>
+<!-- Pipeline 3-Stage Segment Indicator -->
+<div class="mt-space-md pt-space-sm bg-surface-tertiary p-space-sm rounded-lg flex flex-col space-y-2">
+<span class="font-label-sm text-label-sm text-ink-tertiary uppercase tracking-wider">Active Pipeline Sequence</span>
+<div class="grid grid-cols-3 gap-2 text-center">
+<!-- Step 1: Encrypting -->
+<div class="flex flex-col items-center p-1.5 rounded-md bg-surface-primary shadow-sm">
+<div class="flex items-center gap-1 text-status-success">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span class="font-label-sm text-label-sm font-semibold">1. Cipher</span>
+</div>
+<span class="font-label-sm text-label-sm text-status-success font-mono mt-0.5">85% Active</span>
+</div>
+<!-- Step 2: Verification -->
+<div class="flex flex-col items-center p-1.5 rounded-md bg-surface-container">
+<div class="flex items-center gap-1 text-ink-secondary">
+<span class="material-symbols-outlined text-[14px]">verified_user</span>
+<span class="font-label-sm text-label-sm">2. Checksum</span>
+</div>
+<span class="font-label-sm text-label-sm text-ink-tertiary font-mono mt-0.5">Queued</span>
+</div>
+<!-- Step 3: Zero Fill -->
+<div class="flex flex-col items-center p-1.5 rounded-md bg-surface-container">
+<div class="flex items-center gap-1 text-ink-secondary">
+<span class="material-symbols-outlined text-[14px]">delete_sweep</span>
+<span class="font-label-sm text-label-sm">3. Shred</span>
+</div>
+<span class="font-label-sm text-label-sm text-ink-tertiary font-mono mt-0.5">1 Done</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Current Active File Focus Card -->
+<div class="rounded-xl bg-surface-primary p-space-md shadow-sm relative overflow-hidden bg-gradient-to-b from-selection-soft/40 to-surface-primary">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[24px]">description</span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h2 class="font-body-md text-body-md font-semibold text-ink-primary truncate max-w-[180px]">Q3_Financial_Audit.xlsx</h2>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 bg-selection-blue/10 text-selection-blue rounded font-mono">16.8 MB</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary flex items-center gap-1 mt-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-aurora-mid animate-pulse"></span>
+            Streaming ciphertext blocks to NVMe...
+          </p>
+</div>
+</div>
+<span class="font-headline-sm text-headline-sm text-ink-primary font-mono">82%</span>
+</div>
+<!-- Active File Progress -->
+<div class="w-full bg-surface-container h-2 rounded-full mt-space-sm overflow-hidden">
+<div class="h-full rounded-full bg-gradient-to-r from-aurora-lavender to-aurora-pink" style="width: 82%;"></div>
+</div>
+<!-- Micro Hash Telemetry & Block Verification -->
+<div class="mt-space-sm pt-space-xs flex flex-col space-y-1">
+<div class="flex items-center justify-between text-ink-tertiary">
+<span class="font-label-sm text-label-sm font-mono">Payload: 12.4 MB / 16.8 MB</span>
+<span class="font-label-sm text-label-sm font-mono">Nonce: 9F042C..A81</span>
+</div>
+<div class="p-2 rounded bg-surface-secondary flex items-center justify-between font-mono">
+<div class="flex items-center gap-1 truncate text-ink-secondary">
+<span class="font-label-sm text-label-sm text-ink-tertiary font-sans font-semibold">SHA-256:</span>
+<span class="font-label-sm text-label-sm truncate">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>
+</div>
+<span class="font-label-sm text-label-sm text-selection-blue ml-2 flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px] animate-spin">refresh</span> Verifying
+        </span>
+</div>
+</div>
+</div>
+<!-- Plaintext Forensic Shredding Monitor -->
+<div class="rounded-xl bg-surface-primary p-space-md shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-status-danger-surface flex items-center justify-center text-status-danger">
+<span class="material-symbols-outlined text-[16px]">security_update_good</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-ink-primary">Forensic Shredding Engine</h3>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-secondary text-ink-secondary font-mono">DoD 5220.22-M</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-space-xs leading-relaxed">
+      Overwriting flash blocks with cryptographically secure random entropy (3-pass zero-fill) to eliminate NAND remnants before unlinking inodes.
+    </p>
+<!-- Shredding File Verification Rows -->
+<div class="mt-space-sm space-y-2">
+<!-- File 1: Shredded -->
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-secondary">
+<div class="flex items-center gap-2 truncate">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span class="font-body-sm text-body-sm text-ink-primary truncate max-w-[190px]">Passport_BioScan_2026.pdf</span>
+</div>
+<span class="font-label-sm text-label-sm text-status-success font-mono font-medium">Pass 3/3 Zeroed</span>
+</div>
+<!-- File 2: Active Cipher, Pending Shred -->
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-secondary">
+<div class="flex items-center gap-2 truncate">
+<span class="material-symbols-outlined text-status-warning text-[18px] animate-pulse">pending</span>
+<span class="font-body-sm text-body-sm text-ink-primary truncate max-w-[190px]">Q3_Financial_Audit.xlsx</span>
+</div>
+<span class="font-label-sm text-label-sm text-status-warning font-mono">Awaiting Cipher Flush</span>
+</div>
+<!-- File 3: Locked in Buffer -->
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-secondary">
+<div class="flex items-center gap-2 truncate">
+<span class="material-symbols-outlined text-ink-tertiary text-[18px]">lock_clock</span>
+<span class="font-body-sm text-body-sm text-ink-secondary truncate max-w-[190px]">Client_Passphrases_Backup.kdbx</span>
+</div>
+<span class="font-label-sm text-label-sm text-ink-tertiary font-mono">Plaintext Locked</span>
+</div>
+</div>
+</div>
+<!-- Itemized Batch Queue Container -->
+<div class="rounded-xl bg-surface-primary p-space-md shadow-sm space-y-space-sm">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-ink-primary">Batch Manifest (3 Items)</h3>
+<span class="font-label-sm text-label-sm text-ink-tertiary font-mono">Total: 48.6 MB</span>
+</div>
+<div class="space-y-2">
+<!-- Item 1: Complete -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-space-sm truncate">
+<span class="material-symbols-outlined text-status-success text-[20px]">verified</span>
+<div class="truncate">
+<p class="font-body-md text-body-md text-ink-primary truncate max-w-[170px]">Passport_BioScan_2026.pdf</p>
+<p class="font-label-sm text-label-sm text-ink-tertiary font-mono">8.4 MB · Inode unlinked</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-status-success px-2 py-0.5 rounded bg-surface-primary shadow-sm font-semibold">VAULT SECURED</span>
+</div>
+<!-- Item 2: Encrypting -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-selection-soft">
+<div class="flex items-center gap-space-sm truncate">
+<span class="material-symbols-outlined text-selection-blue text-[20px] animate-spin">sync</span>
+<div class="truncate">
+<p class="font-body-md text-body-md text-ink-primary font-medium truncate max-w-[170px]">Q3_Financial_Audit.xlsx</p>
+<p class="font-label-sm text-label-sm text-ink-secondary font-mono">16.8 MB · 14.2 MB/s</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-selection-blue px-2 py-0.5 rounded bg-surface-primary shadow-sm font-semibold font-mono">82%</span>
+</div>
+<!-- Item 3: Queued -->
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-space-sm truncate">
+<span class="material-symbols-outlined text-ink-tertiary text-[20px]">hourglass_empty</span>
+<div class="truncate">
+<p class="font-body-md text-body-md text-ink-secondary truncate max-w-[170px]">Client_Passphrases_Backup.kdbx</p>
+<p class="font-label-sm text-label-sm text-ink-tertiary font-mono">23.4 MB · Keystore standby</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-ink-tertiary px-2 py-0.5 rounded bg-surface-secondary font-mono">QUEUE #3</span>
+</div>
+</div>
+</div>
+<!-- Safety Warning Notice Banner -->
+<div class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container text-ink-primary">
+<span class="material-symbols-outlined text-status-warning text-[20px] shrink-0 mt-0.5">warning</span>
+<p class="font-body-sm text-body-sm text-ink-secondary">
+<strong class="font-semibold text-ink-primary">Hardware Safety Protocol:</strong> Do not unmount external storage media or power down the host device during active block zeroing to ensure NAND wear-level integrity.
+    </p>
+</div>
+<!-- Dedicated Action & Pause Controls -->
+<div class="flex flex-col space-y-space-sm pt-space-xs">
+<!-- Primary: Run in Background -->
+<button class="w-full h-12 rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink shadow-md text-ink-primary font-body-md text-body-md font-semibold flex items-center justify-center gap-2 active:scale-98 transition-transform" id="btn-run-bg-main">
+<span class="material-symbols-outlined text-[20px]">layers</span>
+<span>Run Crypto Pipeline in Background</span>
+</button>
+<!-- Secondary Safe Abort Row -->
+<div class="flex items-center gap-space-sm">
+<button class="flex-1 h-11 rounded-full bg-surface-primary shadow-sm hover:bg-surface-secondary text-ink-primary font-body-md text-body-md font-medium flex items-center justify-center gap-1.5 transition-colors" id="btn-pause">
+<span class="material-symbols-outlined text-[18px]">pause_circle</span>
+<span>Pause Stream</span>
+</button>
+<button class="flex-1 h-11 rounded-full bg-status-danger-surface hover:bg-error-container text-status-danger font-body-md text-body-md font-medium flex items-center justify-center gap-1.5 transition-colors" id="btn-cancel">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+<span>Cancel Batch</span>
+</button>
+</div>
+<p class="text-center font-label-sm text-label-sm text-ink-tertiary">
+      Cancelling preserves un-encrypted files safely in original storage partition.
+    </p>
+</div>
+</div>
+<script>
+  // Dynamic Background Notification Simulation
+  const bgBtnTop = document.getElementById('btn-run-bg');
+  const bgBtnMain = document.getElementById('btn-run-bg-main');
+  const toast = document.getElementById('bg-toast');
+  const pauseBtn = document.getElementById('btn-pause');
+
+  function triggerBackgroundMode() {
+    toast.classList.remove('hidden');
+    setTimeout(() => {
+      toast.classList.add('hidden');
+    }, 4500);
+  }
+
+  if (bgBtnTop) bgBtnTop.addEventListener('click', triggerBackgroundMode);
+  if (bgBtnMain) bgBtnMain.addEventListener('click', triggerBackgroundMode);
+
+  let isPaused = false;
+  if (pauseBtn) {
+    pauseBtn.addEventListener('click', () => {
+      isPaused = !isPaused;
+      pauseBtn.innerHTML = isPaused 
+        ? '<span class="material-symbols-outlined text-[18px]">play_circle</span><span>Resume Pipeline</span>'
+        : '<span class="material-symbols-outlined text-[18px]">pause_circle</span><span>Pause Stream</span>';
+    });
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe pointer-events-none" data-active-classes="text-primary font-bold"><div class="px-margin pb-space-md pt-space-xs pointer-events-auto"><div class="h-[74px] rounded-full bg-surface-primary/85 backdrop-blur-xl shadow-[0_8px_24px_-4px_rgba(26,26,26,0.08)] px-space-sm flex items-center justify-around"><a class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] text-on-surface-variant transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[22px]">home</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] transition-colors text-primary font-bold" data-path="vault" href="#"><span class="material-symbols-outlined text-[22px]">folder_supervised</span><span class="font-label-sm text-label-sm mt-0.5">Files</span></a><a class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] text-on-surface-variant transition-colors" data-path="share-center" href="#"><span class="material-symbols-outlined text-[22px]">share</span><span class="font-label-sm text-label-sm mt-0.5">Share</span></a><a class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] text-on-surface-variant transition-colors" data-path="activity-monitor" href="#"><span class="material-symbols-outlined text-[22px]">monitoring</span><span class="font-label-sm text-label-sm mt-0.5">Activity</span></a><a class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] text-on-surface-variant transition-colors" data-path="node-settings" href="#"><span class="material-symbols-outlined text-[22px]">settings</span><span class="font-label-sm text-label-sm mt-0.5">Settings</span></a></div></div></nav></body></html>

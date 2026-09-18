@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "selection-soft": "#EEF3FB", "status-success": "#3A7A4A", "tertiary": "#864866", "surface-bright": "#fbf9f4", "border-default": "#DCDCDC", "on-primary-fixed-variant": "#473a8a", "error-container": "#ffdad6", "border-strong": "#1A1A1A", "primary-fixed": "#e5deff", "surface-container-high": "#eae8e3", "on-secondary-fixed": "#001b3c", "on-primary-container": "#fffbff", "ink-primary": "#1A1A1A", "on-error": "#ffffff", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#c8bfff", "on-secondary-fixed-variant": "#00468a", "outline-variant": "#c9c4d2", "status-danger": "#A34A4A", "on-tertiary-container": "#fffbff", "on-primary-fixed": "#1a045e", "on-error-container": "#93000a", "status-warning-border": "#DCD0B0", "primary": "#5c50a1", "on-surface-variant": "#484551", "tertiary-container": "#a2607f", "on-tertiary-fixed": "#390724", "inverse-surface": "#30312d", "on-secondary": "#ffffff", "status-danger-surface": "#FDF6F6", "inverse-on-surface": "#f3f1eb", "secondary": "#005eb4", "background": "#fbf9f4", "aurora-soft-l": "#CFC8EF", "on-tertiary-fixed-variant": "#6d3350", "secondary-container": "#5a9fff", "aurora-pink": "#D98FB0", "aurora-soft-p": "#EEC9D6", "on-secondary-container": "#00356a", "border-muted": "#E8E8E8", "on-surface": "#1b1c19", "surface-container-low": "#f5f3ee", "inverse-primary": "#c8bfff", "tertiary-fixed-dim": "#feb0d2", "surface-dim": "#dcdad5", "ink-disabled": "#A5A5A5", "tertiary-fixed": "#ffd8e7", "surface-tint": "#5f53a4", "surface-variant": "#e4e2dd", "on-primary": "#ffffff", "primary-container": "#7569bc", "ink-tertiary": "#8A8A8A", "surface-secondary": "#FAFAFA", "surface": "#fbf9f4", "secondary-fixed": "#d5e3ff", "status-warning": "#8A6A2A", "status-success-border": "#B0CDB4", "selection-blue": "#2A78D6", "aurora-lavender": "#8F83D8", "surface-primary": "#FFFFFF", "aurora-mid": "#B58FD0", "outline": "#797582", "error": "#ba1a1a", "surface-container-highest": "#e4e2dd", "on-tertiary": "#ffffff", "on-background": "#1b1c19", "surface-tertiary": "#F7F7F5", "surface-container": "#f0eee9", "secondary-fixed-dim": "#a8c8ff", "ink-secondary": "#666666", "status-danger-border": "#C98A8A" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xl": "1.5rem", "space-sm": "0.5rem", "gutter-sm": "0.75rem", "margin-lg": "1.5rem", "gutter": "1rem", "space-md": "1rem", "space-xs": "0.25rem", "margin-sm": "0.875rem", "gutter-lg": "1.5rem", "margin": "1rem", "space-lg": "1.25rem" }, "fontFamily": { "label-lg": ["Inter"], "label-md": ["JetBrains Mono"], "label-sm": ["JetBrains Mono"], "display-xl": ["Epilogue"], "display-xl-mobile": ["Epilogue"], "headline-md": ["Epilogue"], "body-md": ["Inter"], "body-sm": ["Inter"], "body-lg": ["Inter"], "headline-lg": ["Epilogue"], "headline-sm": ["Epilogue"] }, "fontSize": { "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "display-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }] } } } };</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; min-height: 100vh; background-color: #fbf9f4; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style></head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0 flex-1"><img alt="A modern geometric server NAS emblem for VaultBox. Stylized storage vault cube box with subtle network pulse signal lines, rendered with soft lavender and violet aurora accents and crisp ink borders. Clean vector icon, perfectly centered.. Design context: - Primary color: #8f83d8 - Font: epilogue - Mode: light - Roundness: rounded-md . The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XFa-uWEsGJPgdLDzAOo7A0aej7Tu1EA-aPNPuKD3u556Cv3c39haZ4T7BqCw4jnYpkWgsZPjsINsWzOouij-4DG3Cbi7Fgr9mpIxiRwvrmaGL0Ubd-PxA8OW3f9dt74s7O9tkigKcIkulCHst4kr4KWX_9ArAErbPl1DOf4NQqUZu8a_DxX9ouOWO_l0EJy1fRNdFQO8reujt8MlLgs_TNlhLubtUjTytYFPUtxFs10rKncpmO3hpsppQ"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-ink-primary tracking-tight truncate">VaultBox</span><span class="px-space-xs py-[2px] rounded-full bg-surface-primary text-status-success font-label-sm text-label-sm flex items-center gap-1 shadow-[0_0_0_1.5px_#B0CDB4]"><span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>Live</span></div><span class="font-label-sm text-label-sm text-ink-secondary truncate">Settings</span></div></div><div class="flex items-center gap-space-xs shrink-0"><a aria-label="Settings" class="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink-primary hover:bg-surface-container transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[20px]">settings</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-32 px-margin bg-surface"><div class="flex flex-col w-full gap-space-md">
+<!-- Top Navigation Sub-Bar & Breadcrumb -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between gap-space-sm">
+<a class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full bg-surface-primary text-ink-primary shadow-sm active:scale-95 transition-transform min-h-[44px]" data-path="file-browser" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span class="font-body-sm text-body-sm text-ink-secondary truncate max-w-[140px]">Projects/Selects_Final</span>
+</a>
+<!-- Quick Header Utility Icons -->
+<div class="flex items-center gap-1">
+<button aria-label="Fullscreen view" class="w-11 h-11 flex items-center justify-center rounded-full bg-surface-primary text-ink-primary shadow-sm active:scale-90 transition-transform" id="btn-fullscreen">
+<span class="material-symbols-outlined text-[20px]" id="fs-icon">fullscreen</span>
+</button>
+<button aria-label="Share" class="w-11 h-11 flex items-center justify-center rounded-full bg-surface-primary text-ink-primary shadow-sm active:scale-90 transition-transform" id="btn-share-quick">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+<button aria-label="More actions" class="w-11 h-11 flex items-center justify-center rounded-full bg-surface-primary text-ink-primary shadow-sm active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Active File Title & Status Badge -->
+<div class="flex flex-col gap-1 px-1">
+<div class="flex items-center justify-between">
+<h1 class="font-headline-sm text-headline-sm text-ink-primary tracking-tight truncate">Studio_Select_014.dng</h1>
+<span class="font-label-sm text-label-sm text-ink-secondary uppercase px-2 py-0.5 rounded-full bg-surface-container">v2.1</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-primary text-status-success font-label-sm text-label-sm shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>
+          Encrypted Cache Verified · RAW DNG
+        </span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">TLS 1.3 Local Direct</span>
+</div>
+</div>
+</div>
+<!-- Primary Photographic Preview Card -->
+<div class="relative w-full rounded-xl bg-surface-primary shadow-md overflow-hidden flex flex-col group">
+<!-- Subtle Ambient Aurora Backdrop Under Glass Frame -->
+<div class="absolute inset-0 bg-gradient-to-tr from-aurora-soft-l/25 via-transparent to-aurora-soft-p/30 pointer-events-none"></div>
+<!-- Image Viewport Canvas -->
+<div class="relative w-full aspect-[4/5] bg-surface-container-high overflow-hidden flex items-center justify-center">
+<img alt="Raw Studio Portrait Preview" class="w-full h-full object-cover transition-transform duration-300 ease-out select-none" data-alt="Intimate editorial studio portrait photograph of an artist drenched in gentle warm rim lighting against a deep muted lavender and slate background, showcasing ultra-fine skin textures, crisp eye catchlights, and soft filmic depth of field. High-end medium format digital sensor aesthetic with rich analog tonality and balanced highlight roll-off." id="preview-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeb3pWICpkc8T_RFmPUcJJXGbX_lp_h9Lwqy1hsduEZLi3YHx83TYG9rR5leMnCtrzoYnwwXQBG0qz_WOsN6gk73fpUyWhMhJ6jVnpjoXYcdYQX5D8mwVPrtMfvStUQiW-3ayRSF6uXPZ6UUguQzGjfnyGqY0X-xCkEXuUKdjCSy6g_nMqzOIZuXcvsEqJJdgG3EQqQ4uDzaxQcXWRoVq-9nfGxhXOLjmF_4XTRM9-TTAqmVTuJKML1A"/>
+<!-- Top Overlay Badge: Metadata Chips -->
+<div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+<div class="px-2.5 py-1 rounded-full bg-ink-primary/85 backdrop-blur-md text-surface-primary flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-aurora-pink">raw_on</span>
+<span class="font-label-sm text-label-sm tracking-wide">14-bit RAW · 48.2 MB</span>
+</div>
+<div class="px-2.5 py-1 rounded-full bg-surface-primary/90 backdrop-blur-md text-ink-primary shadow-sm">
+<span class="font-label-sm text-label-sm">8256 × 5504 px</span>
+</div>
+</div>
+<!-- Zoom and Canvas Navigation Micro-HUD -->
+<div class="absolute bottom-3 right-3 flex items-center gap-1 p-1 rounded-full bg-surface-primary/90 backdrop-blur-md shadow-sm pointer-events-auto">
+<button aria-label="Zoom out" class="w-8 h-8 rounded-full flex items-center justify-center text-ink-primary hover:bg-surface-container active:scale-95 transition-all" id="zoom-out">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+<button class="px-2 h-8 rounded-full flex items-center justify-center text-ink-primary font-label-sm text-label-sm hover:bg-surface-container active:scale-95 transition-all" id="zoom-level">
+<span id="zoom-text">Fit</span>
+</button>
+<button aria-label="Zoom in" class="w-8 h-8 rounded-full flex items-center justify-center text-ink-primary hover:bg-surface-container active:scale-95 transition-all" id="zoom-in">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+<div class="w-[1px] h-4 bg-surface-container mx-0.5"></div>
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-ink-primary hover:bg-surface-container active:scale-95 transition-all" id="zoom-reset" title="100% pixel mapping">
+<span class="material-symbols-outlined text-[16px]">center_focus_strong</span>
+</button>
+</div>
+<!-- Exposure / Proofing Watermark Pill -->
+<div class="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-surface-primary/90 backdrop-blur-md text-ink-secondary shadow-sm flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-aurora-lavender"></span>
+<span class="font-label-sm text-label-sm">sRGB Preview Render</span>
+</div>
+</div>
+<!-- Technical Capture Strip (EXIF Telemetry) -->
+<div class="p-3 bg-surface-primary flex flex-col gap-1.5">
+<div class="flex items-center justify-between text-ink-secondary">
+<div class="flex items-center gap-1.5 truncate">
+<span class="material-symbols-outlined text-[16px] text-primary">photo_camera</span>
+<span class="font-label-md text-label-md text-ink-primary font-semibold truncate">Hasselblad X2D 100C · XCD 90V</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary px-2 py-0.5 rounded-full bg-selection-soft uppercase font-medium">Verified</span>
+</div>
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+<div class="px-2.5 py-1 rounded-lg bg-surface-container text-ink-primary font-label-sm text-label-sm whitespace-nowrap">
+          ISO 100
+        </div>
+<div class="px-2.5 py-1 rounded-lg bg-surface-container text-ink-primary font-label-sm text-label-sm whitespace-nowrap">
+          85mm · f/1.4
+        </div>
+<div class="px-2.5 py-1 rounded-lg bg-surface-container text-ink-primary font-label-sm text-label-sm whitespace-nowrap">
+          1/500 sec
+        </div>
+<div class="px-2.5 py-1 rounded-lg bg-surface-container text-ink-primary font-label-sm text-label-sm whitespace-nowrap">
+          Adobe RGB (1998)
+        </div>
+<div class="px-2.5 py-1 rounded-lg bg-surface-container text-ink-primary font-label-sm text-label-sm whitespace-nowrap">
+          +0.3 EV
+        </div>
+</div>
+</div>
+</div>
+<!-- Quick Action Floating Dock / Action Strip -->
+<div class="w-full p-2 rounded-xl bg-surface-primary shadow-sm flex items-center justify-between gap-2 overflow-x-auto no-scrollbar">
+<!-- Primary Export Action with Gradient -->
+<button class="flex-1 min-w-[130px] h-12 px-4 rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-label-lg text-label-lg font-semibold flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-transform" id="btn-export">
+<span class="material-symbols-outlined text-[20px]">cloud_download</span>
+<span>Export RAW</span>
+</button>
+<!-- Share Link Secondary -->
+<button class="h-12 px-3.5 rounded-full bg-surface-container hover:bg-surface-container-high text-ink-primary font-label-lg text-label-lg font-medium flex items-center justify-center gap-1.5 active:scale-95 transition-transform" id="btn-share-link">
+<span class="material-symbols-outlined text-[18px]">link</span>
+<span>Share</span>
+</button>
+<!-- Move to Vault (Security Isolation) -->
+<button class="h-12 px-3.5 rounded-full bg-surface-container hover:bg-surface-container-high text-ink-primary font-label-lg text-label-lg font-medium flex items-center justify-center gap-1.5 active:scale-95 transition-transform" id="btn-vault-lock" title="Lock in Encrypted Vault">
+<span class="material-symbols-outlined text-[18px] text-tertiary">lock</span>
+<span>Vault</span>
+</button>
+<!-- Integrity Hash Button -->
+<button class="h-12 px-3.5 rounded-full bg-surface-container hover:bg-surface-container-high text-ink-primary font-label-lg text-label-lg font-medium flex items-center justify-center gap-1.5 active:scale-95 transition-transform" id="btn-toggle-integrity">
+<span class="material-symbols-outlined text-[18px] text-secondary">verified_user</span>
+<span>SHA</span>
+</button>
+</div>
+<!-- Storage Node & Inspector Accordion -->
+<div class="flex flex-col gap-space-sm">
+<!-- Storage Diagnostics Card -->
+<div class="rounded-xl bg-surface-primary p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-selection-soft flex items-center justify-center text-selection-blue">
+<span class="material-symbols-outlined text-[18px]">dns</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-ink-primary">Storage Node Details</span>
+<span class="font-body-sm text-body-sm text-ink-secondary">Direct LAN storage target</span>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-ink-secondary hover:bg-surface-container" id="inspector-toggle">
+<span class="material-symbols-outlined text-[20px] transition-transform duration-200" id="accordion-arrow">expand_more</span>
+</button>
+</div>
+<!-- Collapsible Detailed Inspector -->
+<div class="flex flex-col gap-space-sm pt-2" id="inspector-content">
+<!-- Physical Path Row -->
+<div class="flex flex-col gap-1 p-2.5 rounded-lg bg-surface-secondary">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-tertiary">Internal Path</span>
+<button class="text-selection-blue font-label-sm text-label-sm copy-trigger" data-copy="/Internal SSD/Projects/Studio_Shoot/Studio_Select_014.dng">Copy</button>
+</div>
+<span class="font-label-sm text-label-sm text-ink-primary break-all font-mono">/Internal SSD/Projects/Studio_Shoot/Studio_Select_014.dng</span>
+</div>
+<!-- SHA-256 Checksum -->
+<div class="flex flex-col gap-1 p-2.5 rounded-lg bg-surface-secondary">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-tertiary">SHA-256 Checksum</span>
+<span class="material-symbols-outlined text-[14px] text-status-success" title="Hash verified against node manifest">check_circle</span>
+</div>
+<button class="text-selection-blue font-label-sm text-label-sm copy-trigger" data-copy="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855">Copy Hash</button>
+</div>
+<span class="font-label-sm text-label-sm text-ink-primary break-all font-mono">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>
+</div>
+<!-- Two-column hardware metrics -->
+<div class="grid grid-cols-2 gap-2">
+<div class="flex flex-col p-2.5 rounded-lg bg-surface-secondary">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-tertiary">Host Volume</span>
+<span class="font-label-md text-label-md text-ink-primary font-medium truncate mt-0.5">Samsung 990 Pro 2TB</span>
+<span class="font-label-sm text-label-sm text-status-success mt-0.5">Health: 99% · 38°C</span>
+</div>
+<div class="flex flex-col p-2.5 rounded-lg bg-surface-secondary">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-tertiary">Timestamp</span>
+<span class="font-label-md text-label-md text-ink-primary font-medium truncate mt-0.5">Oct 24, 2026</span>
+<span class="font-label-sm text-label-sm text-ink-secondary mt-0.5 font-mono">14:32:08 (POSIX)</span>
+</div>
+</div>
+<!-- WebDAV Sync URL -->
+<div class="flex flex-col gap-1 p-2.5 rounded-lg bg-surface-secondary">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-tertiary">Secure WebDAV Mount</span>
+<button class="text-selection-blue font-label-sm text-label-sm copy-trigger" data-copy="https://vaultbox.local:8443/dav/Projects/Selects_Final/Studio_Select_014.dng">Copy URI</button>
+</div>
+<span class="font-label-sm text-label-sm text-ink-secondary truncate font-mono">https://vaultbox.local:8443/dav/Projects/Selects_Final/...</span>
+</div>
+</div>
+</div>
+<!-- Integrity & Peer Sync Status Mini Card -->
+<div class="rounded-xl bg-surface-primary p-space-md shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-status-success/10 flex items-center justify-center text-status-success">
+<span class="material-symbols-outlined text-[22px]">lock_reset</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-ink-primary font-medium">Btrfs Bit-Rot Check</span>
+<span class="font-body-sm text-body-sm text-ink-secondary">Scrubbed 4 hours ago · 0 errors</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container font-label-sm text-label-sm text-ink-primary font-medium">RAID 1 Mirror</span>
+</div>
+</div>
+<!-- Micro Interaction Toast Feedback Notification -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-ink-primary text-surface-primary font-label-sm text-label-sm shadow-xl flex items-center gap-2 opacity-0 pointer-events-none transition-all duration-300 z-40" id="toast-notify">
+<span class="material-symbols-outlined text-[16px] text-aurora-pink">check_circle</span>
+<span id="toast-text">Copied to clipboard</span>
+</div>
+</div>
+<script>
+  (function() {
+    // Zoom & Pan Micro-interaction State
+    let zoomLevel = 1;
+    const zoomSteps = [1, 1.5, 2, 3];
+    let zoomIndex = 0;
+    const img = document.getElementById('preview-image');
+    const zoomText = document.getElementById('zoom-text');
+    const zoomInBtn = document.getElementById('zoom-in');
+    const zoomOutBtn = document.getElementById('zoom-out');
+    const zoomResetBtn = document.getElementById('zoom-reset');
+    const zoomPill = document.getElementById('zoom-level');
+    const toast = document.getElementById('toast-notify');
+    const toastText = document.getElementById('toast-text');
+
+    function showToast(msg) {
+      if (!toast) return;
+      toastText.textContent = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'pointer-events-none');
+        toast.classList.remove('opacity-100');
+      }, 2200);
+    }
+
+    function updateZoom() {
+      if (!img || !zoomText) return;
+      img.style.transform = `scale(${zoomLevel})`;
+      zoomText.textContent = zoomLevel === 1 ? 'Fit' : `${Math.round(zoomLevel * 100)}%`;
+    }
+
+    if (zoomInBtn) {
+      zoomInBtn.addEventListener('click', () => {
+        zoomLevel = Math.min(zoomLevel + 0.5, 3);
+        updateZoom();
+      });
+    }
+
+    if (zoomOutBtn) {
+      zoomOutBtn.addEventListener('click', () => {
+        zoomLevel = Math.max(zoomLevel - 0.5, 1);
+        updateZoom();
+      });
+    }
+
+    if (zoomResetBtn) {
+      zoomResetBtn.addEventListener('click', () => {
+        zoomLevel = zoomLevel === 2 ? 1 : 2;
+        updateZoom();
+      });
+    }
+
+    if (zoomPill) {
+      zoomPill.addEventListener('click', () => {
+        zoomIndex = (zoomIndex + 1) % zoomSteps.length;
+        zoomLevel = zoomSteps[zoomIndex];
+        updateZoom();
+      });
+    }
+
+    // Fullscreen Toggle Micro Action
+    const fsBtn = document.getElementById('btn-fullscreen');
+    const fsIcon = document.getElementById('fs-icon');
+    let isFs = false;
+    if (fsBtn && fsIcon) {
+      fsBtn.addEventListener('click', () => {
+        isFs = !isFs;
+        fsIcon.textContent = isFs ? 'fullscreen_exit' : 'fullscreen';
+        showToast(isFs ? 'Immersive RAW mode enabled' : 'Exited immersive view');
+      });
+    }
+
+    // Inspector Accordion Collapse/Expand
+    const accordionBtn = document.getElementById('inspector-toggle');
+    const accordionContent = document.getElementById('inspector-content');
+    const accordionArrow = document.getElementById('accordion-arrow');
+    let isExpanded = true;
+
+    if (accordionBtn && accordionContent && accordionArrow) {
+      accordionBtn.addEventListener('click', () => {
+        isExpanded = !isExpanded;
+        if (isExpanded) {
+          accordionContent.classList.remove('hidden');
+          accordionArrow.style.transform = 'rotate(0deg)';
+        } else {
+          accordionContent.classList.add('hidden');
+          accordionArrow.style.transform = 'rotate(-90deg)';
+        }
+      });
+    }
+
+    // Copy to Clipboard Listeners
+    document.querySelectorAll('.copy-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const copyVal = btn.getAttribute('data-copy');
+        if (copyVal && navigator.clipboard) {
+          navigator.clipboard.writeText(copyVal).then(() => {
+            showToast('Copied to clipboard');
+          }).catch(() => {
+            showToast('Copied text: ' + copyVal.slice(0, 16) + '...');
+          });
+        } else {
+          showToast('Copied to clipboard');
+        }
+      });
+    });
+
+    // Action Buttons Delight feedback
+    const exportBtn = document.getElementById('btn-export');
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => {
+        showToast('Direct stream starting · 48.2 MB');
+      });
+    }
+
+    const shareBtn = document.getElementById('btn-share-link');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', () => {
+        showToast('One-time signed link created');
+      });
+    }
+
+    const vaultBtn = document.getElementById('btn-vault-lock');
+    if (vaultBtn) {
+      vaultBtn.addEventListener('click', () => {
+        showToast('Moved to Encrypted Zero-Knowledge Vault');
+      });
+    }
+
+    const shaBtn = document.getElementById('btn-toggle-integrity');
+    if (shaBtn) {
+      shaBtn.addEventListener('click', () => {
+        showToast('SHA-256 match confirmed with SSD sector');
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe pointer-events-none" data-active-classes="text-ink-primary bg-white/90 shadow-[0_2px_12px_rgba(143,131,216,0.25)] ring-[1.5px] ring-border-strong font-semibold"><div class="px-margin pb-space-sm pt-space-xs flex justify-center"><div class="w-full max-w-md h-[68px] bg-white/80 backdrop-blur-xl rounded-full shadow-[0_4px_20px_rgba(26,26,26,0.06)] ring-[1.5px] ring-border-default/80 p-1.5 flex items-center justify-between pointer-events-auto"><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[22px]">dns</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="file-browser" href="#"><span class="material-symbols-outlined text-[22px]">folder_open</span><span class="font-label-sm text-label-sm mt-0.5">Files</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="share-hub" href="#"><span class="material-symbols-outlined text-[22px]">share</span><span class="font-label-sm text-label-sm mt-0.5">Share</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="activity-monitor" href="#"><span class="material-symbols-outlined text-[22px]">monitoring</span><span class="font-label-sm text-label-sm mt-0.5">Activity</span></a><a aria-current="page" class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full transition-all duration-200 text-ink-primary bg-white/90 shadow-[0_2px_12px_rgba(143,131,216,0.25)] ring-[1.5px] ring-border-strong font-semibold" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-label-sm text-label-sm mt-0.5">Settings</span></a></div></div></nav></body></html>

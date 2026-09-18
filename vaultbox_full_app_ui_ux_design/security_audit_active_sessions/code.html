@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "selection-soft": "#EEF3FB", "status-success": "#3A7A4A", "tertiary": "#864866", "surface-bright": "#fbf9f4", "border-default": "#DCDCDC", "on-primary-fixed-variant": "#473a8a", "error-container": "#ffdad6", "border-strong": "#1A1A1A", "primary-fixed": "#e5deff", "surface-container-high": "#eae8e3", "on-secondary-fixed": "#001b3c", "on-primary-container": "#fffbff", "ink-primary": "#1A1A1A", "on-error": "#ffffff", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#c8bfff", "on-secondary-fixed-variant": "#00468a", "outline-variant": "#c9c4d2", "status-danger": "#A34A4A", "on-tertiary-container": "#fffbff", "on-primary-fixed": "#1a045e", "on-error-container": "#93000a", "status-warning-border": "#DCD0B0", "primary": "#5c50a1", "on-surface-variant": "#484551", "tertiary-container": "#a2607f", "on-tertiary-fixed": "#390724", "inverse-surface": "#30312d", "on-secondary": "#ffffff", "status-danger-surface": "#FDF6F6", "inverse-on-surface": "#f3f1eb", "secondary": "#005eb4", "background": "#fbf9f4", "aurora-soft-l": "#CFC8EF", "on-tertiary-fixed-variant": "#6d3350", "secondary-container": "#5a9fff", "aurora-pink": "#D98FB0", "aurora-soft-p": "#EEC9D6", "on-secondary-container": "#00356a", "border-muted": "#E8E8E8", "on-surface": "#1b1c19", "surface-container-low": "#f5f3ee", "inverse-primary": "#c8bfff", "tertiary-fixed-dim": "#feb0d2", "surface-dim": "#dcdad5", "ink-disabled": "#A5A5A5", "tertiary-fixed": "#ffd8e7", "surface-tint": "#5f53a4", "surface-variant": "#e4e2dd", "on-primary": "#ffffff", "primary-container": "#7569bc", "ink-tertiary": "#8A8A8A", "surface-secondary": "#FAFAFA", "surface": "#fbf9f4", "secondary-fixed": "#d5e3ff", "status-warning": "#8A6A2A", "status-success-border": "#B0CDB4", "selection-blue": "#2A78D6", "aurora-lavender": "#8F83D8", "surface-primary": "#FFFFFF", "aurora-mid": "#B58FD0", "outline": "#797582", "error": "#ba1a1a", "surface-container-highest": "#e4e2dd", "on-tertiary": "#ffffff", "on-background": "#1b1c19", "surface-tertiary": "#F7F7F5", "surface-container": "#f0eee9", "secondary-fixed-dim": "#a8c8ff", "ink-secondary": "#666666", "status-danger-border": "#C98A8A" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xl": "1.5rem", "space-sm": "0.5rem", "gutter-sm": "0.75rem", "margin-lg": "1.5rem", "gutter": "1rem", "space-md": "1rem", "space-xs": "0.25rem", "margin-sm": "0.875rem", "gutter-lg": "1.5rem", "margin": "1rem", "space-lg": "1.25rem" }, "fontFamily": { "label-lg": ["Inter"], "label-md": ["JetBrains Mono"], "label-sm": ["JetBrains Mono"], "display-xl": ["Epilogue"], "display-xl-mobile": ["Epilogue"], "headline-md": ["Epilogue"], "body-md": ["Inter"], "body-sm": ["Inter"], "body-lg": ["Inter"], "headline-lg": ["Epilogue"], "headline-sm": ["Epilogue"] }, "fontSize": { "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "display-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }] } } } };</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; min-height: 100vh; background-color: #fbf9f4; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style></head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0 flex-1"><img alt="A modern geometric server NAS emblem for VaultBox. Stylized storage vault cube box with subtle network pulse signal lines, rendered with soft lavender and violet aurora accents and crisp ink borders. Clean vector icon, perfectly centered.. Design context: - Primary color: #8f83d8 - Font: epilogue - Mode: light - Roundness: rounded-md . The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XFa-uWEsGJPgdLDzAOo7A0aej7Tu1EA-aPNPuKD3u556Cv3c39haZ4T7BqCw4jnYpkWgsZPjsINsWzOouij-4DG3Cbi7Fgr9mpIxiRwvrmaGL0Ubd-PxA8OW3f9dt74s7O9tkigKcIkulCHst4kr4KWX_9ArAErbPl1DOf4NQqUZu8a_DxX9ouOWO_l0EJy1fRNdFQO8reujt8MlLgs_TNlhLubtUjTytYFPUtxFs10rKncpmO3hpsppQ"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-ink-primary tracking-tight truncate">VaultBox</span><span class="px-space-xs py-[2px] rounded-full bg-surface-primary text-status-success font-label-sm text-label-sm flex items-center gap-1 shadow-[0_0_0_1.5px_#B0CDB4]"><span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>Live</span></div><span class="font-label-sm text-label-sm text-ink-secondary truncate">Settings</span></div></div><div class="flex items-center gap-space-xs shrink-0"><a aria-label="Settings" class="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink-primary hover:bg-surface-container transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[20px]">settings</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-32 px-margin bg-surface"><div class="flex flex-col w-full space-y-space-lg pb-12">
+<!-- Top Bar / App Context Sub-Header -->
+<div class="flex items-center justify-between py-space-xs">
+<div class="flex items-center gap-space-sm">
+<a aria-label="Go back to settings" class="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-container-high transition-colors text-ink-primary" data-path="settings" href="#">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</a>
+<div class="flex flex-col min-w-0">
+<h1 class="font-headline-sm text-headline-sm text-ink-primary tracking-tight truncate">Security &amp; Sessions</h1>
+<p class="font-label-sm text-label-sm text-ink-secondary truncate flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+          Admin Node · StrongBox Keystore
+        </p>
+</div>
+</div>
+<button aria-label="Security Status Details" class="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-surface-container text-ink-primary hover:bg-surface-container-high transition-colors relative" id="audit-info-trigger" type="button">
+<span class="material-symbols-outlined text-[20px]">shield_lock</span>
+<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-aurora-lavender"></span>
+</button>
+</div>
+<!-- Hero Card: Security Checklist & Health Scorecard -->
+<section class="w-full rounded-xl bg-surface-container-lowest p-space-md shadow-sm relative overflow-hidden">
+<!-- Subtle top aura bar -->
+<div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink opacity-80"></div>
+<div class="flex items-center justify-between mb-space-sm pt-1">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-semibold">SECURITY POSTURE · AIR-GAP LOCAL</span>
+<span class="px-space-xs py-0.5 rounded-full bg-status-success/10 text-status-success font-label-sm text-label-sm flex items-center gap-1 font-medium">
+<span class="material-symbols-outlined text-[12px]">verified</span>
+        Protected
+      </span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-ink-primary mb-space-xs">Node Protection Checklist</h2>
+<p class="font-body-sm text-body-sm text-ink-secondary mb-space-md">Deterministic local cryptographic integrity metrics. 5 of 6 defenses fully satisfied.</p>
+<!-- Checklist items (Explicit list, no fake circular progress ring) -->
+<div class="space-y-space-sm bg-surface-container-low rounded-lg p-space-sm">
+<div class="flex items-start gap-space-sm">
+<div class="w-5 h-5 rounded-full bg-status-success/15 text-status-success flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[14px] font-bold">check</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-ink-primary font-medium">TLS 1.3 Encryption Enforced</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Port 8443 · Self-signed Ed25519 root node cert</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm">
+<div class="w-5 h-5 rounded-full bg-status-success/15 text-status-success flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[14px] font-bold">check</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-ink-primary font-medium">Strong Master Passphrase</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Secured via hardware biometric enclave tier</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm">
+<div class="w-5 h-5 rounded-full bg-status-success/15 text-status-success flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[14px] font-bold">check</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-ink-primary font-medium">LAN-Only Isolation Active</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">WAN/Cellular passthrough drops unsolicited SYN</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm">
+<div class="w-5 h-5 rounded-full bg-status-success/15 text-status-success flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[14px] font-bold">check</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-ink-primary font-medium">Brute-Force Rate Limiting</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">3 failed attempts triggers automatic 15m jail</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm">
+<div class="w-5 h-5 rounded-full bg-status-warning/20 text-status-warning flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[14px] font-bold">priority_high</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-ink-primary font-medium">Guest &amp; Anonymous Access</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">Disabled globally · Public audit token stale (14d)</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm">
+<div class="w-5 h-5 rounded-full bg-surface-container-high text-ink-tertiary flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[13px]">lock</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-ink-primary font-medium">Encrypted Storage Vault</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">3 directory targets encrypted with ChaCha20-Poly1305</span>
+</div>
+</div>
+</div>
+<button class="mt-space-md w-full py-2.5 px-space-md rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-between text-ink-primary" type="button">
+<span class="font-body-sm text-body-sm font-medium">Review Security Policies &amp; Rules</span>
+<span class="material-symbols-outlined text-[18px] text-ink-secondary">chevron_right</span>
+</button>
+</section>
+<!-- Active Client Sessions Section -->
+<section class="space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<h2 class="font-headline-sm text-headline-sm text-ink-primary">Active Sessions</h2>
+<span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-semibold">3 Active</span>
+</div>
+<button class="text-status-danger hover:bg-status-danger-surface px-2.5 py-1.5 rounded-lg transition-colors font-label-md text-label-md font-semibold flex items-center gap-1" id="revoke-all-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">power_settings_new</span>
+        Revoke Others
+      </button>
+</div>
+<!-- Session 1: Current Android Device -->
+<div class="w-full rounded-xl bg-surface-container-lowest p-space-md shadow-sm relative overflow-hidden">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-full bg-selection-soft text-selection-blue flex items-center justify-center shrink-0 relative">
+<span class="material-symbols-outlined text-[22px]">phone_android</span>
+<span class="w-2.5 h-2.5 rounded-full bg-status-success absolute -top-0.5 -right-0.5 animate-pulse"></span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-body-md text-body-md font-semibold text-ink-primary truncate">VaultBox Local Admin</span>
+<span class="px-1.5 py-0.5 rounded-full bg-gradient-to-r from-aurora-soft-l to-aurora-soft-p text-ink-primary font-label-sm text-label-sm font-semibold">This Device</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Root Console · Pixel 8 Pro</p>
+<div class="mt-space-sm flex flex-wrap items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-secondary text-ink-secondary font-label-sm text-label-sm">Hardware Biometric</span>
+<span class="px-2 py-0.5 rounded bg-surface-secondary text-ink-secondary font-label-sm text-label-sm">Loopback</span>
+</div>
+<div class="mt-space-sm pt-space-xs flex flex-col gap-0.5">
+<div class="flex items-center justify-between font-label-sm text-label-sm text-ink-tertiary">
+<span>Endpoint</span>
+<span class="font-label-sm text-label-sm text-ink-primary font-medium">127.0.0.1:8443</span>
+</div>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-ink-tertiary">
+<span>Session Token</span>
+<span class="font-label-sm text-label-sm text-ink-secondary">tk_admin_8f0ae42c…</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Session 2: MacBook Pro 16" -->
+<div class="w-full rounded-xl bg-surface-container-lowest p-space-md shadow-sm transition-all duration-300" id="session-card-macbook">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-ink-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">laptop_mac</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-1">
+<span class="font-body-md text-body-md font-semibold text-ink-primary truncate">MacBook Pro 16″ (Studio)</span>
+<span class="w-2 h-2 rounded-full bg-status-success shrink-0" title="Connected"></span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">macOS 14.5 · Chrome 126 &amp; WebDAV</p>
+<div class="mt-space-sm flex flex-wrap items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-selection-soft text-selection-blue font-label-sm text-label-sm font-medium">Read / Write</span>
+<span class="px-2 py-0.5 rounded bg-surface-secondary text-ink-secondary font-label-sm text-label-sm">WebDAV + HTTPS</span>
+</div>
+<div class="mt-space-sm space-y-0.5 text-ink-tertiary">
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span>IP / MAC</span>
+<span class="font-label-sm text-label-sm text-ink-primary">192.168.1.102 · e2:89:bc:41</span>
+</div>
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span>Telemetry</span>
+<span class="font-label-sm text-label-sm text-ink-secondary">Active 12s ago · 14.2 MB tx</span>
+</div>
+</div>
+<div class="mt-space-md flex justify-end">
+<button class="px-space-md py-1.5 rounded-full bg-status-danger-surface text-status-danger hover:bg-status-danger/15 transition-colors font-label-sm text-label-sm font-semibold flex items-center gap-1" onclick="terminateSession('session-card-macbook', 'MacBook Pro 16″')" type="button">
+<span class="material-symbols-outlined text-[15px]">link_off</span>
+              Disconnect Session
+            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Session 3: iPad Pro 12.9" -->
+<div class="w-full rounded-xl bg-surface-container-lowest p-space-md shadow-sm transition-all duration-300" id="session-card-ipad">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-ink-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">tablet_mac</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-1">
+<span class="font-body-md text-body-md font-semibold text-ink-primary truncate">iPad Pro 12.9″ (Field)</span>
+<span class="w-2 h-2 rounded-full bg-status-warning shrink-0" title="Idle"></span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-0.5">Safari Web Portal Ingest</p>
+<div class="mt-space-sm flex flex-wrap items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-secondary text-ink-secondary font-label-sm text-label-sm font-medium">Read Only</span>
+<span class="px-2 py-0.5 rounded bg-surface-secondary text-ink-secondary font-label-sm text-label-sm">Web Portal</span>
+</div>
+<div class="mt-space-sm space-y-0.5 text-ink-tertiary">
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span>Subnet Host</span>
+<span class="font-label-sm text-label-sm text-ink-primary">192.168.1.118</span>
+</div>
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span>Activity</span>
+<span class="font-label-sm text-label-sm text-ink-secondary">Idle · Connected 42m ago</span>
+</div>
+</div>
+<div class="mt-space-md flex justify-end">
+<button class="px-space-md py-1.5 rounded-full bg-status-danger-surface text-status-danger hover:bg-status-danger/15 transition-colors font-label-sm text-label-sm font-semibold flex items-center gap-1" onclick="terminateSession('session-card-ipad', 'iPad Pro 12.9″')" type="button">
+<span class="material-symbols-outlined text-[15px]">link_off</span>
+              Disconnect Session
+            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Intrusion & Failed-Login Jail (Section 73) -->
+<section class="w-full rounded-xl bg-surface-container-lowest p-space-md shadow-sm space-y-space-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-status-warning/10 text-status-warning flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">security</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-ink-primary">Intrusion &amp; Jail Guard</h2>
+<span class="font-label-sm text-label-sm text-status-success font-medium">Active Defense · 0 IPs Banned</span>
+</div>
+</div>
+<!-- Interactive Switch -->
+<label class="relative inline-flex items-center cursor-pointer min-w-[44px] min-h-[44px]">
+<input checked="" class="sr-only peer" id="jail-toggle" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[14px] after:left-[4px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<p class="font-body-sm text-body-sm text-ink-secondary">
+      Automatically drops TCP handshakes at kernel socket level after 5 consecutive bad credentials from any node on <code class="font-label-sm text-label-sm bg-surface-secondary px-1 py-0.5 rounded">192.168.1.0/24</code>.
+    </p>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-ink-secondary">history</span>
+<span class="font-body-sm text-body-sm text-ink-primary">Access Audits</span>
+</div>
+<button class="font-label-sm text-label-sm text-primary font-semibold hover:underline" type="button">
+        2 Logged Events This Week →
+      </button>
+</div>
+</section>
+<!-- App Lock & Biometrics (Section 73 & 28) -->
+<section class="w-full rounded-xl bg-surface-container-lowest p-space-md shadow-sm space-y-space-md">
+<div class="flex items-center gap-space-sm mb-space-xs">
+<div class="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">fingerprint</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-ink-primary">App Lock &amp; Privacy</h2>
+<span class="font-label-sm text-label-sm text-ink-secondary">Local client security barriers</span>
+</div>
+</div>
+<div class="divide-y divide-border-default/40">
+<!-- Biometric Lock Row -->
+<div class="py-space-sm flex items-center justify-between gap-space-sm">
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md text-ink-primary font-medium">Biometric Lock</span>
+<span class="font-body-sm text-body-sm text-ink-secondary">Fingerprint or Face Unlock upon return</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer min-w-[44px] min-h-[44px]">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[14px] after:left-[4px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Timeout Row -->
+<div class="py-space-sm flex items-center justify-between gap-space-sm">
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md text-ink-primary font-medium">Auto-Lock Delay</span>
+<span class="font-body-sm text-body-sm text-ink-secondary">Time before session re-authentication</span>
+</div>
+<button class="px-space-sm py-1.5 rounded-lg bg-surface-container font-label-sm text-label-sm text-ink-primary font-medium flex items-center gap-1" type="button">
+<span>Immediately</span>
+<span class="material-symbols-outlined text-[16px]">unfold_more</span>
+</button>
+</div>
+<!-- Recents Obfuscation Row -->
+<div class="pt-space-sm flex items-center justify-between gap-space-sm">
+<div class="flex flex-col min-w-0">
+<span class="font-body-md text-body-md text-ink-primary font-medium">Android Recents Privacy</span>
+<span class="font-body-sm text-body-sm text-ink-secondary">Obfuscate screen preview in app switcher</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer min-w-[44px] min-h-[44px]">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[14px] after:left-[4px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Hardware Key & StrongBox Keystore Attestation -->
+<section class="w-full rounded-xl bg-surface-container-lowest p-space-md shadow-sm space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-primary">memory</span>
+<h2 class="font-headline-sm text-headline-sm text-ink-primary">Hardware Attestation</h2>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-status-success/10 text-status-success font-semibold">Verified</span>
+</div>
+<div class="bg-surface-secondary rounded-lg p-space-sm space-y-2">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-ink-tertiary">KEYSTORE PROVIDER</span>
+<span class="font-label-md text-label-md text-ink-primary">Google Tensor G3 StrongBox Keymaster</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-ink-tertiary">KEY DERIVATION ENCLAVE</span>
+<span class="font-label-md text-label-md text-ink-secondary">PBKDF2-HMAC-SHA512 + AES-256-GCM hardware tier</span>
+</div>
+<div class="flex flex-col pt-1">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-ink-tertiary">NODE FINGERPRINT (SHA-256)</span>
+<button class="font-label-sm text-label-sm text-primary flex items-center gap-0.5 hover:underline" id="copy-fp-btn" type="button">
+<span class="material-symbols-outlined text-[13px]">content_copy</span>
+            Copy
+          </button>
+</div>
+<span class="font-label-sm text-label-sm text-ink-primary break-all bg-surface-container-high/40 p-1.5 rounded mt-1" id="fingerprint-val">
+          7F:3A:99:C1:4E:02:DE:10:9B:F4:55:A6:48:72:EE:91:0A:74:39:BC:AA:08:12:F3:9C:5D:88:41:88:EC:31:02
+        </span>
+</div>
+</div>
+</section>
+<!-- Interactive Revoke Modal (Local Vanilla JS trigger) -->
+<div class="fixed inset-0 z-50 bg-ink-primary/40 backdrop-blur-sm hidden items-center justify-center p-space-md" id="revoke-modal">
+<div class="w-full max-w-sm bg-surface-primary rounded-xl p-space-md shadow-xl space-y-space-md">
+<div class="w-12 h-12 rounded-full bg-status-danger-surface text-status-danger flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">crisis_alert</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-ink-primary">Revoke All Remote Sessions?</h3>
+<p class="font-body-sm text-body-sm text-ink-secondary mt-1">
+          This will immediately invalidate WebDAV, HTTPS, and API access tokens for all devices except this local admin phone.
+        </p>
+</div>
+<div class="flex items-center justify-end gap-space-sm pt-space-xs">
+<button class="px-space-md py-2 rounded-full text-ink-secondary hover:bg-surface-container font-label-md text-label-md font-semibold transition-colors" id="cancel-revoke-btn" type="button">
+          Cancel
+        </button>
+<button class="px-space-md py-2 rounded-full bg-status-danger text-on-error font-label-md text-label-md font-semibold shadow transition-transform active:scale-95" id="confirm-revoke-btn" type="button">
+          Revoke 2 Sessions
+        </button>
+</div>
+</div>
+</div>
+<!-- Toast Notification -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-space-md py-2 rounded-full bg-ink-primary text-surface-primary font-label-sm text-label-sm shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none flex items-center gap-2" id="toast">
+<span class="material-symbols-outlined text-[16px] text-status-success">check_circle</span>
+<span id="toast-message">Action confirmed</span>
+</div>
+</div>
+<script>
+  // Ensure the settings tab in the navigation dock is active
+  (function initDockActiveState() {
+    const dockLinks = document.querySelectorAll('nav a[data-path]');
+    const activeClasses = (document.querySelector('nav[data-active-classes]')?.getAttribute('data-active-classes') || '').split(' ').filter(Boolean);
+    
+    dockLinks.forEach(link => {
+      const isSettings = link.getAttribute('data-path') === 'settings';
+      if (isSettings) {
+        link.classList.add(...activeClasses);
+        link.classList.remove('text-ink-secondary');
+      } else {
+        link.classList.remove(...activeClasses);
+        link.classList.add('text-ink-secondary');
+      }
+    });
+  })();
+
+  // Toast Helper
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toast-message');
+    if (!toast || !toastMsg) return;
+    toastMsg.textContent = msg;
+    toast.classList.remove('opacity-0');
+    toast.classList.add('opacity-100');
+    setTimeout(() => {
+      toast.classList.remove('opacity-100');
+      toast.classList.add('opacity-0');
+    }, 2800);
+  }
+
+  // Session termination helper
+  function terminateSession(elementId, name) {
+    const target = document.getElementById(elementId);
+    if (!target) return;
+    target.style.opacity = '0.4';
+    target.style.transform = 'scale(0.98)';
+    setTimeout(() => {
+      target.remove();
+      showToast(`Disconnected ${name}`);
+    }, 260);
+  }
+
+  // Revoke All Modal Interactions
+  const revokeBtn = document.getElementById('revoke-all-btn');
+  const modal = document.getElementById('revoke-modal');
+  const cancelBtn = document.getElementById('cancel-revoke-btn');
+  const confirmBtn = document.getElementById('confirm-revoke-btn');
+
+  if (revokeBtn && modal) {
+    revokeBtn.addEventListener('click', () => {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    });
+  }
+
+  if (cancelBtn && modal) {
+    cancelBtn.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    });
+  }
+
+  if (confirmBtn && modal) {
+    confirmBtn.addEventListener('click', () => {
+      const macCard = document.getElementById('session-card-macbook');
+      const ipadCard = document.getElementById('session-card-ipad');
+      if (macCard) macCard.remove();
+      if (ipadCard) ipadCard.remove();
+
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      showToast('All remote sessions revoked immediately');
+    });
+  }
+
+  // Copy fingerprint to clipboard
+  const copyFpBtn = document.getElementById('copy-fp-btn');
+  const fpVal = document.getElementById('fingerprint-val');
+  if (copyFpBtn && fpVal) {
+    copyFpBtn.addEventListener('click', () => {
+      navigator.clipboard?.writeText(fpVal.textContent.trim());
+      showToast('Node SHA-256 fingerprint copied');
+    });
+  }
+
+  // Info trigger
+  const infoBtn = document.getElementById('audit-info-trigger');
+  if (infoBtn) {
+    infoBtn.addEventListener('click', () => {
+      showToast('Hardware enclave active · 0 alerts pending');
+    });
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe pointer-events-none" data-active-classes="text-ink-primary bg-white/90 shadow-[0_2px_12px_rgba(143,131,216,0.25)] ring-[1.5px] ring-border-strong font-semibold"><div class="px-margin pb-space-sm pt-space-xs flex justify-center"><div class="w-full max-w-md h-[68px] bg-white/80 backdrop-blur-xl rounded-full shadow-[0_4px_20px_rgba(26,26,26,0.06)] ring-[1.5px] ring-border-default/80 p-1.5 flex items-center justify-between pointer-events-auto"><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[22px]">dns</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="file-browser" href="#"><span class="material-symbols-outlined text-[22px]">folder_open</span><span class="font-label-sm text-label-sm mt-0.5">Files</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="share-hub" href="#"><span class="material-symbols-outlined text-[22px]">share</span><span class="font-label-sm text-label-sm mt-0.5">Share</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="activity-monitor" href="#"><span class="material-symbols-outlined text-[22px]">monitoring</span><span class="font-label-sm text-label-sm mt-0.5">Activity</span></a><a aria-current="page" class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full transition-all duration-200 text-ink-primary bg-white/90 shadow-[0_2px_12px_rgba(143,131,216,0.25)] ring-[1.5px] ring-border-strong font-semibold" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-label-sm text-label-sm mt-0.5">Settings</span></a></div></div></nav></body></html>

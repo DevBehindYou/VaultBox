@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "selection-soft": "#EEF3FB", "status-success": "#3A7A4A", "tertiary": "#864866", "surface-bright": "#fbf9f4", "border-default": "#DCDCDC", "on-primary-fixed-variant": "#473a8a", "error-container": "#ffdad6", "border-strong": "#1A1A1A", "primary-fixed": "#e5deff", "surface-container-high": "#eae8e3", "on-secondary-fixed": "#001b3c", "on-primary-container": "#fffbff", "ink-primary": "#1A1A1A", "on-error": "#ffffff", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#c8bfff", "on-secondary-fixed-variant": "#00468a", "outline-variant": "#c9c4d2", "status-danger": "#A34A4A", "on-tertiary-container": "#fffbff", "on-primary-fixed": "#1a045e", "on-error-container": "#93000a", "status-warning-border": "#DCD0B0", "primary": "#5c50a1", "on-surface-variant": "#484551", "tertiary-container": "#a2607f", "on-tertiary-fixed": "#390724", "inverse-surface": "#30312d", "on-secondary": "#ffffff", "status-danger-surface": "#FDF6F6", "inverse-on-surface": "#f3f1eb", "secondary": "#005eb4", "background": "#fbf9f4", "aurora-soft-l": "#CFC8EF", "on-tertiary-fixed-variant": "#6d3350", "secondary-container": "#5a9fff", "aurora-pink": "#D98FB0", "aurora-soft-p": "#EEC9D6", "on-secondary-container": "#00356a", "border-muted": "#E8E8E8", "on-surface": "#1b1c19", "surface-container-low": "#f5f3ee", "inverse-primary": "#c8bfff", "tertiary-fixed-dim": "#feb0d2", "surface-dim": "#dcdad5", "ink-disabled": "#A5A5A5", "tertiary-fixed": "#ffd8e7", "surface-tint": "#5f53a4", "surface-variant": "#e4e2dd", "on-primary": "#ffffff", "primary-container": "#7569bc", "ink-tertiary": "#8A8A8A", "surface-secondary": "#FAFAFA", "surface": "#fbf9f4", "secondary-fixed": "#d5e3ff", "status-warning": "#8A6A2A", "status-success-border": "#B0CDB4", "selection-blue": "#2A78D6", "aurora-lavender": "#8F83D8", "surface-primary": "#FFFFFF", "aurora-mid": "#B58FD0", "outline": "#797582", "error": "#ba1a1a", "surface-container-highest": "#e4e2dd", "on-tertiary": "#ffffff", "on-background": "#1b1c19", "surface-tertiary": "#F7F7F5", "surface-container": "#f0eee9", "secondary-fixed-dim": "#a8c8ff", "ink-secondary": "#666666", "status-danger-border": "#C98A8A" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xl": "1.5rem", "space-sm": "0.5rem", "gutter-sm": "0.75rem", "margin-lg": "1.5rem", "gutter": "1rem", "space-md": "1rem", "space-xs": "0.25rem", "margin-sm": "0.875rem", "gutter-lg": "1.5rem", "margin": "1rem", "space-lg": "1.25rem" }, "fontFamily": { "label-lg": ["Inter"], "label-md": ["JetBrains Mono"], "label-sm": ["JetBrains Mono"], "display-xl": ["Epilogue"], "display-xl-mobile": ["Epilogue"], "headline-md": ["Epilogue"], "body-md": ["Inter"], "body-sm": ["Inter"], "body-lg": ["Inter"], "headline-lg": ["Epilogue"], "headline-sm": ["Epilogue"] }, "fontSize": { "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "500" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "display-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "display-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "30px", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }] } } } };</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; min-height: 100vh; background-color: #fbf9f4; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style></head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0 flex-1"><img alt="A modern geometric server NAS emblem for VaultBox. Stylized storage vault cube box with subtle network pulse signal lines, rendered with soft lavender and violet aurora accents and crisp ink borders. Clean vector icon, perfectly centered.. Design context: - Primary color: #8f83d8 - Font: epilogue - Mode: light - Roundness: rounded-md . The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1XFa-uWEsGJPgdLDzAOo7A0aej7Tu1EA-aPNPuKD3u556Cv3c39haZ4T7BqCw4jnYpkWgsZPjsINsWzOouij-4DG3Cbi7Fgr9mpIxiRwvrmaGL0Ubd-PxA8OW3f9dt74s7O9tkigKcIkulCHst4kr4KWX_9ArAErbPl1DOf4NQqUZu8a_DxX9ouOWO_l0EJy1fRNdFQO8reujt8MlLgs_TNlhLubtUjTytYFPUtxFs10rKncpmO3hpsppQ"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-ink-primary tracking-tight truncate">VaultBox</span><span class="px-space-xs py-[2px] rounded-full bg-surface-primary text-status-success font-label-sm text-label-sm flex items-center gap-1 shadow-[0_0_0_1.5px_#B0CDB4]"><span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>Live</span></div><span class="font-label-sm text-label-sm text-ink-secondary truncate">Settings</span></div></div><div class="flex items-center gap-space-xs shrink-0"><a aria-label="Settings" class="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full text-ink-primary hover:bg-surface-container transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[20px]">settings</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-32 px-margin bg-surface"><div class="flex flex-col w-full relative">
+<!-- Underlying Screen Mock (Blurred Files Storage Explorer) -->
+<div class="flex flex-col w-full opacity-40 blur-[3px] select-none pointer-events-none space-y-space-md">
+<!-- Breadcrumb Bar -->
+<div class="flex items-center justify-between bg-surface-container-low rounded-lg p-space-sm">
+<div class="flex items-center gap-space-xs text-ink-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">dns</span>
+<span>vault-node-01</span>
+<span>/</span>
+<span class="text-ink-primary font-bold">MediaPool</span>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-primary px-2 py-0.5 rounded text-ink-secondary">RAID 1 • Healthy</span>
+</div>
+<!-- Storage Pool Snapshot Card -->
+<div class="bg-surface-primary rounded-xl p-space-md shadow-sm">
+<div class="flex items-center justify-between mb-space-xs">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">hard_drive</span>
+</div>
+<div>
+<p class="font-label-lg text-label-lg text-ink-primary">Seagate IronWolf Pro 8TB</p>
+<p class="font-label-sm text-label-sm text-ink-secondary">ZFS Pool /mnt/storage-alpha</p>
+</div>
+</div>
+<span class="font-label-md text-label-md text-status-success font-semibold">ONLINE</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2.5 overflow-hidden my-space-xs">
+<div class="bg-primary h-full rounded-full" style="width: 64%"></div>
+</div>
+<div class="flex justify-between font-label-sm text-label-sm text-ink-secondary">
+<span>5.12 TB Allocated</span>
+<span>2.88 TB Free</span>
+</div>
+</div>
+<!-- Mock File Explorer List Items -->
+<div class="space-y-space-xs">
+<div class="bg-surface-primary rounded-xl p-space-sm flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[22px]">folder</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-ink-primary">DCIM_Backups_2024</p>
+<p class="font-label-sm text-label-sm text-ink-secondary">14 items • Modified 2h ago</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-ink-tertiary">more_vert</span>
+</div>
+<div class="bg-surface-primary rounded-xl p-space-sm flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">image</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-ink-primary">aurora_night_raw_9042.dng</p>
+<p class="font-label-sm text-label-sm text-ink-secondary">48.2 MB • Oct 24, 2024</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-ink-tertiary">more_vert</span>
+</div>
+<div class="bg-surface-primary rounded-xl p-space-sm flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[22px]">lock</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-ink-primary">cold_recovery_keys.kdbx.enc</p>
+<p class="font-label-sm text-label-sm text-ink-secondary">1.2 MB • Argon2id</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-ink-tertiary">more_vert</span>
+</div>
+</div>
+</div>
+<!-- Ambient Backdrop Scrim -->
+<div class="fixed inset-0 bg-ink-primary/25 backdrop-blur-[2px] z-30 pointer-events-auto transition-opacity" id="modal-backdrop"></div>
+<!-- Interactive Sort & Filter Bottom Sheet -->
+<section aria-label="Filesystem Sort and Filter Options" class="relative z-40 -mt-72 mb-2 w-full bg-surface-primary rounded-t-[18px] shadow-2xl flex flex-col overflow-hidden" id="filter-sheet">
+<!-- Top Drag Handle & Tactile Indicator -->
+<div class="w-full flex flex-col items-center pt-3 pb-1">
+<div aria-hidden="true" class="w-12 h-1.5 rounded-full bg-surface-container-high transition-transform duration-200 active:scale-95"></div>
+</div>
+<!-- Sheet Header -->
+<div class="px-space-md pt-space-xs pb-space-sm flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm tracking-wider uppercase text-primary font-semibold">
+          FILESYSTEM VIEW PREFERENCES
+        </span>
+<h2 class="font-headline-md text-headline-md text-ink-primary tracking-tight flex items-center gap-2">
+          Sort &amp; Filter Files
+          <span class="font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed-variant px-2 py-0.5 rounded-full font-semibold">
+            Active
+          </span>
+</h2>
+</div>
+<button aria-label="Close sort and filter panel" class="w-9 h-9 rounded-full bg-surface-container-low hover:bg-surface-container flex items-center justify-center text-ink-primary transition-transform active:scale-90" id="btn-close-sheet" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Scrollable Sheet Content -->
+<div class="flex-1 overflow-y-auto px-space-md space-y-space-lg pb-space-md max-h-[64vh]">
+<!-- Section 1: Sort Order -->
+<div class="space-y-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-headline-sm text-headline-sm text-ink-primary flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[20px]">sort</span>
+            Sort Order
+          </label>
+<span class="font-label-sm text-label-sm text-ink-secondary">Primary Index</span>
+</div>
+<div aria-label="File Sort Options" class="grid grid-cols-2 gap-2 pt-1" role="radiogroup">
+<!-- Option 1: Name A-Z -->
+<button aria-checked="false" class="sort-pill text-left px-3 py-2.5 rounded-lg bg-surface-secondary text-ink-primary flex items-center justify-between transition-all duration-150 hover:bg-surface-container" role="radio" type="button">
+<span class="font-body-md text-body-md">Name (A → Z)</span>
+<span class="material-symbols-outlined text-[16px] text-ink-disabled">arrow_downward</span>
+</button>
+<!-- Option 2: Name Z-A -->
+<button aria-checked="false" class="sort-pill text-left px-3 py-2.5 rounded-lg bg-surface-secondary text-ink-primary flex items-center justify-between transition-all duration-150 hover:bg-surface-container" role="radio" type="button">
+<span class="font-body-md text-body-md">Name (Z → A)</span>
+<span class="material-symbols-outlined text-[16px] text-ink-disabled">arrow_upward</span>
+</button>
+<!-- Option 3: Newest First [Selected] -->
+<button aria-checked="true" class="sort-pill active-sort text-left px-3 py-2.5 rounded-lg bg-primary-fixed text-ink-primary flex items-center justify-between shadow-sm transition-all duration-150" role="radio" type="button">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-body-md text-body-md font-semibold">Newest first</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span>
+</button>
+<!-- Option 4: Oldest First -->
+<button aria-checked="false" class="sort-pill text-left px-3 py-2.5 rounded-lg bg-surface-secondary text-ink-primary flex items-center justify-between transition-all duration-150 hover:bg-surface-container" role="radio" type="button">
+<span class="font-body-md text-body-md">Oldest first</span>
+<span class="material-symbols-outlined text-[16px] text-ink-disabled">history</span>
+</button>
+<!-- Option 5: Largest First -->
+<button aria-checked="false" class="sort-pill text-left px-3 py-2.5 rounded-lg bg-surface-secondary text-ink-primary flex items-center justify-between transition-all duration-150 hover:bg-surface-container" role="radio" type="button">
+<span class="font-body-md text-body-md">Largest first</span>
+<span class="material-symbols-outlined text-[16px] text-ink-disabled">data_usage</span>
+</button>
+<!-- Option 6: Smallest First -->
+<button aria-checked="false" class="sort-pill text-left px-3 py-2.5 rounded-lg bg-surface-secondary text-ink-primary flex items-center justify-between transition-all duration-150 hover:bg-surface-container" role="radio" type="button">
+<span class="font-body-md text-body-md">Smallest first</span>
+<span class="material-symbols-outlined text-[16px] text-ink-disabled">straighten</span>
+</button>
+<!-- Option 7: File Extension (Spans 2 columns) -->
+<button aria-checked="false" class="sort-pill col-span-2 text-left px-3 py-2.5 rounded-lg bg-surface-secondary text-ink-primary flex items-center justify-between transition-all duration-150 hover:bg-surface-container" role="radio" type="button">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-ink-secondary">extension</span>
+<span class="font-body-md text-body-md">File Extension (.dng, .mp4, .pdf)</span>
+</div>
+<span class="material-symbols-outlined text-[16px] text-ink-disabled">category</span>
+</button>
+</div>
+</div>
+<!-- Section 2: Filter by File Type -->
+<div class="space-y-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-headline-sm text-headline-sm text-ink-primary flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[20px]">filter_alt</span>
+            Filter by File Type
+          </label>
+<button class="font-label-sm text-label-sm text-secondary hover:underline" id="btn-select-all" type="button">
+            Select all
+          </button>
+</div>
+<div aria-label="Filter file formats" class="flex flex-wrap gap-2 pt-1" role="group">
+<!-- Folders (14) Active -->
+<button aria-pressed="true" class="filter-chip flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-selection-soft text-secondary transition-transform active:scale-95 shadow-sm" data-count="14" type="button">
+<span class="material-symbols-outlined text-[16px]">folder</span>
+<span class="font-body-sm text-body-sm font-semibold">Folders</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-surface-primary text-secondary font-semibold">14</span>
+</button>
+<!-- Images (382) Active -->
+<button aria-pressed="true" class="filter-chip flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-selection-soft text-secondary transition-transform active:scale-95 shadow-sm" data-count="382" type="button">
+<span class="material-symbols-outlined text-[16px]">image</span>
+<span class="font-body-sm text-body-sm font-semibold">Images</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-surface-primary text-secondary font-semibold">382</span>
+</button>
+<!-- Video (28) Inactive -->
+<button aria-pressed="false" class="filter-chip flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low text-ink-secondary hover:bg-surface-container transition-transform active:scale-95" data-count="28" type="button">
+<span class="material-symbols-outlined text-[16px]">movie</span>
+<span class="font-body-sm text-body-sm">Video</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-surface-primary text-ink-secondary">28</span>
+</button>
+<!-- Audio (94) Inactive -->
+<button aria-pressed="false" class="filter-chip flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low text-ink-secondary hover:bg-surface-container transition-transform active:scale-95" data-count="94" type="button">
+<span class="material-symbols-outlined text-[16px]">audiotrack</span>
+<span class="font-body-sm text-body-sm">Audio</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-surface-primary text-ink-secondary">94</span>
+</button>
+<!-- Documents (51) Inactive -->
+<button aria-pressed="false" class="filter-chip flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low text-ink-secondary hover:bg-surface-container transition-transform active:scale-95" data-count="51" type="button">
+<span class="material-symbols-outlined text-[16px]">description</span>
+<span class="font-body-sm text-body-sm">Documents</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-surface-primary text-ink-secondary">51</span>
+</button>
+<!-- Archives (12) Inactive -->
+<button aria-pressed="false" class="filter-chip flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low text-ink-secondary hover:bg-surface-container transition-transform active:scale-95" data-count="12" type="button">
+<span class="material-symbols-outlined text-[16px]">folder_zip</span>
+<span class="font-body-sm text-body-sm">Archives</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-surface-primary text-ink-secondary">12</span>
+</button>
+<!-- Other (7) Inactive -->
+<button aria-pressed="false" class="filter-chip flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low text-ink-secondary hover:bg-surface-container transition-transform active:scale-95" data-count="7" type="button">
+<span class="material-symbols-outlined text-[16px]">device_unknown</span>
+<span class="font-body-sm text-body-sm">Other</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-surface-primary text-ink-secondary">7</span>
+</button>
+</div>
+</div>
+<!-- Section 3: Security & Attribute Filters -->
+<div class="space-y-space-xs">
+<label class="font-headline-sm text-headline-sm text-ink-primary flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[20px]">verified_user</span>
+          Security &amp; Attribute Filters
+        </label>
+<div class="space-y-2 bg-surface-secondary rounded-xl p-space-sm">
+<!-- Toggle 1: Show Hidden Files (.nomedia) - Active -->
+<div class="flex items-center justify-between py-1">
+<div class="flex items-center gap-space-sm pr-2">
+<div class="w-8 h-8 rounded-lg bg-surface-primary flex items-center justify-center text-ink-primary shadow-xs">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-medium text-ink-primary">Show Hidden Files</p>
+<p class="font-label-sm text-label-sm text-ink-secondary font-mono">Includes .nomedia &amp; hidden nodes</p>
+</div>
+</div>
+<button aria-checked="true" class="toggle-switch relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full bg-primary transition-colors duration-200 ease-in-out focus:outline-none" role="switch" type="button">
+<span class="translate-x-5 inline-block h-5 w-5 transform rounded-full bg-surface-primary shadow-sm ring-0 transition duration-200 ease-in-out mt-0.5 ml-0.5"></span>
+</button>
+</div>
+<!-- Divider -->
+<div class="h-[1px] bg-surface-container w-full"></div>
+<!-- Toggle 2: Encrypted Vault Items Only - Inactive -->
+<div class="flex items-center justify-between py-1">
+<div class="flex items-center gap-space-sm pr-2">
+<div class="w-8 h-8 rounded-lg bg-surface-primary flex items-center justify-center text-ink-primary shadow-xs">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-medium text-ink-primary">Encrypted Items Only</p>
+<p class="font-label-sm text-label-sm text-ink-secondary">AES-GCM / Argon2 hardware partitions</p>
+</div>
+</div>
+<button aria-checked="false" class="toggle-switch relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full bg-surface-container-high transition-colors duration-200 ease-in-out focus:outline-none" role="switch" type="button">
+<span class="translate-x-0 inline-block h-5 w-5 transform rounded-full bg-surface-primary shadow-sm ring-0 transition duration-200 ease-in-out mt-0.5 ml-0.5"></span>
+</button>
+</div>
+<!-- Divider -->
+<div class="h-[1px] bg-surface-container w-full"></div>
+<!-- Toggle 3: Shared Link Items Only - Inactive -->
+<div class="flex items-center justify-between py-1">
+<div class="flex items-center gap-space-sm pr-2">
+<div class="w-8 h-8 rounded-lg bg-surface-primary flex items-center justify-center text-ink-primary shadow-xs">
+<span class="material-symbols-outlined text-[18px]">link</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-medium text-ink-primary">Shared Link Items Only</p>
+<p class="font-label-sm text-label-sm text-ink-secondary">Files with external share token active</p>
+</div>
+</div>
+<button aria-checked="false" class="toggle-switch relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full bg-surface-container-high transition-colors duration-200 ease-in-out focus:outline-none" role="switch" type="button">
+<span class="translate-x-0 inline-block h-5 w-5 transform rounded-full bg-surface-primary shadow-sm ring-0 transition duration-200 ease-in-out mt-0.5 ml-0.5"></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Sheet Action Footer -->
+<div class="p-space-md bg-surface-container-lowest flex items-center gap-space-sm shadow-inner">
+<!-- Outline Reset Button -->
+<button class="h-12 px-space-md rounded-full bg-surface-secondary hover:bg-surface-container text-ink-primary font-body-md text-body-md font-semibold flex items-center justify-center gap-1.5 transition-all duration-150 active:scale-95 shrink-0" id="btn-reset" type="button">
+<span class="material-symbols-outlined text-[18px]">restart_alt</span>
+<span>Reset Defaults</span>
+</button>
+<!-- Aurora Gradient Apply CTA Button -->
+<button class="flex-1 h-12 px-space-md rounded-full bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink text-ink-primary font-body-md text-body-md font-semibold flex items-center justify-center gap-2 shadow-md hover:brightness-105 active:scale-95 transition-all duration-150" id="btn-apply-filters" type="button">
+<span class="material-symbols-outlined text-[20px]">done_all</span>
+<span id="cta-label">Apply View Filters (396 items)</span>
+</button>
+</div>
+</section>
+</div>
+<script>
+  (() => {
+    // Sort radio selection handler
+    const sortPills = document.querySelectorAll('.sort-pill');
+    sortPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        sortPills.forEach(p => {
+          p.setAttribute('aria-checked', 'false');
+          p.classList.remove('bg-primary-fixed', 'active-sort');
+          p.classList.add('bg-surface-secondary');
+          const checkIcon = p.querySelector('.material-symbols-outlined');
+          if (checkIcon && checkIcon.textContent === 'check_circle') {
+            checkIcon.textContent = 'arrow_downward';
+            checkIcon.classList.add('text-ink-disabled');
+            checkIcon.classList.remove('text-secondary');
+          }
+        });
+
+        pill.setAttribute('aria-checked', 'true');
+        pill.classList.remove('bg-surface-secondary');
+        pill.classList.add('bg-primary-fixed', 'active-sort');
+      });
+    });
+
+    // Toggle switch interaction
+    const toggles = document.querySelectorAll('.toggle-switch');
+    toggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const isChecked = toggle.getAttribute('aria-checked') === 'true';
+        const next = !isChecked;
+        toggle.setAttribute('aria-checked', String(next));
+        const thumb = toggle.querySelector('span');
+
+        if (next) {
+          toggle.classList.remove('bg-surface-container-high');
+          toggle.classList.add('bg-primary');
+          thumb.classList.remove('translate-x-0');
+          thumb.classList.add('translate-x-5');
+        } else {
+          toggle.classList.remove('bg-primary');
+          toggle.classList.add('bg-surface-container-high');
+          thumb.classList.remove('translate-x-5');
+          thumb.classList.add('translate-x-0');
+        }
+      });
+    });
+
+    // Multi-select filter chips logic & dynamic count calculation
+    const filterChips = document.querySelectorAll('.filter-chip');
+    const ctaLabel = document.getElementById('cta-label');
+
+    function updateItemCount() {
+      let total = 0;
+      let anyActive = false;
+      filterChips.forEach(chip => {
+        if (chip.getAttribute('aria-pressed') === 'true') {
+          total += parseInt(chip.getAttribute('data-count') || '0', 10);
+          anyActive = true;
+        }
+      });
+      ctaLabel.textContent = anyActive 
+        ? `Apply View Filters (${total} items)` 
+        : 'Apply View Filters (All 588 items)';
+    }
+
+    filterChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const isPressed = chip.getAttribute('aria-pressed') === 'true';
+        const next = !isPressed;
+        chip.setAttribute('aria-pressed', String(next));
+
+        const badge = chip.querySelector('span:last-child');
+        const label = chip.querySelector('span:nth-child(2)');
+
+        if (next) {
+          chip.classList.remove('bg-surface-container-low', 'text-ink-secondary');
+          chip.classList.add('bg-selection-soft', 'text-secondary', 'shadow-sm');
+          if (badge) {
+            badge.classList.remove('text-ink-secondary');
+            badge.classList.add('text-secondary', 'font-semibold');
+          }
+          if (label) {
+            label.classList.add('font-semibold');
+          }
+        } else {
+          chip.classList.remove('bg-selection-soft', 'text-secondary', 'shadow-sm');
+          chip.classList.add('bg-surface-container-low', 'text-ink-secondary');
+          if (badge) {
+            badge.classList.remove('text-secondary', 'font-semibold');
+            badge.classList.add('text-ink-secondary');
+          }
+          if (label) {
+            label.classList.remove('font-semibold');
+          }
+        }
+        updateItemCount();
+      });
+    });
+
+    // Reset Defaults Action
+    const resetBtn = document.getElementById('btn-reset');
+    resetBtn?.addEventListener('click', () => {
+      // Revert chips
+      filterChips.forEach((chip, index) => {
+        const defaultActive = index < 2; // Folders & Images
+        chip.setAttribute('aria-pressed', String(defaultActive));
+        const badge = chip.querySelector('span:last-child');
+        const label = chip.querySelector('span:nth-child(2)');
+
+        if (defaultActive) {
+          chip.classList.remove('bg-surface-container-low', 'text-ink-secondary');
+          chip.classList.add('bg-selection-soft', 'text-secondary', 'shadow-sm');
+          badge?.classList.remove('text-ink-secondary');
+          badge?.classList.add('text-secondary', 'font-semibold');
+          label?.classList.add('font-semibold');
+        } else {
+          chip.classList.remove('bg-selection-soft', 'text-secondary', 'shadow-sm');
+          chip.classList.add('bg-surface-container-low', 'text-ink-secondary');
+          badge?.classList.remove('text-secondary', 'font-semibold');
+          badge?.classList.add('text-ink-secondary');
+          label?.classList.remove('font-semibold');
+        }
+      });
+      updateItemCount();
+    });
+
+    // Close Button Micro-Interaction
+    const closeBtn = document.getElementById('btn-close-sheet');
+    const sheet = document.getElementById('filter-sheet');
+    const backdrop = document.getElementById('modal-backdrop');
+
+    closeBtn?.addEventListener('click', () => {
+      sheet.style.transition = 'transform 0.25s ease-in, opacity 0.2s';
+      sheet.style.transform = 'translateY(100%)';
+      sheet.style.opacity = '0';
+      if (backdrop) backdrop.style.opacity = '0';
+      setTimeout(() => {
+        sheet.style.display = 'none';
+        if (backdrop) backdrop.style.display = 'none';
+      }, 260);
+    });
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe pointer-events-none" data-active-classes="text-ink-primary bg-white/90 shadow-[0_2px_12px_rgba(143,131,216,0.25)] ring-[1.5px] ring-border-strong font-semibold"><div class="px-margin pb-space-sm pt-space-xs flex justify-center"><div class="w-full max-w-md h-[68px] bg-white/80 backdrop-blur-xl rounded-full shadow-[0_4px_20px_rgba(26,26,26,0.06)] ring-[1.5px] ring-border-default/80 p-1.5 flex items-center justify-between pointer-events-auto"><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[22px]">dns</span><span class="font-label-sm text-label-sm mt-0.5">Home</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="file-browser" href="#"><span class="material-symbols-outlined text-[22px]">folder_open</span><span class="font-label-sm text-label-sm mt-0.5">Files</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="share-hub" href="#"><span class="material-symbols-outlined text-[22px]">share</span><span class="font-label-sm text-label-sm mt-0.5">Share</span></a><a class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full text-ink-secondary hover:text-ink-primary transition-all duration-200" data-path="activity-monitor" href="#"><span class="material-symbols-outlined text-[22px]">monitoring</span><span class="font-label-sm text-label-sm mt-0.5">Activity</span></a><a aria-current="page" class="flex-1 h-full min-w-[44px] min-h-[44px] flex flex-col items-center justify-center rounded-full transition-all duration-200 text-ink-primary bg-white/90 shadow-[0_2px_12px_rgba(143,131,216,0.25)] ring-[1.5px] ring-border-strong font-semibold" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">tune</span><span class="font-label-sm text-label-sm mt-0.5">Settings</span></a></div></div></nav></body></html>

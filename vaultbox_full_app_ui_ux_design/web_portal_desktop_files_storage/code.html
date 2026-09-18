@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"border-default":"#DCDCDC","status-warning-border":"#DCD0B0","surface-tint":"#5f53a4","status-success-border":"#B0CDB4","on-tertiary-fixed-variant":"#6d3350","primary-container":"#7569bc","on-primary-fixed-variant":"#473a8a","surface-container":"#f0eee9","tertiary":"#864866","on-primary-container":"#fffbff","tertiary-container":"#a2607f","selection-blue":"#2A78D6","surface":"#fbf9f4","secondary":"#005eb4","ink-secondary":"#666666","tertiary-fixed-dim":"#feb0d2","on-secondary-fixed":"#001b3c","status-danger-surface":"#FDF6F6","secondary-container":"#5a9fff","ink-tertiary":"#8A8A8A","primary-fixed-dim":"#c8bfff","border-strong":"#1A1A1A","surface-tertiary":"#F7F7F5","status-success":"#3A7A4A","status-danger-border":"#C98A8A","tertiary-fixed":"#ffd8e7","on-tertiary-fixed":"#390724","aurora-soft-l":"#CFC8EF","on-primary-fixed":"#1a045e","on-secondary-fixed-variant":"#00468a","surface-dim":"#dcdad5","surface-bright":"#fbf9f4","surface-container-lowest":"#ffffff","inverse-surface":"#30312d","error":"#ba1a1a","ink-disabled":"#A5A5A5","status-danger":"#A34A4A","on-surface-variant":"#484551","surface-primary":"#FFFFFF","primary-fixed":"#e5deff","ink-primary":"#1A1A1A","outline-variant":"#c9c4d2","inverse-primary":"#c8bfff","on-surface":"#1b1c19","error-container":"#ffdad6","primary":"#5c50a1","surface-variant":"#e4e2dd","inverse-on-surface":"#f3f1eb","on-error-container":"#93000a","border-muted":"#E8E8E8","on-tertiary":"#ffffff","on-tertiary-container":"#fffbff","on-secondary":"#ffffff","selection-soft":"#EEF3FB","background":"#fbf9f4","aurora-soft-p":"#EEC9D6","on-primary":"#ffffff","surface-container-low":"#f5f3ee","aurora-mid":"#B58FD0","outline":"#797582","surface-container-highest":"#e4e2dd","surface-container-high":"#eae8e3","on-secondary-container":"#00356a","surface-secondary":"#FAFAFA","aurora-pink":"#D98FB0","aurora-lavender":"#8F83D8","secondary-fixed-dim":"#a8c8ff","on-background":"#1b1c19","secondary-fixed":"#d5e3ff","status-warning":"#8A6A2A","on-error":"#ffffff"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-sm":"0.5rem","space-xl":"1.5rem",gutter:"1rem",margin:"1rem","space-md":"1rem","space-xs":"0.25rem","margin-lg":"1.5rem","gutter-lg":"1.5rem","margin-sm":"0.875rem","gutter-sm":"0.75rem","space-lg":"1.25rem"},fontFamily:{"headline-sm":["Epilogue"],"body-lg":["Inter"],"headline-md":["Epilogue"],"body-md":["Inter"],"body-sm":["Inter"],"label-md":["JetBrains Mono"],"headline-lg":["Epilogue"],"label-lg":["Inter"],"display-xl-mobile":["Epilogue"],"display-xl":["Epilogue"],"label-sm":["JetBrains Mono"]},fontSize:{"headline-sm":["18px",{lineHeight:"24px",fontWeight:"600"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"headline-md":["22px",{lineHeight:"30px",fontWeight:"600"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"label-md":["12px",{lineHeight:"16px",fontWeight:"500"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",fontWeight:"500"}],"display-xl-mobile":["30px",{lineHeight:"38px",letterSpacing:"-0.02em",fontWeight:"700"}],"display-xl":["36px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"700"}],"label-sm":["10px",{lineHeight:"14px",letterSpacing:"0.02em",fontWeight:"500"}]}}}};</script></head><body class="bg-surface-container font-body-md text-body-md text-on-surface antialiased min-h-screen"><header class="fixed top-0 left-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-md border-b-[1.5px] border-border-default shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-7xl mx-auto px-gutter-lg flex items-center justify-between gap-space-lg"><div class="flex items-center gap-space-lg shrink-0"><div class="flex items-center gap-space-sm cursor-pointer select-none"><div class="w-9 h-9 rounded-lg bg-gradient-to-br from-aurora-lavender via-aurora-mid to-aurora-pink p-[1.5px] shadow-sm flex items-center justify-center"><div class="w-full h-full bg-surface-container-lowest rounded-[6px] flex items-center justify-center"><span class="material-symbols-outlined text-ink-primary text-[20px]">deployed_code</span></div></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-ink-primary leading-none tracking-tight">VaultBox</span><span class="font-label-sm text-label-sm text-ink-tertiary uppercase tracking-wider">Node 01</span></div></div><div class="hidden xl:flex items-center gap-space-xs px-space-sm py-space-xs bg-surface-primary border-[1.5px] border-status-success-border rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><span class="w-2 h-2 rounded-full bg-status-success animate-pulse"></span><span class="font-label-md text-label-md text-status-success">● Server Live</span><span class="font-label-sm text-label-sm text-ink-tertiary ml-space-xs font-label-md">(192.168.1.41:8443)</span></div></div><nav class="hidden lg:flex items-center gap-space-xs" data-active-classes="bg-selection-soft text-selection-blue border-selection-blue font-label-lg font-medium"><a aria-current="page" class="px-space-md py-space-xs rounded-full transition-colors bg-selection-soft text-selection-blue border-selection-blue font-label-lg font-medium" data-path="files" href="#">Files</a><a class="px-space-md py-space-xs rounded-full border-[1.5px] border-transparent font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-secondary transition-colors" data-path="shared-links" href="#">Shared Links</a><a class="px-space-md py-space-xs rounded-full border-[1.5px] border-transparent font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-secondary transition-colors" data-path="activity-and-transfers" href="#">Activity &amp; Transfers</a><a class="px-space-md py-space-xs rounded-full border-[1.5px] border-transparent font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-secondary transition-colors" data-path="system-health" href="#">System Health</a></nav><div class="flex items-center gap-space-md shrink-0"><div class="hidden md:flex items-center gap-space-sm px-space-md py-space-xs bg-surface-primary border-[1.5px] border-border-default rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.02)]"><span class="material-symbols-outlined text-ink-secondary text-[18px]">pie_chart</span><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-label-sm text-label-sm text-ink-secondary">1.42 TB / 4.0 TB</span><span class="font-label-sm text-label-sm text-ink-tertiary">(35%)</span></div><div class="w-24 h-1.5 bg-surface-container rounded-full overflow-hidden border border-border-default"><div class="h-full w-[35%] bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink rounded-full"></div></div></div></div><button aria-label="Toggle Theme" class="w-9 h-9 rounded-full bg-surface-primary border-[1.5px] border-border-default flex items-center justify-center text-ink-secondary hover:text-ink-primary hover:border-border-strong hover:bg-surface-secondary transition-all" type="button"><span class="material-symbols-outlined text-[18px]">light_mode</span></button><div class="relative flex items-center gap-space-sm pl-space-xs"><div class="flex items-center gap-space-sm p-1 pr-space-sm rounded-full bg-surface-primary border-[1.5px] border-border-default hover:border-border-strong cursor-pointer transition-all"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-inner"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden sm:flex flex-col text-left"><span class="font-label-sm text-label-sm text-ink-primary font-medium leading-none">admin</span><span class="font-label-sm text-[9px] text-ink-tertiary leading-none mt-0.5">root@node01</span></div><span class="material-symbols-outlined text-ink-secondary text-[16px]">expand_more</span></div></div></div></div></header><main class="w-full pt-16 bg-surface-container min-h-screen"><div class="flex flex-col w-full">
+<div class="max-w-7xl mx-auto w-full px-gutter-lg py-space-lg flex flex-col gap-space-lg">
+<!-- Top Action & Telemetry Ribbon -->
+<div class="w-full bg-surface-primary rounded-xl p-space-md shadow-sm flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-space-md">
+<!-- Quick Search Bar with Shortcut -->
+<div class="relative flex-1 max-w-xl">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-secondary text-[20px]">search</span>
+<input class="w-full h-11 pl-10 pr-24 bg-surface-secondary text-ink-primary font-body-md text-body-md rounded-lg focus:bg-surface-primary focus:outline-none transition-all placeholder:text-ink-disabled" placeholder="Search files, checksums, EXIF metadata..." type="text"/>
+<div class="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+<kbd class="px-1.5 py-0.5 bg-surface-container text-ink-secondary font-label-sm text-label-sm rounded shadow-xs">⌘</kbd>
+<kbd class="px-1.5 py-0.5 bg-surface-container text-ink-secondary font-label-sm text-label-sm rounded shadow-xs">F</kbd>
+</div>
+</div>
+<!-- Storage Ribbon Summary -->
+<div class="hidden sm:flex items-center gap-space-md bg-surface-secondary px-space-md py-2 rounded-lg">
+<div class="flex flex-col">
+<div class="flex items-center justify-between gap-space-lg text-ink-primary">
+<span class="font-label-sm text-label-sm text-ink-secondary">Vol Storage</span>
+<span class="font-label-md text-label-md text-ink-primary">2.1 TB <span class="text-ink-tertiary">/ 3.84 TB</span></span>
+</div>
+<div class="w-48 h-2 bg-surface-container rounded-full overflow-hidden mt-1 flex">
+<div class="h-full bg-primary" style="width: 42%;"></div>
+<div class="h-full bg-aurora-pink" style="width: 13%;"></div>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-status-success font-medium">1.74 TB free</span>
+</div>
+<!-- Action Cluster -->
+<div class="flex items-center gap-space-sm shrink-0">
+<button class="h-11 px-space-md bg-surface-secondary hover:bg-surface-container text-ink-primary rounded-full font-label-lg text-label-lg flex items-center gap-space-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">create_new_folder</span>
+<span>New Folder</span>
+</button>
+<button class="h-11 px-space-lg bg-gradient-to-r from-aurora-lavender via-aurora-mid to-aurora-pink hover:opacity-95 text-ink-primary rounded-full font-label-lg text-label-lg font-semibold flex items-center gap-space-xs shadow-sm transition-all transform active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[20px]">cloud_upload</span>
+<span>Upload Files</span>
+</button>
+</div>
+</div>
+<!-- Main Section: 2-Column Split -->
+<div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- Left Sidebar / Storage & Hierarchy Rail (approx 260px - 280px equivalent on desktop) -->
+<aside class="lg:col-span-3 flex flex-col gap-space-md">
+<!-- Storage Roots Card -->
+<div class="bg-surface-primary rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-tertiary">Mounted Volumes</span>
+<span class="material-symbols-outlined text-ink-tertiary text-[16px]">hard_drive</span>
+</div>
+<!-- Internal Storage -->
+<button class="w-full p-space-sm rounded-lg flex items-center justify-between hover:bg-surface-secondary text-left transition-colors group" type="button">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-8 h-8 rounded-lg bg-surface-secondary flex items-center justify-center text-ink-secondary group-hover:text-ink-primary">
+<span class="material-symbols-outlined text-[18px]">smartphone</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-ink-primary truncate">Internal NVMe</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">54.2 GB free</span>
+</div>
+</div>
+<span class="w-2 h-2 rounded-full bg-status-success"></span>
+</button>
+<!-- Selected: Samsung EVO SD Card -->
+<button class="w-full p-space-sm rounded-lg flex items-center justify-between bg-selection-soft text-left transition-colors" type="button">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">sd_card</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-ink-primary font-medium truncate">Samsung EVO 1TB</span>
+<span class="font-label-sm text-label-sm text-selection-blue">Active Target</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-selection-blue text-[18px]">check_circle</span>
+</button>
+<!-- USB Drive / OTG -->
+<button class="w-full p-space-sm rounded-lg flex items-center justify-between bg-surface-secondary/50 opacity-60 text-left cursor-not-allowed" type="button">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-ink-disabled">
+<span class="material-symbols-outlined text-[18px]">usb</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-ink-secondary truncate">USB Drive / OTG</span>
+<span class="font-label-sm text-label-sm text-ink-disabled">Offline</span>
+</div>
+</div>
+<span class="w-2 h-2 rounded-full bg-ink-disabled"></span>
+</button>
+</div>
+<!-- Directory Shortcuts -->
+<div class="bg-surface-primary rounded-xl p-space-md shadow-sm flex flex-col gap-1">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-tertiary px-space-xs pb-space-xs">Quick Access</span>
+<a class="flex items-center justify-between px-space-sm py-2 rounded-lg bg-surface-secondary text-ink-primary font-label-lg text-label-lg" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">folder_open</span>
+<span>All Files</span>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-container px-2 py-0.5 rounded-full text-ink-secondary">38</span>
+</a>
+<a class="flex items-center justify-between px-space-sm py-2 rounded-lg hover:bg-surface-secondary text-ink-secondary hover:text-ink-primary font-label-lg text-label-lg transition-colors" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-amber-500 text-[20px]">star</span>
+<span>Favorites</span>
+</div>
+<span class="font-label-sm text-label-sm text-ink-tertiary">3</span>
+</a>
+<a class="flex items-center justify-between px-space-sm py-2 rounded-lg hover:bg-surface-secondary text-ink-secondary hover:text-ink-primary font-label-lg text-label-lg transition-colors" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-selection-blue text-[20px]">link</span>
+<span>Shared &amp; Guest Drops</span>
+</div>
+<span class="font-label-sm text-label-sm bg-selection-soft text-selection-blue px-2 py-0.5 rounded-full">4 active</span>
+</a>
+<a class="flex items-center justify-between px-space-sm py-2 rounded-lg hover:bg-surface-secondary text-ink-secondary hover:text-ink-primary font-label-lg text-label-lg transition-colors" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-tertiary text-[20px]">lock</span>
+<span>Encrypted Vault</span>
+</div>
+<span class="material-symbols-outlined text-ink-tertiary text-[16px]">key</span>
+</a>
+<a class="flex items-center justify-between px-space-sm py-2 rounded-lg hover:bg-surface-secondary text-ink-secondary hover:text-ink-primary font-label-lg text-label-lg transition-colors" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-ink-secondary text-[20px]">delete</span>
+<span>Recycle Bin</span>
+</div>
+<span class="font-label-sm text-label-sm text-ink-tertiary">12</span>
+</a>
+</div>
+<!-- Telemetry & Diagnostic Health Card -->
+<div class="bg-surface-primary rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-tertiary">Media Health</span>
+<div class="flex items-center gap-1 bg-surface-secondary px-2 py-0.5 rounded-full text-status-success font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+<span>Healthy</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-body-sm text-ink-secondary">
+<span>NAND Wear Life</span>
+<span class="font-label-md text-label-md text-ink-primary">4% Exhausted</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-status-success rounded-full" style="width: 4%;"></div>
+</div>
+<div class="pt-space-xs mt-space-xs flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-ink-tertiary">Local WebDAV Link</span>
+<div class="flex items-center justify-between bg-surface-secondary px-space-sm py-1.5 rounded-lg">
+<code class="font-label-sm text-label-sm text-ink-secondary truncate">dav://vaultbox.local:8443/dav/</code>
+<button class="p-1 hover:bg-surface-container rounded text-ink-secondary hover:text-ink-primary transition-colors" title="Copy endpoint" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+<!-- Right Main Workspace: Toolbar + DropZone + File Grid -->
+<main class="lg:col-span-9 flex flex-col gap-space-md">
+<!-- Breadcrumbs & Views Toolbar -->
+<div class="bg-surface-primary rounded-xl p-space-md shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md">
+<!-- Path Breadcrumbs -->
+<div class="flex items-center flex-wrap gap-1 min-w-0">
+<span class="font-label-md text-label-md text-ink-tertiary hover:text-ink-primary cursor-pointer">Samsung EVO 1TB</span>
+<span class="material-symbols-outlined text-ink-disabled text-[16px]">chevron_right</span>
+<span class="font-label-md text-label-md text-ink-tertiary hover:text-ink-primary cursor-pointer">DCIM</span>
+<span class="material-symbols-outlined text-ink-disabled text-[16px]">chevron_right</span>
+<span class="font-label-md text-label-md text-ink-tertiary hover:text-ink-primary cursor-pointer">Raw Camera 2026</span>
+<span class="material-symbols-outlined text-ink-disabled text-[16px]">chevron_right</span>
+<span class="font-label-md text-label-md text-ink-primary font-semibold bg-surface-secondary px-2 py-0.5 rounded">Selects_Final</span>
+<button class="ml-1 p-1 hover:bg-surface-secondary rounded text-ink-tertiary hover:text-ink-primary transition-colors" title="Copy Full Path" type="button">
+<span class="material-symbols-outlined text-[16px]">link</span>
+</button>
+</div>
+<!-- Controls: Item Count + Sort + View Mode -->
+<div class="flex items-center gap-space-sm shrink-0 self-end sm:self-auto">
+<span class="font-label-sm text-label-sm text-ink-tertiary hidden md:inline">38 items · 12.8 GB</span>
+<!-- Sort Selector -->
+<button class="h-9 px-space-sm bg-surface-secondary hover:bg-surface-container rounded-lg text-ink-secondary font-label-sm text-label-sm flex items-center gap-1 transition-colors" type="button">
+<span>Sort: Newest First</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+<!-- View Switcher -->
+<div class="flex items-center bg-surface-secondary p-1 rounded-lg">
+<button class="p-1 hover:text-ink-primary text-ink-tertiary rounded transition-colors" title="List View" type="button">
+<span class="material-symbols-outlined text-[18px]">format_list_bulleted</span>
+</button>
+<button class="p-1 bg-surface-primary text-ink-primary rounded shadow-xs" title="Grid View" type="button">
+<span class="material-symbols-outlined text-[18px]">grid_view</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Drag-and-Drop Ingestion Target -->
+<div class="relative w-full rounded-xl bg-surface-primary overflow-hidden p-space-lg flex flex-col items-center justify-center text-center shadow-sm cursor-pointer group hover:bg-surface-secondary/40 transition-colors">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center mb-space-sm text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[24px]">cloud_sync</span>
+</div>
+<p class="font-headline-sm text-headline-sm text-ink-primary">
+            Drop files or folders here to upload directly to <span class="font-label-md text-primary">/Selects_Final</span>
+</p>
+<p class="font-body-sm text-body-sm text-ink-tertiary mt-1">
+            Supports chunked streaming multi-part transfers up to 10 GB per object · Zero server compression
+          </p>
+</div>
+<!-- Subfolders Cluster -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between px-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-tertiary">Folders</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">3 subdirectories</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-space-md">
+<!-- Folder 1 -->
+<div class="bg-surface-primary rounded-xl p-space-md shadow-sm hover:shadow-md transition-all flex items-center justify-between cursor-pointer group">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">folder</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-ink-primary truncate font-medium">01_Landscape_Pano</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">14 files · 4.2 GB</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-ink-tertiary text-[18px]">more_vert</span>
+</div>
+<!-- Folder 2 -->
+<div class="bg-surface-primary rounded-xl p-space-md shadow-sm hover:shadow-md transition-all flex items-center justify-between cursor-pointer group">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">folder</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-ink-primary truncate font-medium">02_Golden_Hour</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">8 files · 1.8 GB</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-ink-tertiary text-[18px]">more_vert</span>
+</div>
+<!-- Folder 3 -->
+<div class="bg-surface-primary rounded-xl p-space-md shadow-sm hover:shadow-md transition-all flex items-center justify-between cursor-pointer group">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">folder</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-ink-primary truncate font-medium">03_Portraits_RAW</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">16 files · 6.1 GB</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-ink-tertiary text-[18px]">more_vert</span>
+</div>
+</div>
+</div>
+<!-- Files Grid -->
+<div class="flex flex-col gap-space-xs mt-space-sm">
+<div class="flex items-center justify-between px-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-ink-tertiary">Files &amp; Assets</span>
+<span class="font-label-sm text-label-sm text-ink-tertiary">5 files shown</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-space-md">
+<!-- File Card 1: DNG RAW with Verified SHA256 -->
+<div class="bg-surface-primary rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group">
+<div class="relative h-44 w-full bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Cinematic high altitude mountain range during sunrise with pink and lavender soft atmospheric light and sharp rocky crests captured on professional camera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBa_FPdt-4YK4gTjCGGsYrtUllvzg9RkeyWM1tuEx4VcWgeywebaHdgYS3bw-pGPXFmJysSnM8vsJABD-F3yZxs3YLDAaYGURsk9YEfTDd_nCFis064OBEUQt_tU1fyplqN-G4RF-QQt1H5oSjV_xNIDS5-YootRCg2lnU72tRcvYEzhg2xNfYI8AwAFvZGlRMFcGh18ebqPQ0VpczGA5dxQ3Ap0RHD77Zt2YdlS_1PPSWNyvOT01QmHw"/>
+<div class="absolute top-2 left-2 flex items-center gap-1">
+<span class="px-2 py-0.5 rounded bg-surface-primary/90 backdrop-blur-sm text-ink-primary font-label-sm text-label-sm uppercase font-semibold">RAW</span>
+<span class="p-1 rounded bg-status-success text-on-primary shadow-xs" title="SHA-256 Verified Match">
+<span class="material-symbols-outlined text-[14px] block">verified</span>
+</span>
+</div>
+<div class="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 rounded-full bg-surface-primary text-ink-primary flex items-center justify-center hover:bg-surface-secondary shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-surface-primary text-ink-primary flex items-center justify-center hover:bg-surface-secondary shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">share</span>
+</button>
+</div>
+</div>
+<div class="p-space-md flex flex-col gap-1">
+<span class="font-label-lg text-label-lg text-ink-primary font-medium truncate" title="DSC_0982_Master.dng">DSC_0982_Master.dng</span>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-ink-tertiary">
+<span>42.4 MB · Today, 14:20</span>
+<span class="font-label-sm text-[10px] text-ink-secondary truncate max-w-[80px]">hash: e3b0c4...</span>
+</div>
+</div>
+</div>
+<!-- File Card 2: 16-bit TIFF -->
+<div class="bg-surface-primary rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group">
+<div class="relative h-44 w-full bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Richly graded warm sunset photo of coastal sand dunes with deep purple ocean horizon and high contrast golden highlights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCn_DFktk3LSCVZk31Z7p6X_Pj9M-h8IqfWnI4pH2cLcdMxIG-dKpOSy2XBHg82vJ_bOPuntsliSv1G_S2oLPxPUI89bLMM7CcckEUquDH5QueApJesHxWk7RBaq2iFWgcSfgwnk16mlJEupRcAiXDKVdOa6tHLBNbE-dFeSTkAkLQIGpPMtCHmfTov57re_pmerf4qvd8jj4tusTGElDFoGwAKX19TohopYNa8tdRg0l6T6af97I5Pkg"/>
+<div class="absolute top-2 left-2">
+<span class="px-2 py-0.5 rounded bg-surface-primary/90 backdrop-blur-sm text-ink-primary font-label-sm text-label-sm uppercase font-semibold">16-Bit TIFF</span>
+</div>
+<div class="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 rounded-full bg-surface-primary text-ink-primary flex items-center justify-center hover:bg-surface-secondary shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-surface-primary text-ink-primary flex items-center justify-center hover:bg-surface-secondary shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">share</span>
+</button>
+</div>
+</div>
+<div class="p-space-md flex flex-col gap-1">
+<span class="font-label-lg text-label-lg text-ink-primary font-medium truncate" title="DSC_0983_Graded.tif">DSC_0983_Graded.tif</span>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-ink-tertiary">
+<span>118.2 MB · Today, 14:22</span>
+<span class="text-status-success font-medium">Color Synced</span>
+</div>
+</div>
+</div>
+<!-- File Card 3: 4K Video Reel -->
+<div class="bg-surface-primary rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group">
+<div class="relative h-44 w-full bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Aerial top down drone shot of dense pine forest road with a classic vintage car driving through misty morning light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaDiv4r_bAj7NApAyngmYZnK2isS14Yo2MCIP1fsLSjz7LioaBefkfvc3q3kiqBoYjskCdl8761rNN6aVBtx_HY7ybSKrgSOUmJqz54uDEkxRGpEa9gW7dDExpUJLx_PJKYyJ3ZmR7qGU4r77Z-TpFrovHRU6C0_xnAWqr-RmnutbQZfrbPULanJ65HjPfCfvZ_rTI9290LqgzAE94LaD5628Y6zb8Vt6pQ6zotvWiyeqJwvoGfwp1ag"/>
+<div class="absolute inset-0 bg-ink-primary/20 flex items-center justify-center">
+<div class="w-12 h-12 rounded-full bg-surface-primary/90 backdrop-blur-sm flex items-center justify-center text-ink-primary group-hover:scale-110 transition-transform shadow-md">
+<span class="material-symbols-outlined text-[24px] ml-0.5">play_arrow</span>
+</div>
+</div>
+<div class="absolute top-2 left-2 flex items-center gap-1">
+<span class="px-2 py-0.5 rounded bg-surface-primary/90 backdrop-blur-sm text-ink-primary font-label-sm text-label-sm uppercase font-semibold">4K ProRes</span>
+</div>
+<div class="absolute bottom-2 left-2">
+<span class="px-2 py-0.5 rounded bg-status-success text-on-primary font-label-sm text-label-sm">Stream Ready</span>
+</div>
+<div class="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 rounded-full bg-surface-primary text-ink-primary flex items-center justify-center hover:bg-surface-secondary shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-surface-primary text-ink-primary flex items-center justify-center hover:bg-surface-secondary shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">share</span>
+</button>
+</div>
+</div>
+<div class="p-space-md flex flex-col gap-1">
+<span class="font-label-lg text-label-lg text-ink-primary font-medium truncate" title="Drone_4K_Reel_04.mp4">Drone_4K_Reel_04.mp4</span>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-ink-tertiary">
+<span>1.4 GB · Today, 13:45</span>
+<span>02:18 min</span>
+</div>
+</div>
+</div>
+<!-- File Card 4: Editorial PDF Document -->
+<div class="bg-surface-primary rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group">
+<div class="relative h-44 w-full bg-surface-secondary flex flex-col items-center justify-center p-space-md text-ink-secondary">
+<div class="w-14 h-16 bg-surface-primary rounded-lg shadow-sm flex flex-col items-center justify-center gap-1">
+<span class="material-symbols-outlined text-tertiary text-[28px]">picture_as_pdf</span>
+<span class="font-label-sm text-[9px] uppercase font-bold text-tertiary">PDF</span>
+</div>
+<span class="font-body-sm text-body-sm text-ink-tertiary mt-2">v2 Document Spec</span>
+<div class="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 rounded-full bg-surface-primary text-ink-primary flex items-center justify-center hover:bg-surface-secondary shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-surface-primary text-ink-primary flex items-center justify-center hover:bg-surface-secondary shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">share</span>
+</button>
+</div>
+</div>
+<div class="p-space-md flex flex-col gap-1">
+<span class="font-label-lg text-label-lg text-ink-primary font-medium truncate" title="Editorial_Spread_v2.pdf">Editorial_Spread_v2.pdf</span>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-ink-tertiary">
+<span>18.6 MB · Yesterday</span>
+<span>32 Pages</span>
+</div>
+</div>
+</div>
+<!-- File Card 5: CSV Telemetry Flight Log -->
+<div class="bg-surface-primary rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group">
+<div class="relative h-44 w-full bg-surface-secondary flex flex-col items-center justify-center p-space-md text-ink-secondary">
+<div class="w-14 h-16 bg-surface-primary rounded-lg shadow-sm flex flex-col items-center justify-center gap-1">
+<span class="material-symbols-outlined text-status-success text-[28px]">table_chart</span>
+<span class="font-label-sm text-[9px] uppercase font-bold text-status-success">CSV</span>
+</div>
+<span class="font-body-sm text-body-sm text-ink-tertiary mt-2">GPS + Inertial Data</span>
+<div class="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="w-8 h-8 rounded-full bg-surface-primary text-ink-primary flex items-center justify-center hover:bg-surface-secondary shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-surface-primary text-ink-primary flex items-center justify-center hover:bg-surface-secondary shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">share</span>
+</button>
+</div>
+</div>
+<div class="p-space-md flex flex-col gap-1">
+<span class="font-label-lg text-label-lg text-ink-primary font-medium truncate" title="Telemetry_Flight_Log.csv">Telemetry_Flight_Log.csv</span>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-ink-tertiary">
+<span>240 KB · Oct 12</span>
+<span>4,820 Rows</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Bottom Persistent Realtime Sync Bar -->
+<div class="w-full bg-surface-primary rounded-xl px-space-md py-space-sm shadow-sm flex flex-col sm:flex-row items-center justify-between gap-space-sm text-ink-secondary">
+<div class="flex items-center gap-space-sm flex-wrap text-center sm:text-left">
+<span class="w-2.5 h-2.5 rounded-full bg-status-success animate-ping"></span>
+<span class="font-label-sm text-label-sm text-ink-primary font-medium">Connected Client:</span>
+<span class="font-label-sm text-label-sm bg-surface-secondary px-2 py-0.5 rounded text-ink-secondary">192.168.1.14 (MacBook Pro via HTTPS WebDAV)</span>
+</div>
+<div class="flex items-center gap-space-lg shrink-0">
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm">
+<span class="text-ink-tertiary">Throughput:</span>
+<span class="text-selection-blue font-semibold">42.1 MB/s</span>
+</div>
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-status-success">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+<span>WebDAV Sync: Active</span>
+</div>
+</div>
+</div>
+</div>
+</div></main><footer class="w-full bg-surface-primary border-t-[1.5px] border-border-default py-space-md"><div class="max-w-7xl mx-auto px-gutter-lg flex flex-col sm:flex-row items-center justify-between gap-space-sm"><div class="flex items-center gap-space-md"><span class="font-label-sm text-label-sm text-ink-tertiary">VaultBox OS v2.4.1-rc</span><span class="text-border-default">•</span><span class="font-label-sm text-label-sm text-ink-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-status-success">verified_user</span> End-to-End Encrypted</span></div><div class="flex items-center gap-space-lg"><a class="font-label-sm text-label-sm text-ink-secondary hover:text-ink-primary transition-colors" href="#">Documentation</a><a class="font-label-sm text-label-sm text-ink-secondary hover:text-ink-primary transition-colors" href="#">Security Log</a><a class="font-label-sm text-label-sm text-ink-secondary hover:text-ink-primary transition-colors" href="#">API Console</a></div></div></footer></body></html>

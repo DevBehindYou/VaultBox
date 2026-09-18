@@ -64,6 +64,12 @@ final class InvalidOperationFailure extends AppFailure {
   const InvalidOperationFailure({required super.message, super.debugDetail});
 }
 
+/// The person's input was rejected (weak password, bad username…). [message]
+/// is written to be shown to them directly.
+final class ValidationFailure extends AppFailure {
+  const ValidationFailure({required super.message, super.debugDetail});
+}
+
 final class PathTraversalRejectedFailure extends AppFailure {
   const PathTraversalRejectedFailure({super.debugDetail})
     : super(

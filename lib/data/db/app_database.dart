@@ -62,7 +62,21 @@ class RecycleItems extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
 
-@DriftDatabase(tables: <Type>[StorageRoots, RecycleItems])
+/// Schema v3. Login accounts. Only the PHC-encoded Argon2id hash is stored.
+@DataClassName("AccountRow")
+class Accounts extends Table {
+  TextColumn get id => text()();
+
+  /// Lower-case (see UsernamePolicy); unique so a name can't be claimed twice.
+  TextColumn get username => text().unique()();
+  TextColumn get passwordHash => text()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
+@DriftDatabase(tables: <Type>[StorageRoots, RecycleItems, Accounts])
 final class AppDatabase extends _$AppDatabase {
   /// Production use: `AppDatabase()` opens (or creates) the on-device
   /// database. `drift_flutter`'s `driftDatabase()` stores `vaultbox.sqlite`
@@ -78,7 +92,7 @@ final class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: "vaultbox"));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -89,6 +103,10 @@ final class AppDatabase extends _$AppDatabase {
         // so existing rows stay valid. (Not covered by an automated migration
         // test yet — see docs/ai-handover/PENDING_TASKS.md.)
         await m.addColumn(storageRoots, storageRoots.rootDocumentId);
+      }
+      if (from < 3) {
+        // v3: login accounts.
+        await m.createTable(accounts);
       }
     },
   );

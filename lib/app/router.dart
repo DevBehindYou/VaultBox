@@ -10,6 +10,7 @@ import "../domain/entities/storage_root.dart";
 import "../features/files/presentation/files_screen.dart";
 import "../features/files/viewmodel/files_view_model.dart";
 import "../features/home/presentation/home_screen.dart";
+import "../features/onboarding/presentation/admin_setup_screen.dart";
 import "../features/onboarding/presentation/onboarding_ready_screen.dart";
 import "../features/onboarding/presentation/onboarding_storage_screen.dart";
 import "../features/onboarding/presentation/onboarding_welcome_screen.dart";
@@ -39,6 +40,21 @@ GoRouter buildRouter(Ref ref) {
         path: "/onboarding/storage",
         builder: (BuildContext context, GoRouterState state) =>
             const OnboardingStorageScreen(),
+      ),
+      GoRoute(
+        path: "/onboarding/admin",
+        builder: (BuildContext context, GoRouterState state) => AdminSetupScreen(
+          stepLabel: "Step 3 of 3",
+          skipLabel: "Skip for now",
+          onSkip: (BuildContext context) => context.go("/onboarding/ready"),
+          onDone: (BuildContext context) => context.go("/onboarding/ready"),
+        ),
+      ),
+      // Reached from Home when no admin exists yet (outside the shell: no dock).
+      GoRoute(
+        path: "/admin/new",
+        builder: (BuildContext context, GoRouterState state) =>
+            AdminSetupScreen(onDone: (BuildContext context) => context.go("/home")),
       ),
       GoRoute(
         path: "/onboarding/ready",

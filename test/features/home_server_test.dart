@@ -5,6 +5,8 @@ import "package:vaultbox/app/providers.dart";
 import "package:vaultbox/core/design/aurora_theme.dart";
 import "package:vaultbox/core/errors/app_failure.dart";
 import "package:vaultbox/data/repositories/in_memory_storage_root_repository.dart";
+import "package:vaultbox/data/repositories/in_memory_account_repository.dart";
+import "package:vaultbox/domain/entities/account.dart";
 import "package:vaultbox/domain/entities/server_config.dart";
 import "package:vaultbox/domain/entities/server_state.dart";
 import "package:vaultbox/features/home/presentation/home_screen.dart";
@@ -13,10 +15,19 @@ import "../helpers/fake_server_host.dart";
 
 /// Home's server card against a fake host: what the person sees for each state.
 void main() {
-  Widget harness(FakeServerHost host) {
+  Widget harness(FakeServerHost host, {bool withAdmin = true}) {
     return ProviderScope(
       overrides: [
         serverHostProvider.overrideWithValue(host),
+        accountRepositoryProvider.overrideWithValue(
+          InMemoryAccountRepository(
+            withAdmin
+                ? <Account>[
+                    Account(id: "1", username: "admin", passwordHash: "x", createdAt: DateTime.utc(2026)),
+                  ]
+                : <Account>[],
+          ),
+        ),
         storageRootRepositoryProvider.overrideWithValue(InMemoryStorageRootRepository()),
       ],
       child: MaterialApp(theme: AuroraTheme.light(), home: const HomeScreen()),
@@ -158,5 +169,29 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining("reachable from devices on your local network"), findsOneWidget);
     expect(find.textContaining("nothing is exposed to your network"), findsNothing);
+  });
+
+  testWidgets("no admin yet: an admin card is shown and network access can't be turned on", (WidgetTester tester) async {
+    final FakeServerHost host = FakeServerHost();
+    await tester.pumpWidget(harness(host, withAdmin: false));
+    await tester.pumpAndSettle();
+
+    expect(find.text("No admin account yet"), findsOneWidget);
+    expect(find.text("Create admin account"), findsOneWidget);
+
+    await tester.tap(find.byType(Switch));
+    await tester.pumpAndSettle();
+
+    expect(find.text("Create an admin account first"), findsOneWidget);
+    expect(find.text("Allow network access?"), findsNothing, reason: "must not even offer exposure yet");
+    await tester.tap(find.text("Not now"));
+    await tester.pumpAndSettle();
+    expect(host.savedConfig.allowNetworkAccess, isFalse);
+  });
+
+  testWidgets("with an admin the prompt card is hidden", (WidgetTester tester) async {
+    await tester.pumpWidget(harness(FakeServerHost()));
+    await tester.pumpAndSettle();
+    expect(find.text("No admin account yet"), findsNothing);
   });
 }

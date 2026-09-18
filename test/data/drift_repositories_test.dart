@@ -3,8 +3,10 @@ import "dart:async";
 import "package:drift/native.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:vaultbox/data/db/app_database.dart";
+import "package:vaultbox/data/repositories/drift_account_repository.dart";
 import "package:vaultbox/data/repositories/drift_recycle_bin_repository.dart";
 import "package:vaultbox/data/repositories/drift_storage_root_repository.dart";
+import "package:vaultbox/domain/entities/account.dart";
 import "package:vaultbox/domain/entities/recycle_item.dart";
 import "package:vaultbox/domain/entities/storage_root.dart";
 import "package:vaultbox/domain/value_objects/storage_capabilities.dart";
@@ -193,6 +195,42 @@ void main() {
       await repo.add(item);
       await repo.remove("recycle-1");
       expect(await repo.get("recycle-1"), isNull);
+    });
+  });
+
+  group("DriftAccountRepository", () {
+    late DriftAccountRepository repo;
+    setUp(() => repo = DriftAccountRepository(db));
+
+    Account account(String id, String name) =>
+        Account(id: id, username: name, passwordHash: r"$argon2id$stub", createdAt: DateTime.utc(2026, 9, 19));
+
+    test("createFirst stores the first account and refuses every later one", () async {
+      expect(await repo.count(), 0);
+      expect(await repo.createFirst(account("a1", "admin")), isNotNull);
+      expect(await repo.createFirst(account("a2", "other")), isNull);
+      expect(await repo.count(), 1);
+      expect(await repo.findByUsername("other"), isNull, reason: "the refused account was not stored");
+    });
+
+    test("findByUsername round-trips every field", () async {
+      await repo.createFirst(account("a1", "admin"));
+      final Account? loaded = await repo.findByUsername("admin");
+
+      expect(loaded, isNotNull);
+      expect(loaded!.id, "a1");
+      expect(loaded.passwordHash, r"$argon2id$stub");
+      expect(loaded.createdAt.isAtSameMomentAs(DateTime.utc(2026, 9, 19)), isTrue);
+      expect(await repo.findByUsername("nobody"), isNull);
+    });
+
+    test("updatePasswordHash replaces only the hash", () async {
+      await repo.createFirst(account("a1", "admin"));
+      await repo.updatePasswordHash("a1", r"$argon2id$upgraded");
+
+      final Account? loaded = await repo.findByUsername("admin");
+      expect(loaded!.passwordHash, r"$argon2id$upgraded");
+      expect(loaded.username, "admin");
     });
   });
 }

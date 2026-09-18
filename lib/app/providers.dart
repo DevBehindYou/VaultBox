@@ -3,9 +3,11 @@ import "dart:async";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../data/db/app_database.dart";
+import "../data/repositories/drift_account_repository.dart";
 import "../data/repositories/drift_recycle_bin_repository.dart";
 import "../data/repositories/drift_storage_root_repository.dart";
 import "../data/repositories/file_repository_impl.dart";
+import "../data/security/argon2id_password_hasher.dart";
 import "../data/services/direct_path_storage_backend.dart";
 import "../data/services/memory_storage_backend.dart";
 import "../data/services/saf_storage_backend.dart";
@@ -14,6 +16,7 @@ import "../domain/entities/recycle_item.dart";
 import "../domain/entities/server_config.dart";
 import "../domain/entities/server_state.dart";
 import "../domain/entities/storage_root.dart";
+import "../domain/repositories/account_repository.dart";
 import "../domain/repositories/clock.dart";
 import "../domain/repositories/file_repository.dart";
 import "../domain/repositories/id_generator.dart";
@@ -21,7 +24,9 @@ import "../domain/repositories/recycle_bin_repository.dart";
 import "../domain/repositories/server_host.dart";
 import "../domain/repositories/storage_backend.dart";
 import "../domain/repositories/storage_root_repository.dart";
+import "../domain/security/password_hasher.dart";
 import "../domain/usecases/copy_items.dart";
+import "../domain/usecases/create_admin_account.dart";
 import "../domain/usecases/delete_items_to_recycle_bin.dart";
 import "../domain/usecases/import_files.dart";
 import "../domain/usecases/move_items.dart";
@@ -213,3 +218,26 @@ final FutureProvider<ServerConfig> serverConfigProvider =
 /// SHA-256 fingerprint of the server's TLS certificate.
 final FutureProvider<String> tlsFingerprintProvider =
     FutureProvider<String>((Ref ref) => ref.watch(serverHostProvider).tlsFingerprint());
+
+// --- Accounts (Phase 3) ---
+
+final Provider<AccountRepository> accountRepositoryProvider =
+    Provider<AccountRepository>((Ref ref) => DriftAccountRepository(ref.watch(appDatabaseProvider)));
+
+/// Argon2id at the OWASP minimum. Overridden with a fast fake in widget tests.
+final Provider<PasswordHasher> passwordHasherProvider =
+    Provider<PasswordHasher>((Ref ref) => Argon2idPasswordHasher());
+
+final Provider<CreateAdminAccount> createAdminAccountProvider = Provider<CreateAdminAccount>((Ref ref) {
+  return CreateAdminAccount(
+    ref.watch(accountRepositoryProvider),
+    ref.watch(passwordHasherProvider),
+    ref.watch(idGeneratorProvider),
+    ref.watch(clockProvider),
+  );
+});
+
+/// Whether an admin account exists yet (drives onboarding and the network switch).
+final FutureProvider<bool> adminExistsProvider = FutureProvider<bool>(
+  (Ref ref) async => (await ref.watch(accountRepositoryProvider).count()) > 0,
+);

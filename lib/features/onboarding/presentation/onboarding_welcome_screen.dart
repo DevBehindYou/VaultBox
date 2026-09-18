@@ -23,7 +23,7 @@ class OnboardingWelcomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const AuroraStatusChip(label: "Step 1 of 2", status: AuroraStatus.idle),
+              const AuroraStatusChip(label: "Step 1 of 3", status: AuroraStatus.idle),
               const SizedBox(height: AuroraSpacing.lg),
               Text(
                 "Turn this phone into your\npersonal storage server.",

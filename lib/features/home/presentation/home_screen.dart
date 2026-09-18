@@ -55,6 +55,7 @@ class HomeScreen extends ConsumerWidget {
             ),
             const SizedBox(height: AuroraSpacing.md),
             const _ServerCard(),
+            const _AdminCard(),
             const SizedBox(height: AuroraSpacing.md),
             roots.when(
               loading: () => const AuroraCard(
@@ -231,6 +232,33 @@ class _NetworkAccessSwitch extends ConsumerWidget {
     bool enable,
   ) async {
     if (enable) {
+      final bool adminExists = await ref.read(adminExistsProvider.future);
+      if (!context.mounted) return;
+      if (!adminExists) {
+        // Nothing to log in with yet: exposing the server would only expose a login page.
+        final bool? create = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext dialogContext) => AlertDialog(
+            title: const Text("Create an admin account first"),
+            content: const Text(
+              "Other devices need a login to use VaultBox. Create the admin "
+              "account, then turn network access on.",
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: const Text("Not now"),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(dialogContext).pop(true),
+                child: const Text("Create account"),
+              ),
+            ],
+          ),
+        );
+        if (create == true && context.mounted) unawaited(context.push("/admin/new"));
+        return;
+      }
       final bool? confirmed = await showDialog<bool>(
         context: context,
         builder: (BuildContext dialogContext) => AlertDialog(
@@ -284,6 +312,40 @@ class _FingerprintRow extends ConsumerWidget {
           ),
           SelectableText(fingerprint, style: AuroraTypography.labelMonoSm),
         ],
+      ),
+    );
+  }
+}
+
+/// Shown until an admin account exists.
+class _AdminCard extends ConsumerWidget {
+  const _AdminCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bool? exists = ref.watch(adminExistsProvider).value;
+    if (exists != false) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: AuroraSpacing.md),
+      child: AuroraCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text("No admin account yet", style: AuroraTypography.headlineSm),
+            const SizedBox(height: AuroraSpacing.xs),
+            Text(
+              "Create the login other devices will use.",
+              style: AuroraTypography.bodyMd.copyWith(color: AuroraColors.inkSecondary),
+            ),
+            const SizedBox(height: AuroraSpacing.md),
+            AuroraPrimaryButton(
+              label: "Create admin account",
+              icon: Icons.person_add_alt,
+              expand: false,
+              onPressed: () => unawaited(context.push("/admin/new")),
+            ),
+          ],
+        ),
       ),
     );
   }

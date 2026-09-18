@@ -35,7 +35,7 @@ class _OnboardingStorageScreenState extends ConsumerState<OnboardingStorageScree
     try {
       await addAppStorageRoot(ref);
       if (!mounted) return;
-      unawaited(context.push("/onboarding/ready"));
+      unawaited(context.push("/onboarding/admin"));
     } on AppFailure catch (failure) {
       if (!mounted) return;
       setState(() => _failure = failure);
@@ -53,7 +53,7 @@ class _OnboardingStorageScreenState extends ConsumerState<OnboardingStorageScree
       final String? rootId = await addSafStorageRoot(ref);
       if (!mounted) return;
       // null = the person cancelled the system picker: stay on this screen.
-      if (rootId != null) unawaited(context.push("/onboarding/ready"));
+      if (rootId != null) unawaited(context.push("/onboarding/admin"));
     } on AppFailure catch (failure) {
       if (!mounted) return;
       setState(() => _failure = failure);
@@ -72,7 +72,7 @@ class _OnboardingStorageScreenState extends ConsumerState<OnboardingStorageScree
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const AuroraStatusChip(label: "Step 2 of 2", status: AuroraStatus.idle),
+              const AuroraStatusChip(label: "Step 2 of 3", status: AuroraStatus.idle),
               const SizedBox(height: AuroraSpacing.md),
               Text("Where should VaultBox keep your files?", style: AuroraTypography.headlineMd),
               const SizedBox(height: AuroraSpacing.lg),

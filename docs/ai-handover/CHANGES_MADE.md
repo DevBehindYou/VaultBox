@@ -1,6 +1,6 @@
 # Changes Made (session 1, 2026-09-18)
 
-Branch `ci/bootstrap`, 7 commits on top of `main@37f1d60`. Each change lists the CI evidence.
+Branch `ci/bootstrap`, 8 commits on top of `main@37f1d60` (7 code/CI commits + the docs commit). Each change lists the CI evidence.
 Order = commit order. Verification always means a green run of `.github/workflows/ci.yml`.
 
 ---
@@ -19,7 +19,7 @@ Environmental constraint (see DECISIONS D1).
 - `.gitignore` ignores `*.g.dart`, `*.freezed.dart`, `*.drift.dart`, generated `pigeon/*.g.kt`, keystores, `android/local.properties`, `ci-report/`.
 ### Verification
 Run #1 exercised it end-to-end (found Error 1). ### Remaining Concerns
-`ubuntu-latest` → Ubuntu 26 on 2026-10-19; `paths-ignore` for docs not yet added.
+`ubuntu-latest` → Ubuntu 26 on 2026-10-19. (`paths-ignore` for docs was added later — Change 11.)
 
 ---
 ## Change 2 — pubspec resolution fix  (`3df259f`)

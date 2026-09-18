@@ -40,7 +40,7 @@ Every task below assumes the **CI-only verification loop** (no local SDK). "Veri
 
 - [ ] **Add rename + file-details entry points in the Files UI** (VM/backends already support rename; no UI calls it).
 
-- [ ] **Tighten CI gate:** `--fatal-infos`, then enforce `dart format` after a single dedicated reformat commit (DECISIONS D11); pin `runs-on: ubuntu-24.04` before 2026-10-19; add `paths-ignore: ['docs/**','**.md']` to `on.push`; add `flutter test --coverage`.
+- [ ] **Tighten CI gate:** `--fatal-infos`, then enforce `dart format` after a single dedicated reformat commit (DECISIONS D11); pin `runs-on: ubuntu-24.04` before 2026-10-19; add `flutter test --coverage`.
 
 ## P2 — Medium
 

@@ -97,7 +97,7 @@ None expected — working tree was clean and in sync with `origin/ci/bootstrap` 
 None. No servers, domains, or secrets. **Secrets required: none.** (`GITHUB_TOKEN` is the auto-provided workflow token.)
 
 ## Current CI/CD State
-Green (run #6). Known upcoming break: runner label `ubuntu-latest` migrates to Ubuntu 26 on 2026-10-19.
+Green (runs #6, #7). Docs-only pushes skip CI (`paths-ignore`). Known upcoming break: runner label `ubuntu-latest` migrates to Ubuntu 26 on 2026-10-19.
 
 ## Current Test State
 108 pass / 0 fail in CI (Linux), reproduced in runs #6 and #7. One DirectPath test is `skip: Platform.isWindows` (skipped tests are not counted as failures). See TESTING_STATUS.md.

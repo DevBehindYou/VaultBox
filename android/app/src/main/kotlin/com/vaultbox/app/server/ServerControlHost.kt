@@ -6,9 +6,14 @@ import com.vaultbox.app.pigeon.ServerControlApi
 import com.vaultbox.app.pigeon.ServerStateMessage
 
 /** UI-engine side of the server control contract: start/stop the service, read state. */
-class ServerControlHost(private val context: Context) : ServerControlApi {
+class ServerControlHost(
+    private val context: Context,
+    /** Runs on the UI thread just before the service starts (e.g. to ask for the notification permission). */
+    private val beforeStart: () -> Unit = {},
+) : ServerControlApi {
 
     override fun start() {
+        beforeStart()
         // startForegroundService: the service must call startForeground() promptly
         // (it does, first thing in startServer()).
         context.startForegroundService(Intent(context, ServerForegroundService::class.java))

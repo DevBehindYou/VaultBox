@@ -1,6 +1,9 @@
 package com.vaultbox.app
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import com.vaultbox.app.pigeon.AndroidStorageApi
 import com.vaultbox.app.pigeon.ServerControlApi
 import com.vaultbox.app.pigeon.ServerStateListener
@@ -31,7 +34,10 @@ class MainActivity : FlutterActivity() {
         AndroidStorageApi.setUp(messenger, SafStorageHostApi(applicationContext, treePicker, documentPicker))
 
         // Server host: this (UI) engine controls the service and receives its state.
-        ServerControlApi.setUp(messenger, ServerControlHost(applicationContext))
+        ServerControlApi.setUp(
+            messenger,
+            ServerControlHost(applicationContext) { requestNotificationPermissionIfNeeded() },
+        )
         val dartListener = ServerStateListener(messenger)
         val listener: (ServerStateMessage) -> Unit = { state ->
             // Pigeon 29 generates FlutterApi calls as `suspend fun`; launch on Main
@@ -56,6 +62,19 @@ class MainActivity : FlutterActivity() {
         super.cleanUpFlutterEngine(flutterEngine)
     }
 
+    /**
+     * Android 13+ hides a foreground service's notification until this runtime
+     * permission is granted (seen on a real phone: granted=false). Non-blocking:
+     * the service starts regardless; the notification appears once allowed.
+     */
+    private fun requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= 33 &&
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATIONS)
+        }
+    }
+
     @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
@@ -74,5 +93,6 @@ class MainActivity : FlutterActivity() {
     private companion object {
         const val REQUEST_OPEN_TREE = 0x5AF
         const val REQUEST_PICK_DOCUMENTS = 0x5B0
+        const val REQUEST_NOTIFICATIONS = 0x5B1
     }
 }

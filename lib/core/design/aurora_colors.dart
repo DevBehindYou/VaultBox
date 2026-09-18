@@ -126,6 +126,12 @@ abstract final class AuroraColorsDark {
   static const Color borderDefault = Color(0xFF3A3A42);
   static const Color borderMuted = Color(0xFF2A2A32);
 
+  // Multi-select highlight. The light-theme pair (#EEF3FB fill) is near-white,
+  // so using it in dark mode rendered the row's light text on a light
+  // background — the folder name was unreadable (seen on a real device).
+  static const Color selectionBlue = Color(0xFF6AA7F2);
+  static const Color selectionSoft = Color(0xFF1E2B40);
+
   static const Color statusSuccess = Color(0xFF7CC493);
   static const Color statusSuccessBorder = Color(0xFF3A7A4A);
   static const Color statusWarning = Color(0xFFE0C177);

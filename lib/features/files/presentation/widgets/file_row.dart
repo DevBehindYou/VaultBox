@@ -39,11 +39,15 @@ class FileRow extends StatelessWidget {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final Color subtle =
         isDark ? AuroraColorsDark.inkSecondary : AuroraColors.inkSecondary;
+    final Color selectionFill =
+        isDark ? AuroraColorsDark.selectionSoft : AuroraColors.selectionSoft;
+    final Color selectionAccent =
+        isDark ? AuroraColorsDark.selectionBlue : AuroraColors.selectionBlue;
 
     return SizedBox(
       height: rowHeight,
       child: Material(
-        color: selected ? AuroraColors.selectionSoft : Colors.transparent,
+        color: selected ? selectionFill : Colors.transparent,
         child: InkWell(
           onTap: onTap,
           onLongPress: onLongPress,
@@ -60,7 +64,7 @@ class FileRow extends StatelessWidget {
                     child: Icon(
                       selected ? Icons.check_circle : Icons.circle_outlined,
                       size: 22,
-                      color: selected ? AuroraColors.selectionBlue : subtle,
+                      color: selected ? selectionAccent : subtle,
                     ),
                   ),
                 _EntryGlyph(entry: entry),

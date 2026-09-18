@@ -10,9 +10,11 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import com.vaultbox.app.MainActivity
+import com.vaultbox.app.pigeon.ServerConfigMessage
 import com.vaultbox.app.pigeon.ServerRunStateMessage
 import com.vaultbox.app.pigeon.ServerRuntimeApi
 import com.vaultbox.app.pigeon.ServerStateMessage
+import com.vaultbox.app.pigeon.TlsIdentityMessage
 import io.flutter.FlutterInjector
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.dart.DartExecutor
@@ -89,6 +91,17 @@ class ServerForegroundService : Service() {
     private inner class RuntimeHost : ServerRuntimeApi {
         override fun reportState(state: ServerStateMessage) {
             publish(state)
+        }
+
+        override fun getConfig(): ServerConfigMessage = ServerConfigStore(applicationContext).get()
+
+        override fun getTlsIdentity(): TlsIdentityMessage {
+            val identity = TlsIdentityStore(applicationContext).loadOrCreate()
+            return TlsIdentityMessage(
+                certificatePem = identity.certificatePem,
+                privateKeyPem = identity.privateKeyPem,
+                sha256Fingerprint = identity.sha256Fingerprint,
+            )
         }
     }
 

@@ -3,6 +3,7 @@ import "dart:async";
 import "package:flutter/services.dart" show PlatformException;
 
 import "../../core/errors/app_failure.dart";
+import "../../domain/entities/server_config.dart";
 import "../../domain/entities/server_state.dart";
 import "../../domain/repositories/server_host.dart";
 import "../pigeon/storage_api.g.dart";
@@ -61,6 +62,25 @@ final class PigeonServerHost implements ServerHost, ServerStateListener {
 
   @override
   Future<void> stop() => _guard(_api.stop);
+
+  @override
+  Future<ServerConfig> config() async {
+    final ServerConfigMessage message = await _guard(_api.getConfig);
+    return ServerConfig(
+      allowNetworkAccess: message.allowNetworkAccess ?? false,
+      port: message.port ?? ServerConfig.defaultPort,
+    );
+  }
+
+  @override
+  Future<void> saveConfig(ServerConfig config) => _guard(
+    () => _api.setConfig(
+      ServerConfigMessage(allowNetworkAccess: config.allowNetworkAccess, port: config.port),
+    ),
+  );
+
+  @override
+  Future<String> tlsFingerprint() => _guard(_api.getTlsFingerprint);
 
   ServerState _toState(ServerStateMessage message) {
     return ServerState(

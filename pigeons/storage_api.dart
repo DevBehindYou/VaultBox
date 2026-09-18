@@ -205,19 +205,44 @@ class ServerStateMessage {
   String? detail;
 }
 
+class ServerConfigMessage {
+  /// false (default) = loopback only; true = reachable from the local network.
+  bool? allowNetworkAccess;
+  int? port;
+}
+
+/// The server's TLS identity. The private key is decrypted by native code only
+/// to hand it to the headless server engine at start; it is never persisted in
+/// plaintext.
+class TlsIdentityMessage {
+  String? certificatePem;
+  String? privateKeyPem;
+
+  /// SHA-256 of the certificate, upper-case colon-separated hex — what a person
+  /// compares against the browser's certificate warning.
+  String? sha256Fingerprint;
+}
+
 /// UI engine -> native. Synchronous on purpose: these only start/stop the
-/// service and read a snapshot.
+/// service and read/write small settings.
 @HostApi()
 abstract class ServerControlApi {
   void start();
   void stop();
   ServerStateMessage getState();
+  ServerConfigMessage getConfig();
+  void setConfig(ServerConfigMessage config);
+
+  /// Creates the TLS identity on first use.
+  String getTlsFingerprint();
 }
 
 /// Service (headless) engine -> native.
 @HostApi()
 abstract class ServerRuntimeApi {
   void reportState(ServerStateMessage state);
+  ServerConfigMessage getConfig();
+  TlsIdentityMessage getTlsIdentity();
 }
 
 /// Native -> UI engine push whenever the server state changes.

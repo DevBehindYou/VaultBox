@@ -11,6 +11,7 @@ import "../data/services/memory_storage_backend.dart";
 import "../data/services/saf_storage_backend.dart";
 import "../data/services/system_clock.dart";
 import "../domain/entities/recycle_item.dart";
+import "../domain/entities/server_config.dart";
 import "../domain/entities/server_state.dart";
 import "../domain/entities/storage_root.dart";
 import "../domain/repositories/clock.dart";
@@ -204,3 +205,11 @@ final Provider<ServerHost> serverHostProvider =
 /// The server's live state (native owns it; this mirrors it).
 final StreamProvider<ServerState> serverStateProvider =
     StreamProvider<ServerState>((Ref ref) => ref.watch(serverHostProvider).watch());
+
+/// Saved server settings (network access on/off, port).
+final FutureProvider<ServerConfig> serverConfigProvider =
+    FutureProvider<ServerConfig>((Ref ref) => ref.watch(serverHostProvider).config());
+
+/// SHA-256 fingerprint of the server's TLS certificate.
+final FutureProvider<String> tlsFingerprintProvider =
+    FutureProvider<String>((Ref ref) => ref.watch(serverHostProvider).tlsFingerprint());

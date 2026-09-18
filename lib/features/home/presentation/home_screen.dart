@@ -11,6 +11,7 @@ import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
 import "../../../core/errors/app_failure.dart";
 import "../../../core/utils/byte_format.dart";
+import "../../../domain/entities/server_config.dart";
 import "../../../domain/entities/server_state.dart";
 import "../../../domain/entities/storage_root.dart";
 import "../../../domain/repositories/server_host.dart";
@@ -145,6 +146,7 @@ class _ServerCard extends ConsumerWidget {
               style: AuroraTypography.tabularFigures(AuroraTypography.labelMonoMd),
             ),
           ],
+          const _FingerprintRow(),
           if (server.run == ServerRunState.failed && server.detail != null) ...<Widget>[
             const SizedBox(height: AuroraSpacing.sm),
             AuroraInlineBanner(
@@ -153,6 +155,7 @@ class _ServerCard extends ConsumerWidget {
               technicalDetail: server.detail,
             ),
           ],
+          const _NetworkAccessSwitch(),
           const SizedBox(height: AuroraSpacing.md),
           switch (server.run) {
             ServerRunState.running => OutlinedButton.icon(
@@ -172,6 +175,106 @@ class _ServerCard extends ConsumerWidget {
               onPressed: () => unawaited(_run(context, host.start)),
             ),
           },
+        ],
+      ),
+    );
+  }
+}
+
+/// Off by default. Turning it on exposes the server to the local network, so it
+/// asks first, and it can only change while the server is stopped (settings are
+/// read once, at start).
+class _NetworkAccessSwitch extends ConsumerWidget {
+  const _NetworkAccessSwitch();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ServerState server =
+        ref.watch(serverStateProvider).value ?? const ServerState.stopped();
+    final ServerConfig? config = ref.watch(serverConfigProvider).value;
+    if (config == null) return const SizedBox.shrink();
+    final bool canChange =
+        server.run == ServerRunState.stopped || server.run == ServerRunState.failed;
+
+    // SwitchListTile paints on the nearest Material; the card's coloured
+    // DecoratedBox would hide that (and trips a debug assertion) — own Material.
+    return Material(
+      type: MaterialType.transparency,
+      child: SwitchListTile(
+        contentPadding: EdgeInsets.zero,
+        title: const Text("Allow other devices on my network"),
+        subtitle: Text(
+          canChange
+              ? "Off: only this phone can reach the server."
+              : "Stop the server to change this.",
+        ),
+        value: config.allowNetworkAccess,
+        onChanged: canChange
+            ? (bool enable) => unawaited(_change(context, ref, config, enable))
+            : null,
+      ),
+    );
+  }
+
+  Future<void> _change(
+    BuildContext context,
+    WidgetRef ref,
+    ServerConfig config,
+    bool enable,
+  ) async {
+    if (enable) {
+      final bool? confirmed = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext dialogContext) => AlertDialog(
+          title: const Text("Allow network access?"),
+          content: const Text(
+            "Other devices on your Wi-Fi will be able to reach this phone's "
+            "VaultBox server. Traffic is encrypted, but only turn this on for "
+            "networks you trust.",
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text("Cancel"),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text("Allow"),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !context.mounted) return;
+    }
+    try {
+      await ref.read(serverHostProvider).saveConfig(config.copyWith(allowNetworkAccess: enable));
+      ref.invalidate(serverConfigProvider);
+    } on AppFailure catch (failure) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));
+    }
+  }
+}
+
+/// The certificate fingerprint a person compares with their browser's warning
+/// before trusting the self-signed certificate.
+class _FingerprintRow extends ConsumerWidget {
+  const _FingerprintRow();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final String? fingerprint = ref.watch(tlsFingerprintProvider).value;
+    if (fingerprint == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: AuroraSpacing.sm),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            "Certificate fingerprint (SHA-256)",
+            style: AuroraTypography.bodySm.copyWith(color: AuroraColors.inkSecondary),
+          ),
+          SelectableText(fingerprint, style: AuroraTypography.labelMonoSm),
         ],
       ),
     );

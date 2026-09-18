@@ -2,6 +2,7 @@ package com.vaultbox.app.server
 
 import android.content.Context
 import android.content.Intent
+import com.vaultbox.app.pigeon.ServerConfigMessage
 import com.vaultbox.app.pigeon.ServerControlApi
 import com.vaultbox.app.pigeon.ServerStateMessage
 
@@ -24,4 +25,10 @@ class ServerControlHost(
     }
 
     override fun getState(): ServerStateMessage = ServerStateStore.current
+
+    override fun getConfig(): ServerConfigMessage = ServerConfigStore(context).get()
+
+    override fun setConfig(config: ServerConfigMessage) = ServerConfigStore(context).set(config)
+
+    override fun getTlsFingerprint(): String = TlsIdentityStore(context).loadOrCreate().sha256Fingerprint
 }

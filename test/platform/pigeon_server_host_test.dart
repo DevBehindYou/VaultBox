@@ -3,6 +3,7 @@ import "dart:async";
 import "package:flutter/services.dart" show PlatformException;
 import "package:flutter_test/flutter_test.dart";
 import "package:vaultbox/core/errors/app_failure.dart";
+import "package:vaultbox/domain/entities/server_config.dart";
 import "package:vaultbox/domain/entities/server_state.dart";
 import "package:vaultbox/platform/adapters/pigeon_server_host.dart";
 import "package:vaultbox/platform/pigeon/storage_api.g.dart";
@@ -12,6 +13,9 @@ final class FakeControlApi extends ServerControlApi {
   int starts = 0;
   int stops = 0;
   PlatformException? failWith;
+  ServerConfigMessage configMessage = ServerConfigMessage(allowNetworkAccess: false, port: 8443);
+  ServerConfigMessage? lastSetConfig;
+  String fingerprint = "AA:BB";
 
   /// When set, getState() waits on it (simulates a slow native read).
   Completer<void>? gate;
@@ -31,6 +35,24 @@ final class FakeControlApi extends ServerControlApi {
   Future<void> stop() async {
     _maybeFail();
     stops++;
+  }
+
+  @override
+  Future<ServerConfigMessage> getConfig() async {
+    _maybeFail();
+    return configMessage;
+  }
+
+  @override
+  Future<void> setConfig(ServerConfigMessage config) async {
+    _maybeFail();
+    lastSetConfig = config;
+  }
+
+  @override
+  Future<String> getTlsFingerprint() async {
+    _maybeFail();
+    return fingerprint;
   }
 
   @override
@@ -119,5 +141,28 @@ void main() {
         ),
       ),
     );
+  });
+
+  test("config maps native settings; missing values fall back to safe defaults", () async {
+    api.configMessage = ServerConfigMessage(allowNetworkAccess: true, port: 9000);
+    final ServerConfig custom = await host.config();
+    expect(custom.allowNetworkAccess, isTrue);
+    expect(custom.port, 9000);
+
+    api.configMessage = ServerConfigMessage();
+    final ServerConfig defaults = await host.config();
+    expect(defaults.allowNetworkAccess, isFalse, reason: "network access must default to OFF");
+    expect(defaults.port, 8443);
+  });
+
+  test("saveConfig sends both fields to native", () async {
+    await host.saveConfig(const ServerConfig(allowNetworkAccess: true, port: 8444));
+    expect(api.lastSetConfig?.allowNetworkAccess, isTrue);
+    expect(api.lastSetConfig?.port, 8444);
+  });
+
+  test("tlsFingerprint passes through", () async {
+    api.fingerprint = "12:34:56";
+    expect(await host.tlsFingerprint(), "12:34:56");
   });
 }

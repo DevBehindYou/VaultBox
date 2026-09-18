@@ -46,6 +46,12 @@ kotlin {
     }
 }
 
+dependencies {
+    // X.509 certificate building for the server's self-signed TLS identity
+    // (TlsIdentityStore). Version checked on Maven Central 2026-09-19.
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.86")
+}
+
 flutter {
     source = "../.."
 }

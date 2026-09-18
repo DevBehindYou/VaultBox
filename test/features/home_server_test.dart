@@ -141,4 +141,22 @@ void main() {
     expect(tester.widget<Switch>(find.byType(Switch)).onChanged, isNull);
     expect(find.text("Stop the server to change this."), findsOneWidget);
   });
+
+  testWidgets("copy is honest about exposure: local-only vs reachable on the network", (WidgetTester tester) async {
+    final FakeServerHost local = FakeServerHost(
+      const ServerState(run: ServerRunState.running, endpoint: "https://127.0.0.1:8443/"),
+    );
+    await tester.pumpWidget(harness(local));
+    await tester.pumpAndSettle();
+    expect(find.textContaining("answers on this phone only"), findsOneWidget);
+    expect(find.textContaining("reachable from devices on your local network"), findsNothing);
+
+    final FakeServerHost lan = FakeServerHost(
+      const ServerState(run: ServerRunState.running, endpoint: "https://192.168.1.5:8443/"),
+    );
+    await tester.pumpWidget(harness(lan));
+    await tester.pumpAndSettle();
+    expect(find.textContaining("reachable from devices on your local network"), findsOneWidget);
+    expect(find.textContaining("nothing is exposed to your network"), findsNothing);
+  });
 }

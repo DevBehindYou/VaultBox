@@ -96,6 +96,12 @@ class _ServerStatusChip extends ConsumerWidget {
 class _ServerCard extends ConsumerWidget {
   const _ServerCard();
 
+  /// True when the server only listens on this phone (loopback endpoint).
+  static bool _isLocalOnly(String? endpoint) {
+    final String? host = endpoint == null ? null : Uri.tryParse(endpoint)?.host;
+    return host == null || host == "127.0.0.1" || host == "localhost";
+  }
+
   Future<void> _run(BuildContext context, Future<void> Function() action) async {
     try {
       await action();
@@ -119,13 +125,15 @@ class _ServerCard extends ConsumerWidget {
     };
     final String explanation = switch (server.run) {
       ServerRunState.stopped =>
-        "Start VaultBox's background service. For now it only runs a health "
-            "check on this phone itself; sharing files over the network "
-            "(HTTPS, WebDAV) arrives in Phase 3.",
+        "Start VaultBox's background service. For now it only answers an "
+            "encrypted health check; login and file access come next.",
       ServerRunState.starting => "Starting the background service…",
-      ServerRunState.running =>
-        "The background service is running. It answers on this phone only — "
-            "nothing is exposed to your network yet.",
+      ServerRunState.running => _isLocalOnly(server.endpoint)
+          ? "The background service is running. It answers on this phone only — "
+                "nothing is exposed to your network."
+          : "The background service is running and reachable from devices on your "
+                "local network over HTTPS. It uses a self-signed certificate: compare "
+                "the fingerprint below before trusting it.",
       ServerRunState.failed => "Something went wrong starting the background service.",
     };
 

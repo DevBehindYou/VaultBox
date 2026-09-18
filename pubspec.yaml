@@ -36,7 +36,10 @@ dependencies:
   # transfer-state/audit — never large user files (ADR-005).
   drift: ^2.34.0
   drift_flutter: ^0.3.1
-  sqlite3_flutter_libs: ^0.5.24
+  # sqlite3_flutter_libs is intentionally NOT listed: drift_flutter 0.3.x depends
+  # on sqlite3_flutter_libs ^0.6.0+eol (an end-of-life no-op stub — SQLite is now
+  # bundled by package:sqlite3 3.x build hooks), so a direct ^0.5.x pin made
+  # `pub get` fail with a version-solving error (CI run #1, 2026-09-18).
   path_provider: ^2.1.4
 
   # --- Storage path handling ---

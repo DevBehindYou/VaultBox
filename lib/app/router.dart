@@ -119,15 +119,23 @@ GoRouter buildRouter(Ref ref) {
 
 final Provider<GoRouter> routerProvider = Provider<GoRouter>(buildRouter);
 
-/// Resolves which root the Files tab opens at. Until onboarding exists
-/// (Phase 1 follow-up) this picks the default root, or the first available
-/// one, and shows a clear empty state when no storage is configured yet —
-/// rather than crashing on a missing root.
-class _FilesEntryPoint extends ConsumerWidget {
+/// Resolves which root the Files tab shows: the person's last choice from the
+/// switcher, else the default root, else the first. With more than one root a
+/// chip row above the file list switches between them; with a single root it
+/// stays out of the way. Shows a clear empty state when no storage is
+/// configured yet, rather than crashing on a missing root.
+class _FilesEntryPoint extends ConsumerStatefulWidget {
   const _FilesEntryPoint();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_FilesEntryPoint> createState() => _FilesEntryPointState();
+}
+
+class _FilesEntryPointState extends ConsumerState<_FilesEntryPoint> {
+  String? _selectedId;
+
+  @override
+  Widget build(BuildContext context) {
     final AsyncValue<List<StorageRoot>> roots = ref.watch(storageRootsProvider);
 
     return roots.when(
@@ -140,10 +148,49 @@ class _FilesEntryPoint extends ConsumerWidget {
           return _NoStorageYet(onAddStorage: () => context.push("/onboarding/welcome"));
         }
         final StorageRoot root = list.firstWhere(
-          (StorageRoot r) => r.isDefault,
-          orElse: () => list.first,
+          (StorageRoot r) => r.id == _selectedId,
+          orElse: () => list.firstWhere(
+            (StorageRoot r) => r.isDefault,
+            orElse: () => list.first,
+          ),
         );
-        return FilesScreen(directory: rootRef(root));
+        // Keyed by root so switching roots gives a fresh screen (own paging,
+        // selection and sort state) instead of reusing the previous one.
+        final Widget files = FilesScreen(
+          key: ValueKey<String>(root.id),
+          directory: rootRef(root),
+        );
+        if (list.length < 2) return files;
+
+        return Column(
+          children: <Widget>[
+            SafeArea(
+              bottom: false,
+              child: SizedBox(
+                height: 56,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AuroraSpacing.marginCompact,
+                    vertical: AuroraSpacing.sm,
+                  ),
+                  itemCount: list.length,
+                  separatorBuilder: (BuildContext context, int index) =>
+                      const SizedBox(width: AuroraSpacing.sm),
+                  itemBuilder: (BuildContext context, int index) {
+                    final StorageRoot candidate = list[index];
+                    return ChoiceChip(
+                      label: Text(candidate.displayName),
+                      selected: candidate.id == root.id,
+                      onSelected: (_) => setState(() => _selectedId = candidate.id),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Expanded(child: files),
+          ],
+        );
       },
     );
   }

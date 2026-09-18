@@ -27,6 +27,9 @@ class StorageRoots extends Table {
   IntColumn get freeBytes => integer().nullable()();
   IntColumn get totalBytes => integer().nullable()();
 
+  /// Schema v2. SAF roots only (see StorageRoot.rootDocumentId).
+  TextColumn get rootDocumentId => text().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
@@ -75,11 +78,18 @@ final class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: "vaultbox"));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
-  // No migrations yet — schemaVersion 1 is the first shipped shape. The
-  // first real migration (schemaVersion 2) should follow doc §06's schema
-  // discipline: additive columns with defaults where possible, an explicit
-  // `onUpgrade` step otherwise, and an ADR if a column's meaning changes
-  // rather than just its presence.
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (Migrator m) => m.createAll(),
+    onUpgrade: (Migrator m, int from, int to) async {
+      if (from < 2) {
+        // v2: SAF roots need the tree's root document id. Additive + nullable,
+        // so existing rows stay valid. (Not covered by an automated migration
+        // test yet — see docs/ai-handover/PENDING_TASKS.md.)
+        await m.addColumn(storageRoots, storageRoots.rootDocumentId);
+      }
+    },
+  );
 }

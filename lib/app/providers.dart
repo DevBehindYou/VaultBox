@@ -8,6 +8,7 @@ import "../data/repositories/drift_storage_root_repository.dart";
 import "../data/repositories/file_repository_impl.dart";
 import "../data/services/direct_path_storage_backend.dart";
 import "../data/services/memory_storage_backend.dart";
+import "../data/services/saf_storage_backend.dart";
 import "../data/services/system_clock.dart";
 import "../domain/entities/recycle_item.dart";
 import "../domain/entities/storage_root.dart";
@@ -22,6 +23,8 @@ import "../domain/usecases/delete_items_to_recycle_bin.dart";
 import "../domain/usecases/move_items.dart";
 import "../domain/usecases/permanently_delete_recycled.dart";
 import "../domain/usecases/restore_items.dart";
+import "../platform/adapters/android_storage_host.dart";
+import "../platform/adapters/pigeon_android_storage_host.dart";
 
 /// Composition root for the storage/file layer.
 ///
@@ -46,7 +49,10 @@ final Provider<IdGenerator> idGeneratorProvider =
 /// hold open handles and caches, and rebuilding one mid-operation would be a
 /// correctness bug, not just a performance one.
 final class BackendRegistry {
-  BackendRegistry();
+  BackendRegistry({AndroidStorageHost? host}) : _host = host;
+
+  /// Native SAF bridge; null in tests / contexts that never open a SAF root.
+  final AndroidStorageHost? _host;
 
   final Map<String, StorageBackend> _backends = <String, StorageBackend>{};
 
@@ -63,6 +69,23 @@ final class BackendRegistry {
 
   void evict(String rootId) => _backends.remove(rootId);
 
+  StorageBackend _createSaf(StorageRoot root) {
+    final AndroidStorageHost? host = _host;
+    final String? rootDocumentId = root.rootDocumentId;
+    if (host == null) {
+      throw StateError("No AndroidStorageHost available to open SAF root ${root.id}");
+    }
+    if (rootDocumentId == null) {
+      throw StateError("SAF root ${root.id} has no rootDocumentId");
+    }
+    return SafStorageBackend(
+      id: root.id,
+      host: host,
+      treeUri: root.uriOrPath,
+      rootDocumentId: rootDocumentId,
+    );
+  }
+
   StorageBackend _create(StorageRoot root) {
     return switch (root.backendType) {
       StorageBackendType.direct => DirectPathStorageBackend(
@@ -70,20 +93,7 @@ final class BackendRegistry {
         rootDirectory: root.uriOrPath,
       ),
       StorageBackendType.memory => MemoryStorageBackend(id: root.id),
-      // SafStorageBackend itself is fully implemented
-      // (lib/data/services/saf_storage_backend.dart) and unit-tested against
-      // a fake host — what's still missing is the concrete
-      // AndroidStorageHost wired to real Pigeon-generated code
-      // (pigeons/storage_api.dart has the spec; the Kotlin implementation
-      // draft is at android/.../storage/SafStorageHostApi.kt). Both need
-      // `dart run pigeon` to have actually run, which needs `flutter
-      // create .` to have run first — see README.md. Throwing loudly here
-      // beats returning a silently-wrong backend that appears to work and
-      // loses data.
-      StorageBackendType.saf => throw UnimplementedError(
-        "SafStorageBackend needs its native AndroidStorageHost wired up — "
-        "see README.md",
-      ),
+      StorageBackendType.saf => _createSaf(root),
       StorageBackendType.vault => throw UnimplementedError(
         "VaultStorageBackend is Phase 8",
       ),
@@ -91,8 +101,13 @@ final class BackendRegistry {
   }
 }
 
-final Provider<BackendRegistry> backendRegistryProvider =
-    Provider<BackendRegistry>((Ref ref) => BackendRegistry());
+/// The native SAF bridge (Pigeon). Overridable in tests with a fake.
+final Provider<AndroidStorageHost> androidStorageHostProvider =
+    Provider<AndroidStorageHost>((Ref ref) => PigeonAndroidStorageHost());
+
+final Provider<BackendRegistry> backendRegistryProvider = Provider<BackendRegistry>((Ref ref) {
+  return BackendRegistry(host: ref.watch(androidStorageHostProvider));
+});
 
 // --- Persistence ---
 

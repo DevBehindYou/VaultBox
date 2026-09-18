@@ -58,6 +58,33 @@ void main() {
       expect(loaded.totalBytes, 228000000000);
     });
 
+    test("a SAF root round-trips its root document id and gets SAF capabilities", () async {
+      await repo.addRoot(
+        const StorageRoot(
+          id: "saf-1",
+          displayName: "SD card",
+          backendType: StorageBackendType.saf,
+          uriOrPath: "content://com.android.externalstorage.documents/tree/1234-ABCD%3A",
+          rootDocumentId: "1234-ABCD:",
+          capabilities: StorageCapabilities.saf(),
+        ),
+      );
+
+      final StorageRoot? loaded = await repo.getRoot("saf-1");
+      expect(loaded, isNotNull);
+      expect(loaded!.rootDocumentId, "1234-ABCD:");
+      expect(loaded.backendType, StorageBackendType.saf);
+      expect(loaded.capabilities.canMoveWithinBackend, isFalse);
+      expect(loaded.capabilities.supportsAtomicReplace, isFalse);
+    });
+
+    test("a non-SAF root has no root document id and full local capabilities", () async {
+      await repo.addRoot(root);
+      final StorageRoot? loaded = await repo.getRoot("root-1");
+      expect(loaded!.rootDocumentId, isNull);
+      expect(loaded.capabilities.canMoveWithinBackend, isTrue);
+    });
+
     test("getRoot returns null for an id that was never added", () async {
       expect(await repo.getRoot("nope"), isNull);
     });

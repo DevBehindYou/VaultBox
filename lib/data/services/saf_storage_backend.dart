@@ -54,19 +54,7 @@ final class SafStorageBackend implements StorageBackend {
     // down). Claiming `fullLocal()` parity here would be the exact kind of
     // silently-wrong capability report the interface's own doc comment
     // warns against.
-    return const StorageCapabilities(
-      canRead: true,
-      canWrite: true,
-      canCreateDirectory: true,
-      canDelete: true,
-      canRename: true,
-      canMoveWithinBackend: false,
-      canCopyWithinBackend: false,
-      supportsRandomAccess: false,
-      supportsAtomicReplace: false,
-      supportsFreeSpaceQuery: false,
-      supportsWatch: false,
-    );
+    return const StorageCapabilities.saf();
   }
 
   @override

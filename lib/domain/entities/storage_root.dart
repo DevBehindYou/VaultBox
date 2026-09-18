@@ -18,6 +18,7 @@ final class StorageRoot {
     this.isAvailable = true,
     this.freeBytes,
     this.totalBytes,
+    this.rootDocumentId,
   });
 
   final String id;
@@ -46,6 +47,11 @@ final class StorageRoot {
   final int? freeBytes;
   final int? totalBytes;
 
+  /// SAF only: the tree's top-level document id (`DocumentsContract
+  /// .getTreeDocumentId`), where path resolution starts. Null for every other
+  /// backend type.
+  final String? rootDocumentId;
+
   StorageRoot copyWith({
     bool? isDefault,
     bool? isEnabled,
@@ -65,6 +71,7 @@ final class StorageRoot {
       isAvailable: isAvailable ?? this.isAvailable,
       freeBytes: freeBytes ?? this.freeBytes,
       totalBytes: totalBytes ?? this.totalBytes,
+      rootDocumentId: rootDocumentId,
     );
   }
 }

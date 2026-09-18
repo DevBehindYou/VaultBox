@@ -7,9 +7,13 @@ import "package:path_provider/path_provider.dart";
 import "../../app/providers.dart";
 import "../../core/errors/app_failure.dart";
 import "../../data/services/direct_path_storage_backend.dart";
+import "../../data/services/saf_storage_backend.dart";
 import "../../domain/entities/storage_root.dart";
+import "../../domain/repositories/id_generator.dart";
+import "../../domain/repositories/storage_root_repository.dart";
 import "../../domain/value_objects/storage_capabilities.dart";
 import "../../domain/value_objects/storage_path.dart";
+import "../../platform/adapters/android_storage_host.dart";
 
 /// Phase 1's one real "choose storage" option.
 ///
@@ -68,5 +72,76 @@ Future<String> addAppStorageRoot(WidgetRef ref) async {
     ),
   );
 
+  return rootId;
+}
+
+/// "SD card or custom folder": opens the system folder picker (SAF), takes a
+/// persistable grant, proves the folder is writable, and registers it as a
+/// storage root. Returns the new (or already-registered) root's id, or `null`
+/// if the person cancelled the picker.
+///
+/// Thin wrapper so widgets stay simple; the logic lives in [registerSafRoot],
+/// which takes its dependencies explicitly and is unit-tested with fakes.
+Future<String?> addSafStorageRoot(WidgetRef ref) {
+  return registerSafRoot(
+    host: ref.read(androidStorageHostProvider),
+    registry: ref.read(backendRegistryProvider),
+    roots: ref.read(storageRootRepositoryProvider),
+    ids: ref.read(idGeneratorProvider),
+  );
+}
+
+Future<String?> registerSafRoot({
+  required AndroidStorageHost host,
+  required BackendRegistry registry,
+  required StorageRootRepository roots,
+  required IdGenerator ids,
+}) async {
+  final SafTreeInfo? tree = await host.openDocumentTree();
+  if (tree == null) return null; // cancelled
+
+  final List<StorageRoot> existing = await roots.listRoots();
+  for (final StorageRoot root in existing) {
+    // Picking the same folder twice must not create a duplicate root.
+    if (root.backendType == StorageBackendType.saf && root.uriOrPath == tree.treeUri) {
+      return root.id;
+    }
+  }
+
+  final String rootId = "saf-${ids.newId()}";
+  final SafStorageBackend backend = SafStorageBackend(
+    id: rootId,
+    host: host,
+    treeUri: tree.treeUri,
+    rootDocumentId: tree.rootDocumentId,
+  );
+
+  // Real write probe (same idea as the app-storage root): creating VaultBox's
+  // hidden bookkeeping directory (the Recycle Bin lives in it) proves the grant
+  // is usable NOW, rather than failing on the first real file operation.
+  try {
+    await backend.createDirectory(StoragePath.parse(rootId, ".vaultbox"));
+  } on PathConflictFailure {
+    // Already set up in this folder — fine.
+  } on AppFailure {
+    // The grant was persisted by the picker; don't leave a useless one behind.
+    await host.releasePersistedUri(tree.treeUri);
+    rethrow;
+  }
+
+  registry.register(backend);
+  await roots.addRoot(
+    StorageRoot(
+      id: rootId,
+      displayName: tree.displayName,
+      backendType: StorageBackendType.saf,
+      uriOrPath: tree.treeUri,
+      rootDocumentId: tree.rootDocumentId,
+      capabilities: const StorageCapabilities.saf(),
+      // Only the first root becomes the default; adding a second must not
+      // silently change where the Files tab opens.
+      isDefault: !existing.any((StorageRoot r) => r.isDefault),
+    ),
+  );
   return rootId;
 }

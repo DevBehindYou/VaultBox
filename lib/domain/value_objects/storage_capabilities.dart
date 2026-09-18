@@ -47,6 +47,24 @@ final class StorageCapabilities {
       supportsFreeSpaceQuery = true,
       supportsWatch = false;
 
+  /// Storage Access Framework roots (SD card / any folder the user grants).
+  /// Honest, not aspirational: no native move/copy is relied on, no reliable
+  /// random access, no atomic replace (a replace-mode write truncates in
+  /// place) and no free-space query. `SafStorageBackend.capabilities()` and the
+  /// persisted root both use this, so they can't drift apart.
+  const StorageCapabilities.saf()
+    : canRead = true,
+      canWrite = true,
+      canCreateDirectory = true,
+      canDelete = true,
+      canRename = true,
+      canMoveWithinBackend = false,
+      canCopyWithinBackend = false,
+      supportsRandomAccess = false,
+      supportsAtomicReplace = false,
+      supportsFreeSpaceQuery = false,
+      supportsWatch = false;
+
   final bool canRead;
   final bool canWrite;
   final bool canCreateDirectory;

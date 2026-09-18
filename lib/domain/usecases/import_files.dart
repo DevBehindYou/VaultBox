@@ -90,7 +90,24 @@ final class ImportFiles {
 
       final StorageWriteHandle handle = await _files.openWrite(target, mode: mode);
       try {
-        await handle.sink.addStream(source.open());
+        // Capture a failure of the SOURCE stream ourselves: sinks differ in how
+        // they report a source error through addStream (some complete normally),
+        // and a half-read file must never be committed as if it were complete.
+        Object? sourceError;
+        StackTrace? sourceTrace;
+        Stream<List<int>> bytes() async* {
+          try {
+            yield* source.open();
+          } on Object catch (error, trace) {
+            sourceError = error;
+            sourceTrace = trace;
+            rethrow;
+          }
+        }
+
+        await handle.sink.addStream(bytes());
+        final Object? readFailure = sourceError;
+        if (readFailure != null) Error.throwWithStackTrace(readFailure, sourceTrace!);
         final int written = await handle.commit();
         final int? expected = source.sizeBytes;
         if (expected != null && written != expected) {

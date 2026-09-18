@@ -43,10 +43,18 @@ abstract interface class AndroidStorageHost {
 }
 
 final class SafTreeInfo {
-  const SafTreeInfo({required this.treeUri, required this.displayName});
+  const SafTreeInfo({
+    required this.treeUri,
+    required this.displayName,
+    required this.rootDocumentId,
+  });
 
   final String treeUri;
   final String displayName;
+
+  /// The tree's top-level document id — where [SafStorageBackend] starts
+  /// walking path segments.
+  final String rootDocumentId;
 }
 
 enum SafEntryKind { file, directory }

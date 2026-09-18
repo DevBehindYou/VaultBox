@@ -28,10 +28,10 @@ permissions:
 
 env:
   FLUTTER_VERSION: "3.47.4" # stable, Dart 3.13.3 — pin so results are reproducible
-  # Phase A switch: android/.../storage/SafStorageHostApi.kt is an unreconciled
-  # draft written against a guess of Pigeon's output and cannot compile yet.
-  # Set to "false" once it has been reconciled with the generated StorageApi.g.kt.
-  EXCLUDE_SAF_DRAFT: "true"
+  # SafStorageHostApi.kt was reconciled with the generated StorageApi.g.kt
+  # (session 1, after run #5), so it now builds with everything else. Flip to
+  # "true" only to bisect a Kotlin compile failure.
+  EXCLUDE_SAF_DRAFT: "false"
 
 jobs:
   verify:

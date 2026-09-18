@@ -1,8 +1,3 @@
-// Gradle dependency this file needs and `flutter create .` will NOT add on
-// its own: `kotlinx-coroutines-android` (for `suspendCancellableCoroutine`).
-// Add to android/app/build.gradle's dependencies block if it isn't already
-// present transitively — check before assuming a missing-symbol error here
-// means something else is wrong.
 package com.vaultbox.app.storage
 
 import android.content.ContentResolver
@@ -10,218 +5,200 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
-
-// These three types come from the Pigeon-generated file
-// (android/app/src/main/kotlin/com/vaultbox/app/pigeon/StorageApi.g.kt) —
-// does not exist until `dart run pigeon` has been run (see README.md). This
-// import will fail to resolve until then; that's expected, not a bug in
-// this file.
+import com.vaultbox.app.pigeon.AndroidStorageApi
+import com.vaultbox.app.pigeon.FlutterError
 import com.vaultbox.app.pigeon.SafEntryMessage
 import com.vaultbox.app.pigeon.SafEntryTypeMessage
 import com.vaultbox.app.pigeon.SafTreeMessage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
 
-// Implements the generated `AndroidStorageApi` HostApi interface from
-// `pigeons/storage_api.dart` (see android/app/src/main/kotlin/com/vaultbox/app/pigeon/StorageApi.g.kt
-// once `dart run pigeon` has been run — that file does not exist yet in this
-// delivery, see README.md).
-//
-// IMPORTANT — reconcile before wiring up: this class is written against this
-// project's own best understanding of what Pigeon should generate for the
-// spec in `pigeons/storage_api.dart` (method names, nullability, and
-// whether HostApi methods come out as ordinary functions or `suspend fun`
-// for the ones with a `Future<T>` Dart return type). The Pigeon spec file
-// itself flags this as unverified. Once codegen has actually run, diff this
-// file's method signatures against the real generated interface and adjust
-// — the *bodies* below (the actual SAF calls) don't depend on that; only
-// the `override fun` signatures might need small adjustments.
-//
-// Every operation here is a direct, standard Storage Access Framework call
-// — DocumentFile / DocumentsContract / ContentResolver, all from
-// developer.android.com's own SAF documentation, nothing invented. What
-// HASN'T been exercised on a real device from this delivery: multi-provider
-// interop (different manufacturers' SAF providers vary in what they
-// support), very large files through `openFileDescriptor`, and behaviour
-// across the specific Android versions VaultBox targets (minSdk 29). Treat
-// this class as a strong first draft, not a validated implementation — see
-// docs/IMPLEMENTATION_PLAN.md's risk register.
-// This class deliberately does NOT declare `: AndroidStorageApi` yet — see
-// the reconciliation note above. Two steps remain once codegen has run and
-// the signatures are confirmed:
-//   1. Add `: AndroidStorageApi` to the class declaration below (Kotlin will
-//      point out any signature mismatches immediately).
-//   2. Register it from `MainActivity.configureFlutterEngine`:
-//        AndroidStorageApi.setUp(
-//            flutterEngine.dartExecutor.binaryMessenger,
-//            SafStorageHostApi(applicationContext, treePickerLauncher),
-//        )
-//      (exact call shape per whatever Pigeon actually generates for
-//      HostApi registration — this is the other half of the "don't assume"
-//      note at the top of this file.)
+/**
+ * Native half of the SAF storage bridge. Implements the Pigeon-generated
+ * [AndroidStorageApi] (see `pigeons/storage_api.dart`).
+ *
+ * Reconciled against real Pigeon 29.0.2 output (CI run #4+), which is what the
+ * first draft could only guess at:
+ *  - every method is `suspend fun` (the spec marks them `@async`);
+ *  - the generated `setUp` launches each call on `Dispatchers.Main`, so all
+ *    ContentResolver work below hops to `Dispatchers.IO`;
+ *  - errors are reported by throwing [FlutterError]; the Dart adapter
+ *    (`PigeonAndroidStorageHost`) maps its `code` to an `AppFailure`.
+ *
+ * STATUS: compiles in CI. NOT exercised on a device — multi-provider interop,
+ * very large files through [openFileDescriptor], and behaviour across Android
+ * versions are all unverified (IMPLEMENTATION_PLAN R-19/R-20).
+ */
 class SafStorageHostApi(
     private val context: Context,
     private val treePicker: TreePickerLauncher,
-) {
+) : AndroidStorageApi {
+
     private val resolver: ContentResolver
         get() = context.contentResolver
 
     // --- Tree grants ---
 
-    suspend fun openDocumentTree(): SafTreeMessage? {
+    override suspend fun openDocumentTree(): SafTreeMessage? {
+        // Runs on Main (where the generated handler dispatches us) — the picker
+        // needs the Activity, and suspends until onActivityResult delivers.
         val treeUri = treePicker.launch() ?: return null
 
-        val takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
-            Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
-        // Persisting the grant is what makes it survive process death and
-        // device reboot — without this call the picker result is only good
-        // for the current process lifetime, which would silently break
-        // every storage root the next time the app launches.
-        resolver.takePersistableUriPermission(treeUri, takeFlags)
-
-        val displayName = queryDisplayName(treeUri) ?: treeUri.lastPathSegment ?: "Storage"
-        return SafTreeMessage(treeUri = treeUri.toString(), displayName = displayName)
-    }
-
-    fun persistedTrees(): List<SafTreeMessage> {
-        return resolver.persistedUriPermissions
-            .filter { it.isReadPermission && it.isWritePermission }
-            .map { permission ->
-                val name = queryDisplayName(permission.uri) ?: permission.uri.lastPathSegment ?: "Storage"
-                SafTreeMessage(treeUri = permission.uri.toString(), displayName = name)
+        return withContext(Dispatchers.IO) {
+            guarded {
+                // ONLY read/write bits are legal here. Passing
+                // FLAG_GRANT_PERSISTABLE_URI_PERMISSION (as the first draft did)
+                // makes takePersistableUriPermission throw IllegalArgumentException;
+                // that flag belongs on the picker *intent*, not on this call.
+                resolver.takePersistableUriPermission(
+                    treeUri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+                )
+                describeTree(treeUri)
             }
+        }
     }
 
-    fun releasePersistedUri(treeUri: String) {
-        val uri = Uri.parse(treeUri)
-        val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        resolver.releasePersistableUriPermission(uri, flags)
+    override suspend fun persistedTrees(): List<SafTreeMessage> = withContext(Dispatchers.IO) {
+        guarded {
+            resolver.persistedUriPermissions
+                .filter { it.isReadPermission && it.isWritePermission && DocumentsContract.isTreeUri(it.uri) }
+                .map { describeTree(it.uri) }
+        }
+    }
+
+    override suspend fun releasePersistedUri(treeUri: String) {
+        withContext(Dispatchers.IO) {
+            guarded {
+                resolver.releasePersistableUriPermission(
+                    Uri.parse(treeUri),
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+                )
+            }
+        }
     }
 
     // --- Directory listing / metadata ---
 
-    fun listChildren(treeUri: String, parentDocumentId: String): List<SafEntryMessage> {
-        val tree = Uri.parse(treeUri)
-        val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(tree, parentDocumentId)
-        val projection = arrayOf(
-            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
-            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-            DocumentsContract.Document.COLUMN_MIME_TYPE,
-            DocumentsContract.Document.COLUMN_SIZE,
-            DocumentsContract.Document.COLUMN_LAST_MODIFIED,
-        )
-
-        val results = mutableListOf<SafEntryMessage>()
-        resolver.query(childrenUri, projection, null, null, null)?.use { cursor ->
-            val idCol = cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_DOCUMENT_ID)
-            val nameCol = cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_DISPLAY_NAME)
-            val mimeCol = cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_MIME_TYPE)
-            val sizeCol = cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_SIZE)
-            val modifiedCol = cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_LAST_MODIFIED)
-
-            while (cursor.moveToNext()) {
-                val mimeType = cursor.getString(mimeCol)
-                val isDirectory = mimeType == DocumentsContract.Document.MIME_TYPE_DIR
-                results.add(
-                    SafEntryMessage(
-                        documentId = cursor.getString(idCol),
-                        name = cursor.getString(nameCol),
-                        type = if (isDirectory) SafEntryTypeMessage.DIRECTORY else SafEntryTypeMessage.FILE,
-                        sizeBytes = if (isDirectory) null else cursor.getLong(sizeCol),
-                        lastModifiedMillis = if (cursor.isNull(modifiedCol)) null else cursor.getLong(modifiedCol),
-                        mimeType = if (isDirectory) null else mimeType,
-                    ),
-                )
+    override suspend fun listChildren(treeUri: String, parentDocumentId: String): List<SafEntryMessage> =
+        withContext(Dispatchers.IO) {
+            guarded {
+                val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(Uri.parse(treeUri), parentDocumentId)
+                val results = mutableListOf<SafEntryMessage>()
+                resolver.query(childrenUri, ENTRY_PROJECTION, null, null, null)?.use { cursor ->
+                    while (cursor.moveToNext()) {
+                        results.add(entryFrom(cursor))
+                    }
+                }
+                results
             }
         }
-        return results
-    }
 
-    fun stat(treeUri: String, documentId: String): SafEntryMessage? {
-        val tree = Uri.parse(treeUri)
-        val documentUri = DocumentsContract.buildDocumentUriUsingTree(tree, documentId)
-        val projection = arrayOf(
-            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
-            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-            DocumentsContract.Document.COLUMN_MIME_TYPE,
-            DocumentsContract.Document.COLUMN_SIZE,
-            DocumentsContract.Document.COLUMN_LAST_MODIFIED,
-        )
-
-        resolver.query(documentUri, projection, null, null, null)?.use { cursor ->
-            if (!cursor.moveToFirst()) return null
-            val mimeType = cursor.getString(cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_MIME_TYPE))
-            val isDirectory = mimeType == DocumentsContract.Document.MIME_TYPE_DIR
-            val sizeCol = cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_SIZE)
-            val modifiedCol = cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_LAST_MODIFIED)
-            return SafEntryMessage(
-                documentId = cursor.getString(cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_DOCUMENT_ID)),
-                name = cursor.getString(cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_DISPLAY_NAME)),
-                type = if (isDirectory) SafEntryTypeMessage.DIRECTORY else SafEntryTypeMessage.FILE,
-                sizeBytes = if (isDirectory) null else cursor.getLong(sizeCol),
-                lastModifiedMillis = if (cursor.isNull(modifiedCol)) null else cursor.getLong(modifiedCol),
-                mimeType = if (isDirectory) null else mimeType,
-            )
+    override suspend fun stat(treeUri: String, documentId: String): SafEntryMessage? =
+        withContext(Dispatchers.IO) {
+            guarded {
+                val documentUri = DocumentsContract.buildDocumentUriUsingTree(Uri.parse(treeUri), documentId)
+                resolver.query(documentUri, ENTRY_PROJECTION, null, null, null)?.use { cursor ->
+                    if (cursor.moveToFirst()) entryFrom(cursor) else null
+                }
+            }
         }
-        return null
-    }
 
     // --- Mutations ---
 
-    fun createDirectory(treeUri: String, parentDocumentId: String, name: String): String {
-        val tree = Uri.parse(treeUri)
-        val parentUri = DocumentsContract.buildDocumentUriUsingTree(tree, parentDocumentId)
-        val newUri = DocumentsContract.createDocument(
-            resolver,
-            parentUri,
-            DocumentsContract.Document.MIME_TYPE_DIR,
-            name,
-        ) ?: throw IllegalStateException("Provider refused to create directory '$name'")
-        return DocumentsContract.getDocumentId(newUri)
+    override suspend fun createDirectory(treeUri: String, parentDocumentId: String, name: String): String =
+        withContext(Dispatchers.IO) {
+            guarded {
+                val parentUri = DocumentsContract.buildDocumentUriUsingTree(Uri.parse(treeUri), parentDocumentId)
+                val created = DocumentsContract.createDocument(
+                    resolver, parentUri, DocumentsContract.Document.MIME_TYPE_DIR, name,
+                ) ?: throw IllegalStateException("Provider refused to create directory '$name'")
+                DocumentsContract.getDocumentId(created)
+            }
+        }
+
+    override suspend fun createFile(
+        treeUri: String,
+        parentDocumentId: String,
+        name: String,
+        mimeType: String,
+    ): String = withContext(Dispatchers.IO) {
+        guarded {
+            val parentUri = DocumentsContract.buildDocumentUriUsingTree(Uri.parse(treeUri), parentDocumentId)
+            val created = DocumentsContract.createDocument(resolver, parentUri, mimeType, name)
+                ?: throw IllegalStateException("Provider refused to create file '$name'")
+            DocumentsContract.getDocumentId(created)
+        }
     }
 
-    fun createFile(treeUri: String, parentDocumentId: String, name: String, mimeType: String): String {
-        val tree = Uri.parse(treeUri)
-        val parentUri = DocumentsContract.buildDocumentUriUsingTree(tree, parentDocumentId)
-        val newUri = DocumentsContract.createDocument(resolver, parentUri, mimeType, name)
-            ?: throw IllegalStateException("Provider refused to create file '$name'")
-        return DocumentsContract.getDocumentId(newUri)
+    override suspend fun deleteDocument(treeUri: String, documentId: String) {
+        withContext(Dispatchers.IO) {
+            guarded {
+                val documentUri = DocumentsContract.buildDocumentUriUsingTree(Uri.parse(treeUri), documentId)
+                if (!DocumentsContract.deleteDocument(resolver, documentUri)) {
+                    throw IllegalStateException("Provider refused to delete document")
+                }
+            }
+        }
     }
 
-    fun deleteDocument(treeUri: String, documentId: String) {
-        val tree = Uri.parse(treeUri)
-        val documentUri = DocumentsContract.buildDocumentUriUsingTree(tree, documentId)
-        val deleted = DocumentsContract.deleteDocument(resolver, documentUri)
-        if (!deleted) throw IllegalStateException("Provider refused to delete document")
-    }
-
-    fun renameDocument(treeUri: String, documentId: String, newName: String): String {
-        val tree = Uri.parse(treeUri)
-        val documentUri = DocumentsContract.buildDocumentUriUsingTree(tree, documentId)
-        // The returned URI's documentId (and sometimes its display name, if
-        // the provider resolved a naming conflict on its own) can differ
-        // from what was requested — some providers implement rename as
-        // delete+recreate under a new id. Query the actual result rather
-        // than echoing back the input, so a caller that checks the returned
-        // name for a "(1)"-style suffix sees the truth.
-        val renamedUri = DocumentsContract.renameDocument(resolver, documentUri, newName)
-            ?: throw IllegalStateException("Provider refused to rename document")
-        return queryDisplayName(renamedUri) ?: newName
-    }
+    override suspend fun renameDocument(treeUri: String, documentId: String, newName: String): String =
+        withContext(Dispatchers.IO) {
+            guarded {
+                val documentUri = DocumentsContract.buildDocumentUriUsingTree(Uri.parse(treeUri), documentId)
+                // Some providers implement rename as delete+recreate under a new
+                // id, or resolve a name clash themselves ("name (1)"). Report what
+                // actually happened, not what was asked for.
+                val renamed = DocumentsContract.renameDocument(resolver, documentUri, newName)
+                    ?: throw IllegalStateException("Provider refused to rename document")
+                queryDisplayName(renamed) ?: newName
+            }
+        }
 
     // --- Byte I/O ---
 
-    fun openFileDescriptor(treeUri: String, documentId: String, mode: String): Long {
-        val tree = Uri.parse(treeUri)
-        val documentUri = DocumentsContract.buildDocumentUriUsingTree(tree, documentId)
-        val pfd = resolver.openFileDescriptor(documentUri, mode)
-            ?: throw IllegalStateException("Provider refused to open a file descriptor")
-        // detachFd() transfers ownership to the caller — this is exactly
-        // what lets the raw fd cross the platform-channel boundary safely.
-        // The Dart side (SafStorageBackend) is now responsible for closing
-        // whatever it opens from this fd; see that class's doc comment.
-        return pfd.detachFd().toLong()
+    override suspend fun openFileDescriptor(treeUri: String, documentId: String, mode: String): Long =
+        withContext(Dispatchers.IO) {
+            guarded {
+                val documentUri = DocumentsContract.buildDocumentUriUsingTree(Uri.parse(treeUri), documentId)
+                // Plain "w" does NOT truncate on many SAF providers, which would
+                // leave stale tail bytes after a shorter overwrite. "wt" does.
+                val effectiveMode = if (mode == "w") "wt" else mode
+                val pfd = resolver.openFileDescriptor(documentUri, effectiveMode)
+                    ?: throw IllegalStateException("Provider refused to open a file descriptor")
+                // detachFd() transfers ownership to the caller: Dart must close
+                // whatever it opens from this fd.
+                pfd.detachFd().toLong()
+            }
+        }
+
+    // --- helpers ---
+
+    private fun describeTree(treeUri: Uri): SafTreeMessage {
+        val rootId = DocumentsContract.getTreeDocumentId(treeUri)
+        return SafTreeMessage(
+            treeUri = treeUri.toString(),
+            displayName = queryDisplayName(treeUri) ?: rootId,
+            rootDocumentId = rootId,
+        )
+    }
+
+    private fun entryFrom(cursor: android.database.Cursor): SafEntryMessage {
+        val mimeType = cursor.getString(cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_MIME_TYPE))
+        val isDirectory = mimeType == DocumentsContract.Document.MIME_TYPE_DIR
+        val sizeCol = cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_SIZE)
+        val modifiedCol = cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_LAST_MODIFIED)
+        return SafEntryMessage(
+            documentId = cursor.getString(cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_DOCUMENT_ID)),
+            name = cursor.getString(cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_DISPLAY_NAME)),
+            type = if (isDirectory) SafEntryTypeMessage.DIRECTORY else SafEntryTypeMessage.FILE,
+            // A NULL size is "unknown", not zero (some providers can't say).
+            sizeBytes = if (isDirectory || cursor.isNull(sizeCol)) null else cursor.getLong(sizeCol),
+            lastModifiedMillis = if (cursor.isNull(modifiedCol)) null else cursor.getLong(modifiedCol),
+            mimeType = if (isDirectory) null else mimeType,
+        )
     }
 
     private fun queryDisplayName(uri: Uri): String? {
@@ -230,58 +207,91 @@ class SafStorageHostApi(
         } else {
             uri
         }
-        resolver.query(
+        return resolver.query(
             documentUri,
             arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME),
-            null,
-            null,
-            null,
-        )?.use { cursor ->
-            if (cursor.moveToFirst()) {
-                return cursor.getString(0)
-            }
-        }
-        return null
+            null, null, null,
+        )?.use { cursor -> if (cursor.moveToFirst()) cursor.getString(0) else null }
+    }
+
+    /**
+     * Maps platform exceptions onto stable [FlutterError] codes the Dart adapter
+     * understands: `permission_revoked`, `not_found`, `io_error`.
+     */
+    private inline fun <T> guarded(block: () -> T): T = try {
+        block()
+    } catch (e: FlutterError) {
+        throw e
+    } catch (e: SecurityException) {
+        throw FlutterError(code = "permission_revoked", message = e.message, details = null)
+    } catch (e: java.io.FileNotFoundException) {
+        throw FlutterError(code = "not_found", message = e.message, details = null)
+    } catch (e: Exception) {
+        throw FlutterError(code = "io_error", message = e.message, details = e.javaClass.simpleName)
+    }
+
+    private companion object {
+        val ENTRY_PROJECTION = arrayOf(
+            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+            DocumentsContract.Document.COLUMN_MIME_TYPE,
+            DocumentsContract.Document.COLUMN_SIZE,
+            DocumentsContract.Document.COLUMN_LAST_MODIFIED,
+        )
     }
 }
 
-/// Bridges the SAF tree-picker Intent (`ACTION_OPEN_DOCUMENT_TREE`) to a
-/// suspend call. Real implementation lives on `MainActivity` — an
-/// `ActivityResultLauncher<Uri?>` registered via
-/// `registerForActivityResult(ActivityResultContracts.OpenDocumentTree())`
-/// in `onCreate`, wired to resume whatever continuation is pending here.
-/// Kept as an interface so `SafStorageHostApi` doesn't need an `Activity`
-/// reference directly (a plain `Context` — e.g. the application context — is
-/// enough for every other method on this class).
+/** Suspends until the user picks (or cancels) an `ACTION_OPEN_DOCUMENT_TREE` tree. */
 interface TreePickerLauncher {
     suspend fun launch(): Uri?
 }
 
-/// Reference implementation of [TreePickerLauncher] for `MainActivity` to
-/// instantiate and hand to [SafStorageHostApi]. `MainActivity` must call
-/// [onResult] from the `ActivityResultCallback` it registers — this class
-/// only holds the coroutine handoff, not the registration itself, since
-/// `registerForActivityResult` must be called unconditionally during
-/// Activity initialization (a well-known Android platform constraint, not a
-/// design choice made here).
-class ActivityResultTreePickerLauncher : TreePickerLauncher {
-    private var pendingContinuation: ((Uri?) -> Unit)? = null
-    private var launchAction: (() -> Unit)? = null
+/**
+ * Bridges the picker Intent to a suspend call. `MainActivity` supplies the
+ * Activity side ([bind] + [onResult]).
+ *
+ * Uses startActivityForResult rather than the ActivityResult API on purpose:
+ * `FlutterActivity` extends plain `android.app.Activity`, NOT `ComponentActivity`,
+ * so `registerForActivityResult` is not available on it (the first draft
+ * assumed it was).
+ */
+class ActivityTreePickerLauncher : TreePickerLauncher {
+    private var startPicker: ((Intent) -> Unit)? = null
+    private var pending: ((Uri?) -> Unit)? = null
 
-    /** Called once from `MainActivity.onCreate` after registering the launcher. */
-    fun bind(launch: () -> Unit) {
-        launchAction = launch
+    /** Called from `MainActivity.configureFlutterEngine`. */
+    fun bind(start: (Intent) -> Unit) {
+        startPicker = start
     }
 
-    /** Called from the `ActivityResultCallback` `MainActivity` registered. */
+    /** Called from `MainActivity.onActivityResult` with the picked tree, or null if cancelled. */
     fun onResult(uri: Uri?) {
-        pendingContinuation?.invoke(uri)
-        pendingContinuation = null
+        val callback = pending
+        pending = null
+        callback?.invoke(uri)
     }
 
     override suspend fun launch(): Uri? = suspendCancellableCoroutine { continuation ->
-        pendingContinuation = { uri -> continuation.resume(uri) }
-        launchAction?.invoke()
-            ?: continuation.resume(null) // launcher never bound — fail closed, not silently hang
+        val start = startPicker
+        if (start == null) {
+            // Not bound: fail closed (report "cancelled") rather than hang forever.
+            continuation.resume(null)
+            return@suspendCancellableCoroutine
+        }
+        // A previous request that never got its result resolves as cancelled.
+        pending?.invoke(null)
+        pending = { uri -> if (continuation.isActive) continuation.resume(uri) }
+        continuation.invokeOnCancellation { pending = null }
+
+        start(
+            Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+                addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PREFIX_URI_PERMISSION,
+                )
+            },
+        )
     }
 }

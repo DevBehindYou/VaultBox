@@ -20,12 +20,12 @@
 // either — see docs/IMPLEMENTATION_PLAN.md's risk register before treating
 // this contract as final.
 //
-// One thing this spec deliberately does NOT resolve, flagged rather than
-// guessed: whether the installed `pigeon` version generates a Kotlin
-// `suspend fun` automatically for a HostApi method with a Dart `Future<T>`
-// return type, or still expects some other async convention. Check the
-// installed `pigeon` package's own generated output before writing
-// `SafStorageHostApi.kt` against it, rather than assuming this guessed right.
+// VERIFIED by CI (Pigeon 29.0.2, run #4+): every method is `@async`, and the
+// generated Kotlin interface therefore declares `suspend fun` for all of them.
+// The generated `setUp` launches each call on `Dispatchers.Main`, so the Kotlin
+// implementation must hop to `Dispatchers.IO` for ContentResolver work.
+// `openDocumentTree` in particular could not have worked as a synchronous
+// method — it has to wait for an Activity result.
 
 import "package:pigeon/pigeon.dart";
 
@@ -49,6 +49,11 @@ import "package:pigeon/pigeon.dart";
 class SafTreeMessage {
   String? treeUri;
   String? displayName;
+
+  // `DocumentsContract.getTreeDocumentId(treeUri)` — the document id of the
+  // tree's top level. SafStorageBackend needs it to start walking paths; it
+  // was missing from the first draft of this contract.
+  String? rootDocumentId;
 }
 
 enum SafEntryTypeMessage {

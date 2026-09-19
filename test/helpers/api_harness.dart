@@ -11,6 +11,7 @@ import "package:vaultbox/data/services/system_clock.dart";
 import "package:vaultbox/domain/entities/account.dart";
 import "package:vaultbox/domain/entities/storage_root.dart";
 import "package:vaultbox/domain/security/authorizer.dart";
+import "package:vaultbox/domain/security/download_tickets.dart";
 import "package:vaultbox/domain/security/login_service.dart";
 import "package:vaultbox/domain/security/login_throttle.dart";
 import "package:vaultbox/domain/security/session_manager.dart";
@@ -34,6 +35,7 @@ final class ApiHarness {
     required this.accounts,
     required this.backend,
     required this.rootRepository,
+    required this.tickets,
     required this.api,
   });
 
@@ -54,6 +56,7 @@ final class ApiHarness {
     );
     final FileRepositoryImpl files = FileRepositoryImpl(resolveBackend: registry.forRoot);
 
+    final DownloadTicketService tickets = DownloadTicketService(clock: clock);
     final VaultApi api = VaultApi(
       login: LoginService(
         accounts: accounts,
@@ -68,7 +71,9 @@ final class ApiHarness {
       files: FileEndpoints(
         roots: rootRepository,
         files: files,
+        accounts: accounts,
         authorizer: authorizer,
+        tickets: tickets,
         copy: CopyItems(files),
         move: MoveItems(files),
         delete: DeleteItemsToRecycleBin(files, InMemoryRecycleBinRepository(), clock, UuidIdGenerator()),
@@ -80,6 +85,7 @@ final class ApiHarness {
       accounts: accounts,
       backend: memory,
       rootRepository: rootRepository,
+      tickets: tickets,
       api: api,
     );
   }
@@ -92,6 +98,7 @@ final class ApiHarness {
   final InMemoryAccountRepository accounts;
   final MemoryStorageBackend backend;
   final InMemoryStorageRootRepository rootRepository;
+  final DownloadTicketService tickets;
   final VaultApi api;
 
   static StorageRoot root({

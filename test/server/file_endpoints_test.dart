@@ -104,6 +104,8 @@ void main() {
       expect(response.status, 416);
       expect(response.headers["Content-Range"], "bytes */11");
       expect((await get("/readme.txt", headers: <String, String>{"range": "bytes=-0"})).status, 416);
+      expect((await get("/readme.txt", headers: <String, String>{"range": "bytes=11-"})).status, 416);
+      expect((await get("/readme.txt", headers: <String, String>{"range": "bytes=20-"})).status, 416);
     });
 
     test("ranges the server doesn't split are ignored, not errors", () async {
@@ -502,6 +504,106 @@ void main() {
     });
   });
 
+  group("download tickets", () {
+    Future<String> ticketFor(String p) async {
+      final ApiResponse response = await post("ticket", <String, Object?>{"path": p});
+      expect(response.status, 200, reason: p);
+      final String url = body(response)["url"]! as String;
+      expect(url, startsWith("/d/"));
+      return url;
+    }
+
+    test("a logged-in caller gets a link that downloads without any header", () async {
+      final String url = await ticketFor("/readme.txt");
+
+      final ApiResponse response = await h.send("GET", url);
+      expect(response.status, 200);
+      expect(utf8.decode(await ApiHarness.bodyBytes(response)), "hello world");
+      expect(response.headers["Content-Disposition"], startsWith("attachment;"));
+    });
+
+    test("the link tells how long it lives", () async {
+      final ApiResponse response = await post("ticket", <String, Object?>{"path": "/readme.txt"});
+      expect(body(response)["expiresInSeconds"], 900);
+    });
+
+    test("ranges, HEAD and inline work through a ticket", () async {
+      final String url = await ticketFor("/readme.txt");
+
+      final ApiResponse range = await h.send("GET", url, headers: <String, String>{"range": "bytes=0-4"});
+      expect(range.status, 206);
+      expect(utf8.decode(await ApiHarness.bodyBytes(range)), "hello");
+
+      expect((await h.send("HEAD", url)).contentLength, 11);
+
+      final ApiResponse inline = await h.send("GET", url, query: <String, String>{"inline": "1"});
+      expect(inline.headers["Content-Disposition"], startsWith("inline;"));
+    });
+
+    test("an unknown ticket is a plain 404", () async {
+      expect((await h.send("GET", "/d/not-a-real-ticket")).status, 404);
+      expect((await h.send("GET", "/d")).status, 404);
+      expect((await h.send("GET", "/d/a/b")).status, 404);
+    });
+
+    test("a ticket expires", () async {
+      final String url = await ticketFor("/readme.txt");
+      h.clock.advance(const Duration(minutes: 16));
+
+      expect((await h.send("GET", url)).status, 404);
+    });
+
+    test("logging out kills the links that session made", () async {
+      final String url = await ticketFor("/readme.txt");
+      expect((await h.send("POST", "/api/v1/auth/logout", token: token)).status, 204);
+
+      expect((await h.send("GET", url)).status, 404);
+    });
+
+    test("a ticket opens one file and only reads", () async {
+      final String url = await ticketFor("/readme.txt");
+
+      expect((await h.send("PUT", url, bytes: utf8.encode("x"))).status, 405);
+      expect((await h.send("DELETE", url)).status, 405);
+      expect(await contentOf("/readme.txt"), "hello world");
+    });
+
+    test("no tickets for folders, missing files or the recycle bin", () async {
+      expect((await post("ticket", <String, Object?>{"path": "/docs"})).status, 400);
+      expect((await post("ticket", <String, Object?>{"path": "/nope.txt"})).status, 404);
+      expect((await post("ticket", <String, Object?>{"path": "/.vaultbox/recycle/keep.txt"})).status, 404);
+      expect((await post("ticket", <String, Object?>{"path": "/../x"})).status, 400);
+      expect((await post("ticket", <String, Object?>{})).status, 400);
+    });
+
+    test("asking for a ticket needs a login", () async {
+      final ApiResponse response = await h.send(
+        "POST",
+        "/api/v1/roots/r1/ticket",
+        json: <String, Object?>{"path": "/readme.txt"},
+      );
+      expect(response.status, 401);
+    });
+
+    test("the Authorizer is asked again when the link is used", () async {
+      bool blocked = false;
+      await start(authorizer: _RecordingAuthorizer(deny: (Permission p, StoragePath path) => blocked));
+      final String url = await ticketFor("/readme.txt");
+      expect((await h.send("GET", url)).status, 200);
+
+      blocked = true; // e.g. access was taken away after the link was made
+
+      expect((await h.send("GET", url)).status, 403);
+    });
+
+    test("a ticket for a file that has since been deleted is a 404", () async {
+      final String url = await ticketFor("/readme.txt");
+      await backend.delete(sp("/readme.txt"));
+
+      expect((await h.send("GET", url)).status, 404);
+    });
+  });
+
   test("stat describes one item and the root", () async {
     final ApiResponse file = await h.send("GET", "/api/v1/roots/r1/stat", token: token, query: <String, String>{"path": "/readme.txt"});
     expect(file.status, 200);
@@ -523,6 +625,7 @@ void main() {
       ("GET", "stat"),
       ("GET", "content"),
       ("PUT", "content"),
+      ("POST", "ticket"),
       ("POST", "mkdir"),
       ("POST", "rename"),
       ("POST", "move"),

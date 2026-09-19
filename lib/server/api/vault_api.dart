@@ -21,6 +21,7 @@ import "file_endpoints.dart";
 ///   GET  /api/v1/roots/{id}/entries            list a folder (paged)
 ///   GET  /api/v1/roots/{id}/stat               one item's details
 ///   GET|HEAD|PUT /api/v1/roots/{id}/content    download (Range) / upload
+///   POST /api/v1/roots/{id}/ticket             a short-lived `/d/<ticket>` link for one file
 ///   POST /api/v1/roots/{id}/{mkdir|rename|move|copy|delete}
 ///
 /// Failures are `{ "error": "<stable_code>" }` with a matching status; nothing
@@ -53,6 +54,13 @@ final class VaultApi {
   }
 
   Future<ApiResponse> _dispatch(ApiRequest request) async {
+    // Ticket links: /d/<ticket> — the ticket itself is the credential.
+    if (request.segments.isNotEmpty && request.segments.first == "d") {
+      return request.segments.length == 2
+          ? _files.downloadByTicket(request, request.segments[1])
+          : ApiResponse.error(HttpStatus.notFound, "not_found");
+    }
+
     // segments[0] == "api", segments[1] == "v1" (the router guarantees the prefix).
     final List<String> route = request.segments.length < 3
         ? const <String>[]
@@ -71,7 +79,7 @@ final class VaultApi {
     if (caller == null) return _unauthorized();
 
     if (route.length == 2 && route[0] == "auth") {
-      return _only("POST", request, () => _handleLogout(request));
+      return _only("POST", request, () => _handleLogout(request, caller));
     }
     if (route.length == 1 && route[0] == "me") {
       return _only("GET", request, () async => ApiResponse(HttpStatus.ok, json: _user(caller.account)));
@@ -142,8 +150,9 @@ final class VaultApi {
     };
   }
 
-  Future<ApiResponse> _handleLogout(ApiRequest request) async {
+  Future<ApiResponse> _handleLogout(ApiRequest request, ApiCaller caller) async {
     await _sessions.revoke(request.bearerToken!);
+    _files.revokeTickets(caller.session.tokenHash);
     return const ApiResponse(HttpStatus.noContent);
   }
 

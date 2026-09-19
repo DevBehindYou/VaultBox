@@ -6,6 +6,7 @@ import "../app/providers.dart";
 import "../data/security/in_memory_session_store.dart";
 import "../domain/repositories/clock.dart";
 import "../domain/security/authorizer.dart";
+import "../domain/security/download_tickets.dart";
 import "../domain/security/login_service.dart";
 import "../domain/security/login_throttle.dart";
 import "../domain/security/session_manager.dart";
@@ -39,6 +40,7 @@ final class ServerServices {
     );
     unawaited(login.warmUp().catchError((Object _) {}));
 
+    final DownloadTicketService tickets = DownloadTicketService(clock: clock);
     final VaultApi api = VaultApi(
       login: login,
       sessions: sessions,
@@ -47,7 +49,9 @@ final class ServerServices {
       files: FileEndpoints(
         roots: container.read(storageRootRepositoryProvider),
         files: container.read(fileRepositoryProvider),
+        accounts: container.read(accountRepositoryProvider),
         authorizer: const SingleAdminAuthorizer(),
+        tickets: tickets,
         copy: container.read(copyItemsProvider),
         move: container.read(moveItemsProvider),
         delete: container.read(deleteItemsProvider),
@@ -56,7 +60,10 @@ final class ServerServices {
 
     final Timer purge = Timer.periodic(
       const Duration(minutes: 5),
-      (Timer _) => unawaited(sessions.purgeExpired()),
+      (Timer _) {
+        unawaited(sessions.purgeExpired());
+        tickets.purgeExpired();
+      },
     );
     return ServerServices._(api, container, purge);
   }

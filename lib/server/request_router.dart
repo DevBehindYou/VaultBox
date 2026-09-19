@@ -52,7 +52,7 @@ final class RequestRouter {
           response.headers.set(HttpHeaders.allowHeader, "GET");
           _json(response, HttpStatus.methodNotAllowed, <String, Object?>{"error": "method_not_allowed"});
         }
-      } else if (api != null && (path == "/api/v1" || path.startsWith("/api/v1/"))) {
+      } else if (api != null && (path == "/api/v1" || path.startsWith("/api/v1/") || path.startsWith("/d/"))) {
         await _handleApi(request, response);
       } else {
         _json(response, HttpStatus.notFound, <String, Object?>{"error": "not_found"});

@@ -136,6 +136,10 @@ final class StoragePath {
       // Malformed percent-encoding — treat the raw string as-is rather than
       // throwing here; the caller-level checks above still apply to it.
       return value;
+    } on ArgumentError {
+      // What Uri.decodeComponent really throws for a stray "%" ("100%.txt"),
+      // which is an ordinary file name, not an attack.
+      return value;
     }
   }
 

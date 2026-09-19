@@ -2,13 +2,16 @@ import "dart:io";
 
 import "../../core/errors/app_failure.dart";
 import "../../core/utils/mime_types.dart";
+import "../../domain/entities/account.dart";
 import "../../domain/entities/storage_root.dart";
 import "../../domain/models/file_ref.dart";
 import "../../domain/models/operation_batch.dart";
+import "../../domain/repositories/account_repository.dart";
 import "../../domain/repositories/file_repository.dart";
 import "../../domain/repositories/storage_backend.dart";
 import "../../domain/repositories/storage_root_repository.dart";
 import "../../domain/security/authorizer.dart";
+import "../../domain/security/download_tickets.dart";
 import "../../domain/usecases/copy_items.dart";
 import "../../domain/usecases/delete_items_to_recycle_bin.dart";
 import "../../domain/usecases/move_items.dart";
@@ -31,12 +34,16 @@ final class FileEndpoints {
   FileEndpoints({
     required StorageRootRepository roots,
     required FileRepository files,
+    required AccountRepository accounts,
     required Authorizer authorizer,
+    required DownloadTicketService tickets,
     required CopyItems copy,
     required MoveItems move,
     required DeleteItemsToRecycleBin delete,
   }) : _roots = roots,
        _files = files,
+       _accounts = accounts,
+       _tickets = tickets,
        _authorizer = authorizer,
        _copy = copy,
        _move = move,
@@ -44,6 +51,8 @@ final class FileEndpoints {
 
   final StorageRootRepository _roots;
   final FileRepository _files;
+  final AccountRepository _accounts;
+  final DownloadTicketService _tickets;
   final Authorizer _authorizer;
   final CopyItems _copy;
   final MoveItems _move;
@@ -59,6 +68,7 @@ final class FileEndpoints {
     "entries",
     "stat",
     "content",
+    "ticket",
     "mkdir",
     "rename",
     "move",
@@ -70,12 +80,13 @@ final class FileEndpoints {
   /// storage is case-insensitive.
   static const String _reservedDirName = ".vaultbox";
 
-  Future<ApiResponse> handle(ApiRequest request, ApiCaller caller, String rootId, String action) async {
-    try {
+  Future<ApiResponse> handle(ApiRequest request, ApiCaller caller, String rootId, String action) {
+    return _guarded(() async {
       return switch (action) {
         "entries" => await _only("GET", request, () => _entries(request, caller, rootId)),
         "stat" => await _only("GET", request, () => _stat(request, caller, rootId)),
         "content" => await _content(request, caller, rootId),
+        "ticket" => await _only("POST", request, () => _ticket(request, caller, rootId)),
         "mkdir" => await _only("POST", request, () => _mkdir(request, caller, rootId)),
         "rename" => await _only("POST", request, () => _rename(request, caller, rootId)),
         "move" => await _only("POST", request, () => _moveOrCopy(request, caller, rootId, move: true)),
@@ -83,6 +94,36 @@ final class FileEndpoints {
         "delete" => await _only("POST", request, () => _deleteToRecycleBin(request, caller, rootId)),
         _ => ApiResponse.error(HttpStatus.notFound, "not_found"),
       };
+    });
+  }
+
+  /// `GET|HEAD /d/<ticket>`: a short-lived link for one file (see
+  /// [DownloadTicketService]). Unknown or expired tickets are a plain 404.
+  Future<ApiResponse> downloadByTicket(ApiRequest request, String token) {
+    return _guarded(() async {
+      if (request.method != "GET" && request.method != "HEAD") {
+        return ApiResponse.error(
+          HttpStatus.methodNotAllowed,
+          "method_not_allowed",
+          headers: const <String, String>{HttpHeaders.allowHeader: "GET, HEAD"},
+        );
+      }
+      final DownloadTicket? ticket = _tickets.resolve(token);
+      final Account? account = ticket == null ? null : await _accounts.findById(ticket.accountId);
+      if (ticket == null || account == null) return ApiResponse.error(HttpStatus.notFound, "not_found");
+
+      final StorageRoot root = await _root(ticket.rootId);
+      final StoragePath path = _parse(root, ticket.path, allowRoot: false);
+      return _serveFile(request, account, root, path);
+    });
+  }
+
+  /// Revokes every ticket a login session asked for.
+  void revokeTickets(String sessionHash) => _tickets.revokeSession(sessionHash);
+
+  Future<ApiResponse> _guarded(Future<ApiResponse> Function() run) async {
+    try {
+      return await run();
     } on ApiReject catch (reject) {
       return reject.response;
     } on PermissionRevokedFailure {
@@ -149,7 +190,11 @@ final class FileEndpoints {
   }
 
   void _require(ApiCaller caller, Permission permission, StorageRoot root, StoragePath path) {
-    if (!_authorizer.allows(caller.account, permission, root, path)) {
+    _requireAccount(caller.account, permission, root, path);
+  }
+
+  void _requireAccount(Account account, Permission permission, StorageRoot root, StoragePath path) {
+    if (!_authorizer.allows(account, permission, root, path)) {
       throw ApiReject(ApiResponse.error(HttpStatus.forbidden, "forbidden"));
     }
   }
@@ -269,7 +314,13 @@ final class FileEndpoints {
   Future<ApiResponse> _download(ApiRequest request, ApiCaller caller, String rootId) async {
     final StorageRoot root = await _root(rootId);
     final StoragePath path = _parse(root, request.query["path"], allowRoot: false);
-    _require(caller, Permission.read, root, path);
+    return _serveFile(request, caller.account, root, path);
+  }
+
+  /// Streams one file (whole, or one byte range). Shared by the bearer-token
+  /// download and the ticket link, so both enforce exactly the same rules.
+  Future<ApiResponse> _serveFile(ApiRequest request, Account account, StorageRoot root, StoragePath path) async {
+    _requireAccount(account, Permission.read, root, path);
 
     final FileRef ref = FileRef(root: root, path: path);
     final StorageEntry? entry = await _files.statEntry(ref);
@@ -326,6 +377,31 @@ final class FileEndpoints {
       contentType: mime,
       contentLength: length,
       headers: headers,
+    );
+  }
+
+  /// Issues a short-lived link for one existing file (see [DownloadTicketService]).
+  Future<ApiResponse> _ticket(ApiRequest request, ApiCaller caller, String rootId) async {
+    final StorageRoot root = await _root(rootId);
+    final Map<String, Object?> body = await readJsonObject(request);
+    final Object? raw = body["path"];
+    if (raw is! String) return ApiResponse.error(HttpStatus.badRequest, "bad_request");
+
+    final StoragePath path = _parse(root, raw, allowRoot: false);
+    _require(caller, Permission.read, root, path);
+    final StorageEntry? entry = await _files.statEntry(FileRef(root: root, path: path));
+    if (entry == null) return ApiResponse.error(HttpStatus.notFound, "not_found");
+    if (entry.isDirectory) return ApiResponse.error(HttpStatus.badRequest, "not_a_file");
+
+    final String token = _tickets.issue(
+      accountId: caller.account.id,
+      sessionHash: caller.session.tokenHash,
+      rootId: root.id,
+      path: _fmt(path),
+    );
+    return ApiResponse(
+      HttpStatus.ok,
+      json: <String, Object?>{"url": "/d/$token", "expiresInSeconds": _tickets.lifetime.inSeconds},
     );
   }
 
@@ -544,9 +620,13 @@ final class _ByteRange {
       return _ByteRange(count >= size ? 0 : size - count, size - 1);
     }
     final int? start = int.tryParse(from);
-    final int? last = to.isEmpty ? size - 1 : int.tryParse(to);
-    if (start == null || last == null) return null;
-    if (last < start) return null; // an invalid range is ignored (RFC 9110)
+    if (start == null) return null;
+    if (to.isEmpty) {
+      // Open-ended: from [start] to the end.
+      return start >= size ? unsatisfiable : _ByteRange(start, size - 1);
+    }
+    final int? last = int.tryParse(to);
+    if (last == null || last < start) return null; // an invalid range is ignored (RFC 9110)
     if (start >= size) return unsatisfiable;
     return _ByteRange(start, last >= size ? size - 1 : last);
   }

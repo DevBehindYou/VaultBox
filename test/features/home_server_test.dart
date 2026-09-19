@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_test/flutter_test.dart";
+import "package:qr_flutter/qr_flutter.dart";
 import "package:vaultbox/app/providers.dart";
 import "package:vaultbox/core/design/aurora_theme.dart";
 import "package:vaultbox/core/errors/app_failure.dart";
@@ -186,6 +187,36 @@ void main() {
     expect(find.textContaining("nothing is exposed to your network"), findsNothing);
   });
 
+
+  testWidgets("a QR code for the address is offered only when another device can reach it", (WidgetTester tester) async {
+    _tall(tester);
+    await tester.pumpWidget(
+      harness(FakeServerHost(const ServerState(run: ServerRunState.running, endpoint: "https://127.0.0.1:8443/"))),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text("Show QR code"), findsNothing, reason: "loopback: nothing else can open it");
+
+    _tall(tester);
+    await tester.pumpWidget(
+      harness(
+        FakeServerHost(
+          const ServerState(
+            run: ServerRunState.running,
+            endpoint: "https://192.168.1.5:8443/",
+            endpoints: <String>["http://192.168.1.5:8080/", "https://192.168.1.5:8443/"],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("Show QR code"));
+    await tester.pumpAndSettle();
+
+    expect(find.text("Open on another device"), findsOneWidget);
+    expect(find.byType(QrImageView), findsOneWidget);
+    expect(find.text("https://192.168.1.5:8443/"), findsWidgets, reason: "the encrypted address wins");
+    expect(find.textContaining("not encrypted — use it only"), findsNothing);
+  });
 
   testWidgets("HTTPS is on and HTTP is off by default", (WidgetTester tester) async {
     _tall(tester);

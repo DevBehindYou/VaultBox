@@ -105,6 +105,64 @@ void main() {
     expect(find.text("Delete"), findsOneWidget);
   });
 
+  testWidgets("one selected file offers Share, but not Ask for files", (WidgetTester tester) async {
+    final MemoryStorageBackend backend = MemoryStorageBackend(id: root.id)
+      ..seedFile("/a.txt", utf8.encode("a"));
+
+    await tester.pumpWidget(harness(backend));
+    await tester.pumpAndSettle();
+    await tester.longPress(find.text("a.txt"));
+    await tester.pumpAndSettle();
+
+    expect(find.text("Share"), findsOneWidget);
+    expect(find.text("Ask for files"), findsNothing, reason: "people can only send files into a folder");
+  });
+
+  testWidgets("one selected folder offers both Share and Ask for files", (WidgetTester tester) async {
+    final MemoryStorageBackend backend = MemoryStorageBackend(id: root.id)..seedDirectory("/Inbox");
+
+    await tester.pumpWidget(harness(backend));
+    await tester.pumpAndSettle();
+    await tester.longPress(find.text("Inbox"));
+    await tester.pumpAndSettle();
+
+    expect(find.text("Share"), findsOneWidget);
+    expect(find.text("Ask for files"), findsOneWidget);
+  });
+
+  testWidgets("several selected items offer neither, since a link is for one item", (WidgetTester tester) async {
+    final MemoryStorageBackend backend = MemoryStorageBackend(id: root.id)
+      ..seedFile("/a.txt", utf8.encode("a"))
+      ..seedFile("/b.txt", utf8.encode("b"));
+
+    await tester.pumpWidget(harness(backend));
+    await tester.pumpAndSettle();
+    await tester.longPress(find.text("a.txt"));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("b.txt"));
+    await tester.pumpAndSettle();
+
+    expect(find.text("2 selected"), findsOneWidget);
+    expect(find.text("Share"), findsNothing);
+    expect(find.text("Ask for files"), findsNothing);
+    expect(find.text("Copy"), findsOneWidget, reason: "the other actions stay");
+  });
+
+  testWidgets("Share opens the link dialog for the selected item", (WidgetTester tester) async {
+    final MemoryStorageBackend backend = MemoryStorageBackend(id: root.id)
+      ..seedFile("/a.txt", utf8.encode("a"));
+
+    await tester.pumpWidget(harness(backend));
+    await tester.pumpAndSettle();
+    await tester.longPress(find.text("a.txt"));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text("Share"));
+    await tester.pumpAndSettle();
+
+    expect(find.text("Share a link"), findsOneWidget);
+    expect(find.textContaining("can download “a.txt”"), findsOneWidget);
+  });
+
   testWidgets("creating a folder refreshes the listing", (WidgetTester tester) async {
     await tester.pumpWidget(harness(MemoryStorageBackend(id: root.id)));
     await tester.pumpAndSettle();

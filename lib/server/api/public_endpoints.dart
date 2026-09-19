@@ -499,11 +499,11 @@ final class PublicEndpoints {
         : request.bodyStream.transform(
             StreamTransformer<List<int>, List<int>>.fromHandlers(
               handleData: (List<int> chunk, EventSink<List<int>> sink) {
+                if (tooLarge) return; // already refused: the rest is unwanted
                 received += chunk.length;
                 if (received > limit) {
                   tooLarge = true;
                   sink.addError(const FormatException("file too large"));
-                  sink.close(); // stop reading: the rest is unwanted
                 } else {
                   sink.add(chunk);
                 }
@@ -514,7 +514,7 @@ final class PublicEndpoints {
     try {
       final UploadResult result = await _transfer.receive(open.root, target, body, overwrite: false);
       return ApiResponse(HttpStatus.created, json: <String, Object?>{"name": finalName, "size": result.size});
-    } on StorageFault catch (fault) {
+    } on StorageFault {
       if (tooLarge) return ApiResponse.error(HttpStatus.requestEntityTooLarge, "file_too_large", closeConnection: true);
       rethrow;
     }

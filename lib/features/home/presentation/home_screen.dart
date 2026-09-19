@@ -189,7 +189,8 @@ class _ServerCard extends ConsumerWidget {
                   ),
                 ),
             ],
-          if (shareLinkBase(server) != null)
+          // A QR for another device is only useful when the server is reachable from one.
+          if (shareLinkBase(server) != null && !_isLocalOnly(shareLinkBase(server)))
             Align(
               alignment: Alignment.centerLeft,
               child: TextButton.icon(

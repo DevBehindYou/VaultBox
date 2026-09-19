@@ -5,9 +5,11 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "../app/providers.dart";
 import "../data/security/in_memory_session_store.dart";
 import "../domain/repositories/clock.dart";
+import "../domain/security/authorizer.dart";
 import "../domain/security/login_service.dart";
 import "../domain/security/login_throttle.dart";
 import "../domain/security/session_manager.dart";
+import "api/file_endpoints.dart";
 import "api/vault_api.dart";
 
 /// Everything the server's isolate needs, wired once. It reuses the app's own
@@ -42,7 +44,14 @@ final class ServerServices {
       sessions: sessions,
       accounts: container.read(accountRepositoryProvider),
       roots: container.read(storageRootRepositoryProvider),
-      files: container.read(fileRepositoryProvider),
+      files: FileEndpoints(
+        roots: container.read(storageRootRepositoryProvider),
+        files: container.read(fileRepositoryProvider),
+        authorizer: const SingleAdminAuthorizer(),
+        copy: container.read(copyItemsProvider),
+        move: container.read(moveItemsProvider),
+        delete: container.read(deleteItemsProvider),
+      ),
     );
 
     final Timer purge = Timer.periodic(

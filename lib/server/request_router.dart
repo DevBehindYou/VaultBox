@@ -25,12 +25,6 @@ final class RequestRouter {
   final bool privateClientsOnly;
   final VaultApi? api;
 
-  /// Request bodies are tiny JSON documents (a login); anything bigger is refused.
-  static const int maxBodyBytes = 16 * 1024;
-
-  /// How much of an oversized body is read and discarded before hanging up.
-  static const int maxDrainBytes = 256 * 1024;
-
   /// Accepts connections from [server] until it is closed.
   Future<void> serve(HttpServer server) async {
     await for (final HttpRequest request in server) {
@@ -65,24 +59,31 @@ final class RequestRouter {
       }
     } on Object {
       // Never leak internals to a client.
-      response.statusCode = HttpStatus.internalServerError;
+      try {
+        response.statusCode = HttpStatus.internalServerError;
+      } on StateError {
+        // The reply is already under way (a download that broke half-way): the
+        // only honest thing left is to cut the connection.
+        try {
+          (await response.detachSocket(writeHeaders: false)).destroy();
+        } on Object {
+          // Already gone.
+        }
+      }
     } finally {
-      await response.close();
+      try {
+        await response.close();
+      } on Object {
+        // The connection is gone; nothing left to tell the client.
+      }
     }
   }
 
   Future<void> _handleApi(HttpRequest request, HttpResponse response) async {
-    List<int> body = const <int>[];
-    if (request.method == "POST" || request.method == "PUT" || request.method == "PATCH") {
-      final List<int>? read = await _readBody(request);
-      if (read == null) {
-        // Refuse and hang up rather than read on: the rest of an oversized body is never wanted.
-        response.persistentConnection = false;
-        _json(response, HttpStatus.requestEntityTooLarge, <String, Object?>{"error": "payload_too_large"});
-        return;
-      }
-      body = read;
-    }
+    final Map<String, String> headers = <String, String>{};
+    request.headers.forEach((String name, List<String> values) {
+      if (values.isNotEmpty) headers[name.toLowerCase()] = values.first;
+    });
 
     final ApiResponse result = await api!.handle(
       ApiRequest(
@@ -91,41 +92,41 @@ final class RequestRouter {
         query: request.uri.queryParameters,
         remoteAddress: request.connectionInfo?.remoteAddress.address ?? "unknown",
         bearerToken: _bearerToken(request),
-        body: body,
+        headers: headers,
+        bodyStream: request,
+        contentLength: request.contentLength,
       ),
     );
+    await _write(request, response, result);
+  }
 
+  Future<void> _write(HttpRequest request, HttpResponse response, ApiResponse result) async {
     response.statusCode = result.status;
     result.headers.forEach(response.headers.set);
+    if (result.closeConnection) response.persistentConnection = false;
+
     final Object? json = result.json;
+    final List<int>? bytes = result.bytes;
+    final Stream<List<int>>? stream = result.stream;
     if (json != null) {
       response
         ..headers.contentType = ContentType.json
         ..write(jsonEncode(json));
+    } else if (bytes != null) {
+      _setContentType(response, result.contentType);
+      response
+        ..contentLength = bytes.length
+        ..add(bytes);
+    } else if (stream != null) {
+      _setContentType(response, result.contentType);
+      final int? length = result.contentLength;
+      if (length != null) response.contentLength = length;
+      await response.addStream(stream);
     }
   }
 
-  /// The whole body, or `null` if it is larger than [maxBodyBytes].
-  ///
-  /// A body that is only a little too big is still read and thrown away, so the
-  /// client gets to see the 413: closing a socket that still has unread data
-  /// makes the OS reset the connection, and the client would lose the answer.
-  /// Anything bigger than [maxDrainBytes] is not worth reading — the caller
-  /// hangs up on it.
-  Future<List<int>?> _readBody(HttpRequest request) async {
-    if (request.contentLength > maxDrainBytes) return null;
-    final BytesBuilder builder = BytesBuilder(copy: false);
-    int total = 0;
-    bool tooBig = request.contentLength > maxBodyBytes;
-    await for (final List<int> chunk in request) {
-      total += chunk.length;
-      if (total > maxDrainBytes) return null;
-      if (!tooBig) {
-        builder.add(chunk);
-        tooBig = total > maxBodyBytes;
-      }
-    }
-    return tooBig ? null : builder.takeBytes();
+  static void _setContentType(HttpResponse response, String? contentType) {
+    response.headers.set(HttpHeaders.contentTypeHeader, contentType ?? "application/octet-stream");
   }
 
   static String? _bearerToken(HttpRequest request) {

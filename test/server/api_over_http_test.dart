@@ -3,64 +3,25 @@ import "dart:convert";
 import "dart:io";
 
 import "package:flutter_test/flutter_test.dart";
-import "package:vaultbox/app/providers.dart";
-import "package:vaultbox/data/repositories/file_repository_impl.dart";
-import "package:vaultbox/data/repositories/in_memory_account_repository.dart";
-import "package:vaultbox/data/repositories/in_memory_storage_root_repository.dart";
-import "package:vaultbox/data/security/in_memory_session_store.dart";
 import "package:vaultbox/data/services/memory_storage_backend.dart";
-import "package:vaultbox/domain/entities/account.dart";
-import "package:vaultbox/domain/entities/storage_root.dart";
-import "package:vaultbox/domain/security/login_service.dart";
-import "package:vaultbox/domain/security/login_throttle.dart";
-import "package:vaultbox/domain/security/session_manager.dart";
-import "package:vaultbox/domain/value_objects/storage_capabilities.dart";
+import "package:vaultbox/server/api/api_json.dart";
 import "package:vaultbox/server/api/vault_api.dart";
 import "package:vaultbox/server/request_router.dart";
 
-import "../helpers/fake_clock.dart";
-import "../helpers/fake_password_hasher.dart";
+import "../helpers/api_harness.dart";
 
 /// The API through the real HTTP stack (plain loopback sockets; TLS is the
 /// listener's job): headers, bodies, status codes as a client sees them.
 void main() {
-  const String password = "correct horse battery";
+  const String password = ApiHarness.password;
 
   late HttpServer server;
   late Uri base;
 
   VaultApi buildApi() {
-    final FakeClock clock = FakeClock();
-    final InMemoryAccountRepository accounts = InMemoryAccountRepository(<Account>[
-      Account(id: "a1", username: "admin", passwordHash: "fake:$password", createdAt: clock.now()),
-    ]);
-    final SessionManager sessions = SessionManager(store: InMemorySessionStore(), clock: clock);
     final MemoryStorageBackend backend = MemoryStorageBackend(id: "r1")
       ..seedFile("/hello.txt", utf8.encode("hi"));
-    final BackendRegistry registry = BackendRegistry()..register(backend);
-    return VaultApi(
-      login: LoginService(
-        accounts: accounts,
-        hasher: FakePasswordHasher(),
-        sessions: sessions,
-        perAccountThrottle: LoginThrottle(clock: clock),
-        perAddressThrottle: LoginThrottle(clock: clock, freeAttempts: 20),
-      ),
-      sessions: sessions,
-      accounts: accounts,
-      roots: InMemoryStorageRootRepository(
-        initial: const <StorageRoot>[
-          StorageRoot(
-            id: "r1",
-            displayName: "Phone",
-            backendType: StorageBackendType.memory,
-            uriOrPath: "memory://r1",
-            capabilities: StorageCapabilities.fullLocal(),
-          ),
-        ],
-      ),
-      files: FileRepositoryImpl(resolveBackend: registry.forRoot),
-    );
+    return ApiHarness(backend: backend).api;
   }
 
   Future<void> serveWith(RequestRouter router) async {
@@ -166,7 +127,7 @@ void main() {
       final (int status, _, String text) = await send(
         "POST",
         "/api/v1/auth/login",
-        rawBody: List<int>.filled(RequestRouter.maxBodyBytes + 1, 0x20),
+        rawBody: List<int>.filled(maxJsonBodyBytes + 1, 0x20),
       );
 
       expect(status, 413);
@@ -175,6 +136,85 @@ void main() {
 
     test("garbage JSON is a 400, not a crash", () async {
       final (int status, _, _) = await send("POST", "/api/v1/auth/login", rawBody: utf8.encode("{nope"));
+      expect(status, 400);
+    });
+
+    test("upload, download, byte range and HEAD over real HTTP", () async {
+      final String token = await loginToken();
+      final Map<String, String> auth = <String, String>{"Authorization": "Bearer $token"};
+      final String payload = String.fromCharCodes(List<int>.generate(50000, (int i) => 97 + i % 26));
+
+      final (int putStatus, _, String putText) = await send(
+        "PUT",
+        "/api/v1/roots/r1/content?path=%2Fbig.txt",
+        rawBody: utf8.encode(payload),
+        headers: auth,
+      );
+      expect(putStatus, 201);
+      expect(jsonDecode(putText), <String, Object?>{"path": "/big.txt", "size": 50000});
+
+      final (int getStatus, HttpHeaders getHeaders, String getText) = await send(
+        "GET",
+        "/api/v1/roots/r1/content?path=%2Fbig.txt",
+        headers: auth,
+      );
+      expect(getStatus, 200);
+      expect(getText, payload);
+      expect(getHeaders.value("content-length"), "50000");
+      expect(getHeaders.value("accept-ranges"), "bytes");
+      expect(getHeaders.value("content-disposition"), startsWith("attachment;"));
+
+      final (int rangeStatus, HttpHeaders rangeHeaders, String rangeText) = await send(
+        "GET",
+        "/api/v1/roots/r1/content?path=%2Fbig.txt",
+        headers: <String, String>{...auth, "Range": "bytes=10-19"},
+      );
+      expect(rangeStatus, 206);
+      expect(rangeText, payload.substring(10, 20));
+      expect(rangeHeaders.value("content-range"), "bytes 10-19/50000");
+
+      final (int headStatus, HttpHeaders headHeaders, String headText) = await send(
+        "HEAD",
+        "/api/v1/roots/r1/content?path=%2Fbig.txt",
+        headers: auth,
+      );
+      expect(headStatus, 200);
+      expect(headHeaders.value("content-length"), "50000");
+      expect(headText, isEmpty);
+
+      final (int badRange, _, _) = await send(
+        "GET",
+        "/api/v1/roots/r1/content?path=%2Fbig.txt",
+        headers: <String, String>{...auth, "Range": "bytes=60000-"},
+      );
+      expect(badRange, 416);
+    });
+
+    test("an upload without a token is refused and stores nothing", () async {
+      final (int status, _, _) = await send(
+        "PUT",
+        "/api/v1/roots/r1/content?path=%2Fsneaky.txt",
+        rawBody: utf8.encode("x"),
+      );
+      expect(status, 401);
+
+      final String token = await loginToken();
+      final (int listStatus, _, String listing) = await send(
+        "GET",
+        "/api/v1/roots/r1/entries",
+        headers: <String, String>{"Authorization": "Bearer $token"},
+      );
+      expect(listStatus, 200);
+      expect(listing, isNot(contains("sneaky")));
+    });
+
+    test("path traversal in a query string is refused", () async {
+      final String token = await loginToken();
+      final (int status, _, _) = await send(
+        "GET",
+        "/api/v1/roots/r1/content?path=%2E%2E%2F%2E%2E%2Fetc%2Fpasswd",
+        headers: <String, String>{"Authorization": "Bearer $token"},
+      );
       expect(status, 400);
     });
 

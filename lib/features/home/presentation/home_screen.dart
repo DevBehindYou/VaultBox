@@ -15,6 +15,8 @@ import "../../../domain/entities/server_config.dart";
 import "../../../domain/entities/server_state.dart";
 import "../../../domain/entities/storage_root.dart";
 import "../../../domain/repositories/server_host.dart";
+import "../../share/share_links.dart";
+import "qr_sheet.dart";
 
 /// Home. Deliberately thinner than its mockup.
 ///
@@ -150,8 +152,8 @@ class _ServerCard extends ConsumerWidget {
     };
     final String explanation = switch (server.run) {
       ServerRunState.stopped =>
-        "Start VaultBox's background service. For now it only answers a "
-            "health check; login and file access come next.",
+        "Start VaultBox's background service to open your files from a browser or "
+            "a WebDAV app on your network. Nothing is reachable until you start it.",
       ServerRunState.starting => "Starting the background service…",
       ServerRunState.running => _isLocalOnly(server.endpoint)
           ? "The background service is running. It answers on this phone only — "
@@ -187,6 +189,15 @@ class _ServerCard extends ConsumerWidget {
                   ),
                 ),
             ],
+          if (shareLinkBase(server) != null)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: () => unawaited(showServerQrSheet(context, shareLinkBase(server)!)),
+                icon: const Icon(Icons.qr_code_2),
+                label: const Text("Show QR code"),
+              ),
+            ),
           const _FingerprintRow(),
           if (server.run == ServerRunState.failed && server.detail != null) ...<Widget>[
             const SizedBox(height: AuroraSpacing.sm),

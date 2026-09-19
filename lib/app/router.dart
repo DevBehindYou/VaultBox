@@ -6,6 +6,7 @@ import "../core/design/aurora_colors.dart";
 import "../core/design/aurora_spacing.dart";
 import "../core/design/aurora_typography.dart";
 import "../core/design/aurora_widgets.dart";
+import "../domain/entities/account.dart";
 import "../domain/entities/storage_root.dart";
 import "../features/files/presentation/files_screen.dart";
 import "../features/files/viewmodel/files_view_model.dart";
@@ -14,6 +15,9 @@ import "../features/onboarding/presentation/admin_setup_screen.dart";
 import "../features/onboarding/presentation/onboarding_ready_screen.dart";
 import "../features/onboarding/presentation/onboarding_storage_screen.dart";
 import "../features/onboarding/presentation/onboarding_welcome_screen.dart";
+import "../features/share/presentation/add_person_screen.dart";
+import "../features/share/presentation/person_screen.dart";
+import "../features/share/presentation/share_screen.dart";
 import "../features/placeholder_screen.dart";
 import "providers.dart";
 import "shell_scaffold.dart";
@@ -56,6 +60,20 @@ GoRouter buildRouter(Ref ref) {
         builder: (BuildContext context, GoRouterState state) =>
             AdminSetupScreen(onDone: (BuildContext context) => context.go("/home")),
       ),
+      // People (outside the shell: no dock while adding or editing someone).
+      GoRoute(
+        path: "/people/new",
+        builder: (BuildContext context, GoRouterState state) => AddPersonScreen(
+          onDone: (BuildContext context, Account account) => context.pushReplacement("/people/${account.id}"),
+        ),
+      ),
+      GoRoute(
+        path: "/people/:id",
+        builder: (BuildContext context, GoRouterState state) => PersonScreen(
+          accountId: state.pathParameters["id"]!,
+          onRemoved: (BuildContext context) => context.pop(),
+        ),
+      ),
       GoRoute(
         path: "/onboarding/ready",
         builder: (BuildContext context, GoRouterState state) => const OnboardingReadyScreen(),
@@ -86,14 +104,7 @@ GoRouter buildRouter(Ref ref) {
             routes: <RouteBase>[
               GoRoute(
                 path: "/share",
-                builder: (BuildContext context, GoRouterState state) =>
-                    const PlaceholderScreen(
-                      title: "Share",
-                      phase: "Phase 5",
-                      description:
-                          "Shares, links, QR pairing and per-user access arrive once "
-                          "the server and auth layers are in place.",
-                    ),
+                builder: (BuildContext context, GoRouterState state) => const ShareScreen(),
               ),
             ],
           ),

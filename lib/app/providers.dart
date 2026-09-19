@@ -300,3 +300,13 @@ final FutureProvider<List<Account>> accountsProvider =
 /// Every share / upload link, newest first. Invalidate after a change.
 final FutureProvider<List<Share>> sharesProvider =
     FutureProvider<List<Share>>((Ref ref) => ref.watch(shareRepositoryProvider).list());
+
+/// The person who owns the phone: the first enabled admin. Links made in the app
+/// are made as them.
+final FutureProvider<Account?> ownerAccountProvider = FutureProvider<Account?>((Ref ref) async {
+  final List<Account> all = await ref.watch(accountsProvider.future);
+  for (final Account account in all) {
+    if (account.isAdmin && account.isEnabled) return account;
+  }
+  return null;
+});

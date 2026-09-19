@@ -7,10 +7,12 @@ import "../../../core/design/aurora_colors.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
+import "../../../domain/entities/share.dart";
 import "../../../domain/models/file_ref.dart";
 import "../../../domain/models/operation_batch.dart";
 import "../../../domain/value_objects/storage_entry.dart";
 import "../../../domain/value_objects/write_mode.dart";
+import "../../share/presentation/create_share_dialog.dart";
 import "../viewmodel/files_view_model.dart";
 import "destination_picker_screen.dart";
 import "recycle_bin_screen.dart";
@@ -130,8 +132,29 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
               onCopy: () => _copySelected(context, viewModel),
               onMove: () => _moveSelected(context, viewModel),
               onDelete: () => _confirmDelete(context, viewModel),
+              onShare: _onlySelected(state) == null
+                  ? null
+                  : () => _shareSelected(context, _onlySelected(state)!, ShareKind.download),
+              onAskForFiles: _onlySelected(state)?.isDirectory ?? false
+                  ? () => _shareSelected(context, _onlySelected(state)!, ShareKind.upload)
+                  : null,
             )
           : null,
+    );
+  }
+
+  /// The one selected item, or `null` if none or several are selected.
+  StorageEntry? _onlySelected(FilesState state) {
+    final List<StorageEntry> chosen = state.entries.where(state.isSelected).toList();
+    return chosen.length == 1 ? chosen.first : null;
+  }
+
+  Future<void> _shareSelected(BuildContext context, StorageEntry entry, ShareKind kind) {
+    return showCreateShareFlow(
+      context,
+      target: FileRef(root: widget.directory.root, path: entry.path),
+      kind: kind,
+      itemName: entry.name,
     );
   }
 
@@ -488,12 +511,20 @@ class _SelectionActionBar extends StatelessWidget {
     required this.onCopy,
     required this.onMove,
     required this.onDelete,
+    this.onShare,
+    this.onAskForFiles,
   });
 
   final int count;
   final VoidCallback onCopy;
   final VoidCallback onMove;
   final VoidCallback onDelete;
+
+  /// Only when exactly one item is selected.
+  final VoidCallback? onShare;
+
+  /// Only when exactly one folder is selected.
+  final VoidCallback? onAskForFiles;
 
   @override
   Widget build(BuildContext context) {
@@ -514,6 +545,10 @@ class _SelectionActionBar extends StatelessWidget {
                 label: "Move",
                 onPressed: onMove,
               ),
+              if (onShare != null)
+                _SelectionAction(icon: Icons.share_outlined, label: "Share", onPressed: onShare),
+              if (onAskForFiles != null)
+                _SelectionAction(icon: Icons.move_to_inbox_outlined, label: "Ask for files", onPressed: onAskForFiles),
               _SelectionAction(
                 icon: Icons.delete_outline,
                 label: "Delete",

@@ -8,9 +8,9 @@ import "../../domain/security/login_service.dart";
 import "../../domain/security/session.dart";
 import "../../domain/security/session_manager.dart";
 import "../../domain/value_objects/storage_path.dart";
+import "../files/storage_gate.dart";
 import "api_json.dart";
 import "api_types.dart";
-import "../files/storage_gate.dart";
 import "file_endpoints.dart";
 import "public_endpoints.dart";
 

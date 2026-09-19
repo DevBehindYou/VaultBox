@@ -61,6 +61,10 @@ dependencies:
   # XML parsing for PROPFIND/LOCK/PROPPATCH bodies. Pure Dart, no external entities.
   xml: ^7.0.1
 
+  # --- Sharing (Phase 5) ---
+  # QR codes for share links and the server address.
+  qr_flutter: ^4.1.0
+
   # --- Structured logging (doc §16/§20: no print() in production code) ---
   logging: ^1.3.0
 

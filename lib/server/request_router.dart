@@ -5,6 +5,7 @@ import "dart:io";
 import "api/api_types.dart";
 import "api/vault_api.dart";
 import "network_addresses.dart";
+import "portal/portal_assets.dart";
 
 /// Routes and answers HTTP requests. Transport-agnostic so it can be exercised
 /// over plain loopback sockets in tests; `HttpsListener` / `HttpListener`
@@ -19,11 +20,18 @@ final class RequestRouter {
   /// [privateClientsOnly]: refuse any client that isn't this phone or on a
   /// private network — used for the unencrypted HTTP listener.
   /// [api]: the `/api/v1/*` handlers; without it only `/health/` exists.
-  const RequestRouter({this.secure = true, this.privateClientsOnly = false, this.api});
+  /// [portal]: the browser page served at `/`; without it `/` is a plain 404.
+  const RequestRouter({
+    this.secure = true,
+    this.privateClientsOnly = false,
+    this.api,
+    this.portal,
+  });
 
   final bool secure;
   final bool privateClientsOnly;
   final VaultApi? api;
+  final PortalAssets? portal;
 
   /// Accepts connections from [server] until it is closed.
   Future<void> serve(HttpServer server) async {
@@ -54,6 +62,22 @@ final class RequestRouter {
         }
       } else if (api != null && (path == "/api/v1" || path.startsWith("/api/v1/") || path.startsWith("/d/"))) {
         await _handleApi(request, response);
+      } else if (portal?.lookup(path) case final PortalAsset asset) {
+        if (request.method == "GET" || request.method == "HEAD") {
+          await _write(
+            request,
+            response,
+            ApiResponse(
+              HttpStatus.ok,
+              bytes: asset.bytes,
+              contentType: asset.contentType,
+              headers: const <String, String>{"Content-Security-Policy": PortalAssets.contentSecurityPolicy},
+            ),
+          );
+        } else {
+          response.headers.set(HttpHeaders.allowHeader, "GET, HEAD");
+          _json(response, HttpStatus.methodNotAllowed, <String, Object?>{"error": "method_not_allowed"});
+        }
       } else {
         _json(response, HttpStatus.notFound, <String, Object?>{"error": "not_found"});
       }
@@ -145,7 +169,9 @@ final class RequestRouter {
       ..set(HttpHeaders.cacheControlHeader, "no-store")
       ..set("X-Content-Type-Options", "nosniff")
       ..set("Content-Security-Policy", "default-src 'none'")
-      ..set("Referrer-Policy", "no-referrer");
+      ..set("Referrer-Policy", "no-referrer")
+      ..set("X-Frame-Options", "DENY")
+      ..set("Cross-Origin-Resource-Policy", "same-origin");
     if (secure) {
       response.headers.set("Strict-Transport-Security", "max-age=31536000");
     }

@@ -1,3 +1,4 @@
+import "dart:async";
 import "dart:io";
 
 import "../../core/errors/app_failure.dart";
@@ -431,19 +432,21 @@ final class FileEndpoints {
     // Capture a failure of the CLIENT's stream ourselves: sinks differ in how
     // they report a broken source, and a half-received file must never be
     // committed as if it were complete.
+    // (An `async*` wrapper can't do this: `yield*` forwards a stream's errors
+    // without throwing them inside the generator, so a try/catch never sees them.)
     Object? sourceError;
-    Stream<List<int>> body() async* {
-      try {
-        yield* request.bodyStream;
-      } on Object catch (error) {
-        sourceError = error;
-        rethrow;
-      }
-    }
+    final Stream<List<int>> body = request.bodyStream.transform(
+      StreamTransformer<List<int>, List<int>>.fromHandlers(
+        handleError: (Object error, StackTrace trace, EventSink<List<int>> sink) {
+          sourceError ??= error;
+          sink.addError(error, trace);
+        },
+      ),
+    );
 
     try {
       try {
-        await handle.sink.addStream(body());
+        await handle.sink.addStream(body);
       } on Object {
         if (sourceError == null) rethrow;
       }

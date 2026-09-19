@@ -8,6 +8,7 @@ import "api/vault_api.dart";
 import "http_listener.dart";
 import "https_listener.dart";
 import "network_addresses.dart";
+import "portal/portal_assets.dart";
 import "request_router.dart";
 import "server_services.dart";
 
@@ -45,7 +46,7 @@ Future<void> serverMain() async {
 
     if (config.httpsEnabled ?? true) {
       final TlsIdentityMessage identity = await runtime.getTlsIdentity();
-      https = HttpsListener(router: RequestRouter(api: api));
+      https = HttpsListener(router: RequestRouter(api: api, portal: const PortalAssets()));
       await https.start(
         certificatePem: identity.certificatePem!,
         privateKeyPem: identity.privateKeyPem!,
@@ -57,7 +58,9 @@ Future<void> serverMain() async {
 
     if (config.httpEnabled ?? false) {
       // Unencrypted, opt-in, and private-network clients only.
-      http = HttpListener(router: RequestRouter(secure: false, privateClientsOnly: true, api: api));
+      http = HttpListener(
+        router: RequestRouter(secure: false, privateClientsOnly: true, api: api, portal: const PortalAssets()),
+      );
       await http.start(allowNetworkAccess: network, port: config.httpPort ?? 8080);
       endpoints.add("http://$host:${http.port}/");
     }

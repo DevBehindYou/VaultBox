@@ -154,20 +154,13 @@ void main() {
       final Socket socket = await Socket.connect(InternetAddress.loopbackIPv4, server.port);
       try {
         socket.write(
-          "PROPFIND $target HTTP/1.1
-Host: x
-"
-          "Authorization: ${DavHarness.basic("admin", DavHarness.password)}
-"
-          "Depth: 0
-Connection: close
-
-",
+          "PROPFIND $target HTTP/1.1\r\nHost: x\r\n"
+          "Authorization: ${DavHarness.basic("admin", DavHarness.password)}\r\n"
+          "Depth: 0\r\nConnection: close\r\n\r\n",
         );
         await socket.flush();
         final String reply = await utf8.decoder.bind(socket).join();
-        return reply.split("
-").first;
+        return reply.split("\r\n").first;
       } finally {
         socket.destroy();
       }

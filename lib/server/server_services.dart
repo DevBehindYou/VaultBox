@@ -12,6 +12,7 @@ import "../domain/security/login_throttle.dart";
 import "../domain/security/session_manager.dart";
 import "api/file_endpoints.dart";
 import "api/vault_api.dart";
+import "files/storage_gate.dart";
 
 /// Everything the server's isolate needs, wired once. It reuses the app's own
 /// providers (same repositories, hasher and storage backends as the UI) in a
@@ -41,16 +42,19 @@ final class ServerServices {
     unawaited(login.warmUp().catchError((Object _) {}));
 
     final DownloadTicketService tickets = DownloadTicketService(clock: clock);
+    final StorageGate gate = StorageGate(
+      roots: container.read(storageRootRepositoryProvider),
+      authorizer: const SingleAdminAuthorizer(),
+    );
     final VaultApi api = VaultApi(
       login: login,
       sessions: sessions,
       accounts: container.read(accountRepositoryProvider),
       roots: container.read(storageRootRepositoryProvider),
       files: FileEndpoints(
-        roots: container.read(storageRootRepositoryProvider),
+        gate: gate,
         files: container.read(fileRepositoryProvider),
         accounts: container.read(accountRepositoryProvider),
-        authorizer: const SingleAdminAuthorizer(),
         tickets: tickets,
         copy: container.read(copyItemsProvider),
         move: container.read(moveItemsProvider),

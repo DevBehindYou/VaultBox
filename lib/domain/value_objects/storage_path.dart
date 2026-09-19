@@ -69,6 +69,52 @@ final class StoragePath {
     return StoragePath._(rootId, List<String>.unmodifiable(segments));
   }
 
+  /// Parses a path that has ALREADY been percent-decoded exactly once by the
+  /// HTTP layer (a URL path segment, a query parameter, a JSON string).
+  ///
+  /// Unlike [parse] this never decodes again: the text is the literal name. That
+  /// matters because file names can legitimately contain `%` sequences — a file
+  /// called `Report%20final.pdf` is that exact name, and decoding it a second
+  /// time would silently address a different file (`Report final.pdf`).
+  ///
+  /// It still refuses everything [parse] refuses: `..`, absolute-looking and
+  /// drive-letter segments, control characters, backslash separators — and any
+  /// segment that would BECOME `.` or `..` if a later layer decoded it (so
+  /// `%2e%2e`, `%252e%252e` … are rejected rather than trusted).
+  factory StoragePath.parseDecoded(String rootId, String raw) {
+    final List<String> segments = <String>[];
+    for (final String segment in raw.replaceAll("\\", "/").split("/")) {
+      if (segment.isEmpty || segment == ".") continue;
+      if (segment == "..") {
+        throw const PathTraversalRejectedFailure(debugDetail: "'..' segment");
+      }
+      if (_decodesToDots(segment)) {
+        throw const PathTraversalRejectedFailure(debugDetail: "encoded dot segment");
+      }
+      if (_looksAbsolute(segment)) {
+        throw const PathTraversalRejectedFailure(debugDetail: "absolute-looking segment");
+      }
+      if (segment.codeUnits.any((int c) => c < 0x20)) {
+        throw const PathTraversalRejectedFailure(debugDetail: "control character in segment");
+      }
+      segments.add(segment);
+    }
+    return StoragePath._(rootId, List<String>.unmodifiable(segments));
+  }
+
+  /// True if repeatedly percent-decoding [segment] (a few rounds) ever yields
+  /// `.` or `..`.
+  static bool _decodesToDots(String segment) {
+    String current = segment;
+    for (int round = 0; round < 4; round++) {
+      final String next = _safeDecode(current);
+      if (next == current) return false;
+      current = next.trim();
+      if (current == "." || current == "..") return true;
+    }
+    return false;
+  }
+
   final String rootId;
   final List<String> segments;
 

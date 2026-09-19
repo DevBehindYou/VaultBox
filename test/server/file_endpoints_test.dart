@@ -46,7 +46,7 @@ void main() {
 
   setUp(start);
 
-  StoragePath sp(String value) => StoragePath.parse("r1", value);
+  StoragePath sp(String value) => StoragePath.parseDecoded("r1", value);
 
   Future<String> contentOf(String value) async =>
       utf8.decode(await backend.openRead(sp(value)).expand((List<int> c) => c).toList());
@@ -194,6 +194,21 @@ void main() {
       expect(response.status, 409);
       expect(body(response), <String, Object?>{"error": "parent_not_found"});
       expect(await exists("/missing"), isFalse, reason: "no folders are invented");
+    });
+
+    test("a name with %-sequences is that exact name, never a decoded neighbour", () async {
+      expect((await put("/Report%20final.pdf", utf8.encode("literal"))).status, 201);
+
+      expect(await contentOf("/Report%20final.pdf"), "literal");
+      expect((await get("/Report%20final.pdf")).status, 200);
+      expect((await get("/Report final.pdf")).status, 404, reason: "a different name");
+
+      final ApiResponse listing = await h.send("GET", "/api/v1/roots/r1/entries", token: token);
+      final List<Object?> names = (body(listing)["entries"]! as List<Object?>)
+          .map((Object? e) => (e! as Map<String, Object?>)["name"])
+          .toList();
+      expect(names, contains("Report%20final.pdf"));
+      expect(names, isNot(contains("Report final.pdf")));
     });
 
     test("bad and reserved paths", () async {

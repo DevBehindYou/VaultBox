@@ -22,6 +22,7 @@ import "package:vaultbox/domain/value_objects/storage_capabilities.dart";
 import "package:vaultbox/server/api/api_types.dart";
 import "package:vaultbox/server/api/file_endpoints.dart";
 import "package:vaultbox/server/api/vault_api.dart";
+import "package:vaultbox/server/files/storage_gate.dart";
 
 import "fake_clock.dart";
 import "fake_password_hasher.dart";
@@ -69,10 +70,9 @@ final class ApiHarness {
       accounts: accounts,
       roots: rootRepository,
       files: FileEndpoints(
-        roots: rootRepository,
+        gate: StorageGate(roots: rootRepository, authorizer: authorizer),
         files: files,
         accounts: accounts,
-        authorizer: authorizer,
         tickets: tickets,
         copy: CopyItems(files),
         move: MoveItems(files),

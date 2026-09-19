@@ -148,10 +148,35 @@ void main() {
     expect(ok.status, 207);
   });
 
-  test("dot-dot in the URL is resolved away before it can leave /dav/", () async {
-    expect((await dav("GET", "/dav/Phone/%2e%2e/%2e%2e/api/v1/me")).status, 404);
-    expect((await dav("GET", "/dav/Phone/../../api/v1/me")).status, 404);
-    expect((await dav("PROPFIND", "/dav/Phone/docs/../../../secret")).status, 404);
+  test("dot-dot in the request line is resolved away before it can leave /dav/", () async {
+    // Sent over a raw socket: HttpClient would tidy the path before sending.
+    Future<String> rawStatusLine(String target) async {
+      final Socket socket = await Socket.connect(InternetAddress.loopbackIPv4, server.port);
+      try {
+        socket.write(
+          "PROPFIND $target HTTP/1.1
+Host: x
+"
+          "Authorization: ${DavHarness.basic("admin", DavHarness.password)}
+"
+          "Depth: 0
+Connection: close
+
+",
+        );
+        await socket.flush();
+        final String reply = await utf8.decoder.bind(socket).join();
+        return reply.split("
+").first;
+      } finally {
+        socket.destroy();
+      }
+    }
+
+    expect(await rawStatusLine("/dav/Phone/%2e%2e/%2e%2e/etc"), contains("404"));
+    expect(await rawStatusLine("/dav/Phone/../../etc"), contains("404"));
+    expect(await rawStatusLine("/dav/Phone/docs/../../../secret"), contains("404"));
+    expect(await rawStatusLine("/dav/Phone/docs/../"), contains("207"), reason: "stays inside /dav/");
   });
 
   test("the API and the portal are separate: /dav is all this router serves here", () async {

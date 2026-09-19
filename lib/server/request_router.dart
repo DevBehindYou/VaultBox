@@ -117,7 +117,8 @@ final class RequestRouter {
         remoteAddress: request.connectionInfo?.remoteAddress.address ?? "unknown",
         bearerToken: _bearerToken(request),
         headers: headers,
-        bodyStream: request,
+        // HttpRequest is a Stream<Uint8List>; cast so later .transform() calls type-check at runtime.
+        bodyStream: request.cast<List<int>>(),
         contentLength: request.contentLength,
       ),
     );

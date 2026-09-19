@@ -5,12 +5,12 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "../app/providers.dart";
 import "../data/security/in_memory_session_store.dart";
 import "../domain/repositories/clock.dart";
-import "../domain/security/authorizer.dart";
 import "../domain/security/download_tickets.dart";
 import "../domain/security/login_service.dart";
 import "../domain/security/login_throttle.dart";
 import "../domain/security/session_manager.dart";
 import "api/file_endpoints.dart";
+import "api/public_endpoints.dart";
 import "api/vault_api.dart";
 import "files/storage_gate.dart";
 import "webdav/dav_auth.dart";
@@ -47,13 +47,23 @@ final class ServerServices {
     final DownloadTicketService tickets = DownloadTicketService(clock: clock);
     final StorageGate gate = StorageGate(
       roots: container.read(storageRootRepositoryProvider),
-      authorizer: const SingleAdminAuthorizer(),
+      authorizer: container.read(authorizerProvider),
     );
+    final ShareUnlocks unlocks = ShareUnlocks(clock: clock);
     final VaultApi api = VaultApi(
       login: login,
       sessions: sessions,
       accounts: container.read(accountRepositoryProvider),
-      roots: container.read(storageRootRepositoryProvider),
+      gate: gate,
+      public: PublicEndpoints(
+        shares: container.read(shareRepositoryProvider),
+        accounts: container.read(accountRepositoryProvider),
+        gate: gate,
+        files: container.read(fileRepositoryProvider),
+        hasher: container.read(passwordHasherProvider),
+        clock: clock,
+        unlocks: unlocks,
+      ),
       files: FileEndpoints(
         gate: gate,
         files: container.read(fileRepositoryProvider),
@@ -82,6 +92,7 @@ final class ServerServices {
       (Timer _) {
         unawaited(sessions.purgeExpired());
         tickets.purgeExpired();
+        unlocks.purgeExpired();
       },
     );
     return ServerServices._(api, dav, container, purge);

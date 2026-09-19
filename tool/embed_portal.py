@@ -18,6 +18,8 @@ SOURCES = [
     ("portalIndexHtml", "index.html"),
     ("portalCss", "portal.css"),
     ("portalJs", "portal.js"),
+    ("portalPublicHtml", "public.html"),
+    ("portalPublicJs", "public.js"),
 ]
 OUT = os.path.join(ROOT, "lib", "server", "portal", "portal_bundle.dart")
 

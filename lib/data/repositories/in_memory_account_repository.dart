@@ -1,3 +1,4 @@
+import "../../domain/entities/access_rule.dart";
 import "../../domain/entities/account.dart";
 import "../../domain/repositories/account_repository.dart";
 
@@ -11,6 +12,13 @@ final class InMemoryAccountRepository implements AccountRepository {
 
   @override
   Future<int> count() async => _accounts.length;
+
+  @override
+  Future<int> countEnabledAdmins() async =>
+      _accounts.where((Account a) => a.isAdmin && a.isEnabled).length;
+
+  @override
+  Future<List<Account>> listAll() async => List<Account>.of(_accounts);
 
   @override
   Future<Account?> findByUsername(String username) async {
@@ -36,15 +44,38 @@ final class InMemoryAccountRepository implements AccountRepository {
   }
 
   @override
+  Future<Account?> create(Account account) async {
+    if (_accounts.any((Account a) => a.username == account.username)) return null;
+    _accounts.add(account);
+    return account;
+  }
+
+  @override
   Future<void> updatePasswordHash(String id, String passwordHash) async {
+    _replace(id, (Account old) => old.copyWith(passwordHash: passwordHash, credentialVersion: old.credentialVersion + 1));
+  }
+
+  @override
+  Future<void> setEnabled(String id, {required bool enabled}) async {
+    _replace(id, (Account old) {
+      if (old.isEnabled == enabled) return old;
+      return old.copyWith(isEnabled: enabled, credentialVersion: enabled ? old.credentialVersion : old.credentialVersion + 1);
+    });
+  }
+
+  @override
+  Future<void> delete(String id) async {
+    _accounts.removeWhere((Account a) => a.id == id);
+  }
+
+  @override
+  Future<void> replaceRules(String accountId, List<AccessRule> rules) async {
+    _replace(accountId, (Account old) => old.copyWith(rules: List<AccessRule>.unmodifiable(rules)));
+  }
+
+  void _replace(String id, Account Function(Account old) change) {
     final int index = _accounts.indexWhere((Account a) => a.id == id);
     if (index == -1) return;
-    final Account old = _accounts[index];
-    _accounts[index] = Account(
-      id: old.id,
-      username: old.username,
-      passwordHash: passwordHash,
-      createdAt: old.createdAt,
-    );
+    _accounts[index] = change(_accounts[index]);
   }
 }

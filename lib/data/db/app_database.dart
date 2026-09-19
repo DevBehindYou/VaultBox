@@ -72,11 +72,61 @@ class Accounts extends Table {
   TextColumn get passwordHash => text()();
   DateTimeColumn get createdAt => dateTime()();
 
+  /// Schema v4. [AccountRole.name]. Rows that existed before v4 are the admin.
+  TextColumn get role => text().withDefault(const Constant<String>("admin"))();
+
+  /// Schema v4. A disabled account can't log in.
+  BoolColumn get isEnabled => boolean().withDefault(const Constant<bool>(true))();
+
+  /// Schema v4. Bumped on password change / disable; ends existing sessions.
+  IntColumn get credentialVersion => integer().withDefault(const Constant<int>(0))();
+
   @override
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
 
-@DriftDatabase(tables: <Type>[StorageRoots, RecycleItems, Accounts])
+/// Schema v4. Folder grants for member accounts (see `AccessRule`).
+@DataClassName("AccessRuleRow")
+class AccessRules extends Table {
+  TextColumn get id => text()();
+  TextColumn get accountId => text()();
+  TextColumn get rootId => text()();
+
+  /// Normalized folder path; `/` = the whole root.
+  TextColumn get pathPrefix => text()();
+
+  /// Comma-separated `Permission.name`s.
+  TextColumn get permissions => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
+/// Schema v4. Share and upload-request links. Only the token's SHA-256 is kept.
+@DataClassName("ShareRow")
+class Shares extends Table {
+  TextColumn get id => text()();
+
+  /// [ShareKind.name].
+  TextColumn get kind => text()();
+  TextColumn get rootId => text()();
+  TextColumn get path => text()();
+  BoolColumn get isDirectory => boolean()();
+  TextColumn get createdBy => text()();
+  DateTimeColumn get createdAt => dateTime()();
+  TextColumn get tokenHash => text().unique()();
+  TextColumn get label => text().nullable()();
+  DateTimeColumn get expiresAt => dateTime().nullable()();
+  TextColumn get passwordHash => text().nullable()();
+  IntColumn get maxUses => integer().nullable()();
+  IntColumn get useCount => integer().withDefault(const Constant<int>(0))();
+  IntColumn get maxFileBytes => integer().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
+@DriftDatabase(tables: <Type>[StorageRoots, RecycleItems, Accounts, AccessRules, Shares])
 final class AppDatabase extends _$AppDatabase {
   /// Production use: `AppDatabase()` opens (or creates) the on-device
   /// database. `drift_flutter`'s `driftDatabase()` stores `vaultbox.sqlite`
@@ -92,7 +142,7 @@ final class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: "vaultbox"));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -107,6 +157,15 @@ final class AppDatabase extends _$AppDatabase {
       if (from < 3) {
         // v3: login accounts.
         await m.createTable(accounts);
+      }
+      if (from < 4) {
+        // v4: member accounts, folder grants and share links. The new account
+        // columns have defaults, so the existing (admin) row stays valid.
+        await m.addColumn(accounts, accounts.role);
+        await m.addColumn(accounts, accounts.isEnabled);
+        await m.addColumn(accounts, accounts.credentialVersion);
+        await m.createTable(accessRules);
+        await m.createTable(shares);
       }
     },
     beforeOpen: (OpeningDetails details) async {

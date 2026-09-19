@@ -43,6 +43,77 @@ seed("/100% real.txt", "percent sign");
 for (let i = 1; i <= 260; i++) seed("/many/file-" + String(i).padStart(3, "0") + ".txt", "n" + i);
 seed("/.vaultbox/recycle/hidden.txt", "should never be listed");
 
+// ---- public links (dev tokens are readable; the real ones are 43 random characters)
+const links = {
+  "file-link": { kind: "download", path: "/Documents/notes.txt", isDirectory: false },
+  "folder-link": { kind: "download", path: "/Documents", isDirectory: true },
+  "locked-link": { kind: "download", path: "/Documents/readme.md", isDirectory: false, password: "hunter22" },
+  "upload-link": { kind: "upload", path: "/many", isDirectory: true, maxFileBytes: 1024 * 1024, remaining: 5 },
+};
+const unlocks = new Set();
+
+async function publicApi(req, res, url) {
+  const segs = url.pathname.split("/").filter(Boolean).slice(3); // after api/v1/public
+  const link = links[segs[0]];
+  if (!link) return err(res, 404, "not_found");
+  const action = segs[1];
+  const unlocked = !link.password || unlocks.has(url.searchParams.get("unlock"));
+  const base = link.path;
+  const within = (raw) => {
+    const p = parsePath(raw === null ? "/" : raw);
+    if (p === null) return null;
+    if (p === "reserved") return "reserved";
+    return p === "/" ? base : base + p;
+  };
+
+  if (!action) {
+    if (req.method !== "GET") return err(res, 405, "method_not_allowed", { Allow: "GET" });
+    const node = tree.get(base);
+    return send(res, 200, {
+      kind: link.kind, isDirectory: link.isDirectory, requiresPassword: !!link.password, unlocked,
+      name: unlocked ? base.split("/").pop() : null,
+      size: unlocked && node && !node.dir && link.kind === "download" ? node.data.length : null,
+      expiresAt: null, maxFileBytes: link.maxFileBytes || null, remainingUses: link.remaining === undefined ? null : link.remaining,
+    });
+  }
+  if (action === "unlock" && req.method === "POST") {
+    let body;
+    try { body = JSON.parse((await readBody(req, 16384)).toString("utf8")); } catch (_) { return err(res, 400, "bad_request"); }
+    if (!link.password) return send(res, 200, { unlock: null, expiresInSeconds: null });
+    if (body.password !== link.password) return err(res, 401, "invalid_password");
+    const proof = crypto.randomBytes(16).toString("hex");
+    unlocks.add(proof);
+    return send(res, 200, { unlock: proof, expiresInSeconds: 1800 });
+  }
+  if (!unlocked) return err(res, 401, "password_required");
+  if (action === "entries" && link.kind === "download" && link.isDirectory) {
+    const p = within(url.searchParams.get("path"));
+    if (p === null) return err(res, 400, "invalid_path");
+    if (p === "reserved" || !isDir(p)) return err(res, 404, "not_found");
+    return send(res, 200, { path: url.searchParams.get("path") || "/", entries: children(p).map(entryJson), nextCursor: null });
+  }
+  if (action === "entries") return err(res, 400, "not_a_folder_link");
+  if (action === "content" && req.method === "PUT" && link.kind === "upload") {
+    const name = (url.searchParams.get("name") || "").trim();
+    if (!name || name.startsWith(".") || /[\/\\]/.test(name)) return err(res, 400, "invalid_name");
+    const data = await readBody(req);
+    if (link.maxFileBytes && data.length > link.maxFileBytes) return err(res, 413, "file_too_large");
+    if (link.remaining !== undefined) { if (link.remaining <= 0) return err(res, 410, "link_used_up"); link.remaining--; }
+    let target = base + "/" + name;
+    for (let i = 1; tree.has(target); i++) target = base + "/" + name.replace(/(\.[^.]*)?$/, " (" + i + ")$1");
+    tree.set(target, { dir: false, data, mtime: new Date() });
+    return send(res, 201, { name: target.split("/").pop(), size: data.length });
+  }
+  if (action === "content" && (req.method === "GET" || req.method === "HEAD") && link.kind === "download") {
+    const p = link.isDirectory ? within(url.searchParams.get("path")) : base;
+    if (p === null || p === base && link.isDirectory) return err(res, 400, "invalid_path");
+    if (p === "reserved" || !tree.has(p)) return err(res, 404, "not_found");
+    if (tree.get(p).dir) return err(res, 400, "invalid_path");
+    return serveFile(req, res, p, false);
+  }
+  return err(res, 404, "not_found");
+}
+
 const sessions = new Map(); // token -> {created, last}
 const tickets = new Map(); // token -> {path, session, expires}
 
@@ -312,6 +383,7 @@ const assets = {
 http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
   try {
+    if (url.pathname.startsWith("/api/v1/public/")) return await publicApi(req, res, url);
     if (url.pathname.startsWith("/api/v1/")) return await api(req, res, url);
     if (url.pathname.startsWith("/d/")) {
       const t = tickets.get(url.pathname.slice(3));
@@ -320,6 +392,14 @@ http.createServer(async (req, res) => {
       return serveFile(req, res, t.path, url.searchParams.get("inline") === "1");
     }
     if (url.pathname === "/health/" || url.pathname === "/health") return send(res, 200, { status: "ok", app: "vaultbox" });
+    if (/^\/(s|u)\//.test(url.pathname) || url.pathname === "/public.js") {
+      const isJs = url.pathname === "/public.js";
+      return send(res, 200, fs.readFileSync(path.join(PORTAL_DIR, isJs ? "public.js" : "public.html")), {
+        "Content-Type": isJs ? "text/javascript; charset=utf-8" : "text/html; charset=utf-8",
+        "Content-Security-Policy": PORTAL_CSP,
+        "X-Frame-Options": "DENY",
+      });
+    }
     const asset = assets[url.pathname];
     if (asset && (req.method === "GET" || req.method === "HEAD")) {
       return send(res, 200, fs.readFileSync(path.join(PORTAL_DIR, asset[0])), {
@@ -333,4 +413,7 @@ http.createServer(async (req, res) => {
     if (!res.headersSent) res.writeHead(500);
     res.end();
   }
-}).listen(PORT, "127.0.0.1", () => console.log("portal mock on http://127.0.0.1:" + PORT + "/"));
+}).listen(PORT, "127.0.0.1", () => {
+  console.log("portal mock on http://127.0.0.1:" + PORT + "/");
+  console.log("public links: /s/file-link  /s/folder-link  /s/locked-link (password hunter22)  /u/upload-link");
+});

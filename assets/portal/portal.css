@@ -194,6 +194,18 @@ table.files input[type="checkbox"] { width: 20px; height: 20px; accent-color: va
 
 .more { display: flex; justify-content: center; padding: 12px; border-top: 1px solid var(--border-soft); }
 
+/* ---------- public link pages ---------- */
+
+a.btn, a.name-btn { text-decoration: none; color: inherit; }
+.uploads-list { list-style: none; margin: 16px 0 0; padding: 0; }
+.uploads-list li { padding: 8px 0; border-bottom: 1px solid var(--border-soft); }
+.uploads-list li:last-child { border-bottom: 0; }
+.uploads-list .row { display: flex; justify-content: space-between; gap: 8px; font-size: 0.9rem; }
+.uploads-list .row .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.uploads-list .row .s { color: var(--ink-2); white-space: nowrap; }
+.uploads-list .row .s.bad { color: var(--danger); }
+.uploads-list .row .s.good { color: var(--ok); }
+
 /* ---------- uploads + toasts ---------- */
 
 .uploads {

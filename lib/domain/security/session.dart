@@ -6,6 +6,7 @@ final class Session {
     required this.accountId,
     required this.createdAt,
     required this.lastSeenAt,
+    this.credentialVersion = 0,
   });
 
   final String tokenHash;
@@ -15,11 +16,17 @@ final class Session {
   /// Refreshed on every valid request (drives the idle timeout).
   final DateTime lastSeenAt;
 
+  /// The account's `credentialVersion` when this session was opened. If the
+  /// account's value has moved on (password changed, account disabled) the
+  /// session is dead.
+  final int credentialVersion;
+
   Session touched(DateTime now) => Session(
     tokenHash: tokenHash,
     accountId: accountId,
     createdAt: createdAt,
     lastSeenAt: now,
+    credentialVersion: credentialVersion,
   );
 }
 

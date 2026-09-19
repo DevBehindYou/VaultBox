@@ -113,7 +113,7 @@ final class LoginService {
     );
     return switch (check) {
       CredentialsValid(:final Account account) => LoginSucceeded(
-        issued: await _sessions.issue(accountId: account.id),
+        issued: await _sessions.issue(accountId: account.id, credentialVersion: account.credentialVersion),
         account: account,
       ),
       CredentialsRejected() => const LoginRejected(),
@@ -154,7 +154,8 @@ final class LoginService {
       final String encoded = account?.passwordHash ?? await _decoy();
       final bool matches = await _hasher.verify(password, encoded);
 
-      if (account == null || !matches) {
+      // A disabled account fails exactly like a wrong password (after the same work).
+      if (account == null || !matches || !account.isEnabled) {
         _recordFailure(accountKey, remoteAddress);
         return const CredentialsRejected();
       }

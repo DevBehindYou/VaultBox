@@ -31,7 +31,7 @@ final class SessionManager {
   final Duration idleTimeout;
   final Duration absoluteTimeout;
 
-  Future<IssuedSession> issue({required String accountId}) async {
+  Future<IssuedSession> issue({required String accountId, int credentialVersion = 0}) async {
     final String token = _newToken();
     final DateTime now = _clock.now();
     final Session session = Session(
@@ -39,6 +39,7 @@ final class SessionManager {
       accountId: accountId,
       createdAt: now,
       lastSeenAt: now,
+      credentialVersion: credentialVersion,
     );
     await _store.put(session);
     return IssuedSession(token: token, session: session);

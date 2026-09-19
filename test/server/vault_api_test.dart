@@ -41,7 +41,7 @@ void main() {
       final Map<String, Object?> json = body(response);
       expect(json["tokenType"], "Bearer");
       expect((json["token"]! as String).length, greaterThanOrEqualTo(40));
-      expect(json["user"], <String, Object?>{"id": "a1", "username": "admin"});
+      expect(json["user"], <String, Object?>{"id": "a1", "username": "admin", "role": "admin"});
       expect(json["idleTimeoutSeconds"], 30 * 60);
       expect(jsonEncode(json), isNot(contains("fake:")), reason: "no hash may leave the phone");
     });
@@ -135,7 +135,7 @@ void main() {
       final ApiResponse response = await h.send("GET", "/api/v1/me", token: token);
 
       expect(response.status, 200);
-      expect(body(response), <String, Object?>{"id": "a1", "username": "admin"});
+      expect(body(response), <String, Object?>{"id": "a1", "username": "admin", "role": "admin"});
     });
 
     test("logout revokes the token", () async {

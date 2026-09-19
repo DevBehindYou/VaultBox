@@ -3,13 +3,16 @@ import "dart:io";
 import "../../domain/entities/account.dart";
 import "../../domain/entities/storage_root.dart";
 import "../../domain/repositories/account_repository.dart";
-import "../../domain/repositories/storage_root_repository.dart";
+import "../../domain/security/authorizer.dart";
 import "../../domain/security/login_service.dart";
 import "../../domain/security/session.dart";
 import "../../domain/security/session_manager.dart";
+import "../../domain/value_objects/storage_path.dart";
 import "api_json.dart";
 import "api_types.dart";
+import "../files/storage_gate.dart";
 import "file_endpoints.dart";
+import "public_endpoints.dart";
 
 /// The remote API, version 1. Everything except `POST /auth/login` needs a
 /// valid `Authorization: Bearer <token>`.
@@ -17,12 +20,13 @@ import "file_endpoints.dart";
 ///   POST /api/v1/auth/login                    {username, password} -> token
 ///   POST /api/v1/auth/logout                   revokes the token
 ///   GET  /api/v1/me                            who am I
-///   GET  /api/v1/roots                         storage locations (never their raw path/URI)
+///   GET  /api/v1/roots                         storage locations you may see (never their raw path/URI)
 ///   GET  /api/v1/roots/{id}/entries            list a folder (paged)
 ///   GET  /api/v1/roots/{id}/stat               one item's details
 ///   GET|HEAD|PUT /api/v1/roots/{id}/content    download (Range) / upload
 ///   POST /api/v1/roots/{id}/ticket             a short-lived `/d/<ticket>` link for one file
 ///   POST /api/v1/roots/{id}/{mkdir|rename|move|copy|delete}
+///   ...  /api/v1/public/{token}/...            share links (no login; see [PublicEndpoints])
 ///
 /// Failures are `{ "error": "<stable_code>" }` with a matching status; nothing
 /// about the phone's internals (paths, exceptions, stack traces) leaves here.
@@ -31,19 +35,22 @@ final class VaultApi {
     required LoginService login,
     required SessionManager sessions,
     required AccountRepository accounts,
-    required StorageRootRepository roots,
+    required StorageGate gate,
     required FileEndpoints files,
+    PublicEndpoints? public,
   }) : _login = login,
        _sessions = sessions,
        _accounts = accounts,
-       _roots = roots,
-       _files = files;
+       _gate = gate,
+       _files = files,
+       _public = public;
 
   final LoginService _login;
   final SessionManager _sessions;
   final AccountRepository _accounts;
-  final StorageRootRepository _roots;
+  final StorageGate _gate;
   final FileEndpoints _files;
+  final PublicEndpoints? _public;
 
   Future<ApiResponse> handle(ApiRequest request) async {
     try {
@@ -70,6 +77,14 @@ final class VaultApi {
       return _only("POST", request, () => _handleLogin(request));
     }
 
+    // Links made for people without an account; each carries its own secret token.
+    if (route.isNotEmpty && route[0] == "public") {
+      final PublicEndpoints? public = _public;
+      return public == null || route.length < 2
+          ? ApiResponse.error(HttpStatus.notFound, "not_found")
+          : public.handle(request, route.sublist(1));
+    }
+
     // Everything else needs a session.
     final ApiCaller? caller = await _authenticate(request);
     if (route.isEmpty || !_isKnown(route)) {
@@ -85,7 +100,7 @@ final class VaultApi {
       return _only("GET", request, () async => ApiResponse(HttpStatus.ok, json: _user(caller.account)));
     }
     if (route.length == 1 && route[0] == "roots") {
-      return _only("GET", request, _handleRoots);
+      return _only("GET", request, () => _handleRoots(caller));
     }
     // roots/{id}/{action}
     return _files.handle(request, caller, route[1], route[2]);
@@ -158,14 +173,14 @@ final class VaultApi {
 
   // --- storage ---
 
-  Future<ApiResponse> _handleRoots() async {
-    final List<StorageRoot> roots = await _roots.listRoots();
+  Future<ApiResponse> _handleRoots(ApiCaller caller) async {
+    final List<StorageRoot> roots = await _gate.visibleRoots();
     return ApiResponse(
       HttpStatus.ok,
       json: <String, Object?>{
         "roots": <Object?>[
           for (final StorageRoot root in roots)
-            if (root.isEnabled)
+            if (_gate.allows(caller.account, Permission.read, root, StoragePath.root(root.id)))
               <String, Object?>{
                 "id": root.id,
                 "name": root.displayName,
@@ -188,7 +203,9 @@ final class VaultApi {
     final Session? session = await _sessions.validate(token);
     if (session == null) return null;
     final Account? account = await _accounts.findById(session.accountId);
-    if (account == null) {
+    // Gone, disabled, or its password changed since this session began: the
+    // session is over (this is how a change made in the app reaches the server).
+    if (account == null || !account.isEnabled || account.credentialVersion != session.credentialVersion) {
       await _sessions.revoke(token);
       return null;
     }
@@ -206,5 +223,6 @@ final class VaultApi {
   static Map<String, Object?> _user(Account account) => <String, Object?>{
     "id": account.id,
     "username": account.username,
+    "role": account.role.name,
   };
 }

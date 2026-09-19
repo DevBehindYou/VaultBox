@@ -79,7 +79,7 @@ void main() {
       );
 
       expect(status, 200);
-      expect(jsonDecode(text), <String, Object?>{"id": "a1", "username": "admin"});
+      expect(jsonDecode(text), <String, Object?>{"id": "a1", "username": "admin", "role": "admin"});
       expect(headers.contentType?.mimeType, "application/json");
       expect(headers.value("cache-control"), "no-store");
       expect(headers.value("x-content-type-options"), "nosniff");

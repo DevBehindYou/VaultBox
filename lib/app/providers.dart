@@ -5,6 +5,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "../data/db/app_database.dart";
 import "../data/repositories/drift_account_repository.dart";
 import "../data/repositories/drift_recycle_bin_repository.dart";
+import "../data/repositories/drift_share_repository.dart";
 import "../data/repositories/drift_storage_root_repository.dart";
 import "../data/repositories/file_repository_impl.dart";
 import "../data/security/argon2id_password_hasher.dart";
@@ -12,9 +13,11 @@ import "../data/services/direct_path_storage_backend.dart";
 import "../data/services/memory_storage_backend.dart";
 import "../data/services/saf_storage_backend.dart";
 import "../data/services/system_clock.dart";
+import "../domain/entities/account.dart";
 import "../domain/entities/recycle_item.dart";
 import "../domain/entities/server_config.dart";
 import "../domain/entities/server_state.dart";
+import "../domain/entities/share.dart";
 import "../domain/entities/storage_root.dart";
 import "../domain/repositories/account_repository.dart";
 import "../domain/repositories/clock.dart";
@@ -22,13 +25,17 @@ import "../domain/repositories/file_repository.dart";
 import "../domain/repositories/id_generator.dart";
 import "../domain/repositories/recycle_bin_repository.dart";
 import "../domain/repositories/server_host.dart";
+import "../domain/repositories/share_repository.dart";
 import "../domain/repositories/storage_backend.dart";
 import "../domain/repositories/storage_root_repository.dart";
+import "../domain/security/authorizer.dart";
 import "../domain/security/password_hasher.dart";
 import "../domain/usecases/copy_items.dart";
 import "../domain/usecases/create_admin_account.dart";
+import "../domain/usecases/create_share.dart";
 import "../domain/usecases/delete_items_to_recycle_bin.dart";
 import "../domain/usecases/import_files.dart";
+import "../domain/usecases/manage_accounts.dart";
 import "../domain/usecases/move_items.dart";
 import "../domain/usecases/permanently_delete_recycled.dart";
 import "../domain/usecases/restore_items.dart";
@@ -241,3 +248,55 @@ final Provider<CreateAdminAccount> createAdminAccountProvider = Provider<CreateA
 final FutureProvider<bool> adminExistsProvider = FutureProvider<bool>(
   (Ref ref) async => (await ref.watch(accountRepositoryProvider).count()) > 0,
 );
+
+// --- People and sharing (Phase 5) ---
+
+/// Role + folder-grant access, used by every protocol the server speaks.
+final Provider<Authorizer> authorizerProvider = Provider<Authorizer>((Ref ref) => const AclAuthorizer());
+
+final Provider<ShareRepository> shareRepositoryProvider =
+    Provider<ShareRepository>((Ref ref) => DriftShareRepository(ref.watch(appDatabaseProvider)));
+
+final Provider<CreateUserAccount> createUserAccountProvider = Provider<CreateUserAccount>((Ref ref) {
+  return CreateUserAccount(
+    ref.watch(accountRepositoryProvider),
+    ref.watch(passwordHasherProvider),
+    ref.watch(idGeneratorProvider),
+    ref.watch(clockProvider),
+  );
+});
+
+final Provider<ChangePassword> changePasswordProvider = Provider<ChangePassword>(
+  (Ref ref) => ChangePassword(ref.watch(accountRepositoryProvider), ref.watch(passwordHasherProvider)),
+);
+
+final Provider<SetAccountEnabled> setAccountEnabledProvider =
+    Provider<SetAccountEnabled>((Ref ref) => SetAccountEnabled(ref.watch(accountRepositoryProvider)));
+
+final Provider<DeleteAccount> deleteAccountProvider = Provider<DeleteAccount>(
+  (Ref ref) => DeleteAccount(ref.watch(accountRepositoryProvider), ref.watch(shareRepositoryProvider)),
+);
+
+final Provider<SetAccessRules> setAccessRulesProvider = Provider<SetAccessRules>(
+  (Ref ref) => SetAccessRules(ref.watch(accountRepositoryProvider), ref.watch(idGeneratorProvider)),
+);
+
+final Provider<CreateShare> createShareProvider = Provider<CreateShare>((Ref ref) {
+  return CreateShare(
+    roots: ref.watch(storageRootRepositoryProvider),
+    files: ref.watch(fileRepositoryProvider),
+    shares: ref.watch(shareRepositoryProvider),
+    hasher: ref.watch(passwordHasherProvider),
+    ids: ref.watch(idGeneratorProvider),
+    clock: ref.watch(clockProvider),
+    authorizer: ref.watch(authorizerProvider),
+  );
+});
+
+/// Every account, oldest first. Invalidate after a change.
+final FutureProvider<List<Account>> accountsProvider =
+    FutureProvider<List<Account>>((Ref ref) => ref.watch(accountRepositoryProvider).listAll());
+
+/// Every share / upload link, newest first. Invalidate after a change.
+final FutureProvider<List<Share>> sharesProvider =
+    FutureProvider<List<Share>>((Ref ref) => ref.watch(shareRepositoryProvider).list());

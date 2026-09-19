@@ -16,6 +16,7 @@ import "../../domain/usecases/move_items.dart";
 import "../../domain/value_objects/storage_entry.dart";
 import "../../domain/value_objects/storage_path.dart";
 import "../../domain/value_objects/write_mode.dart";
+import "../files/content_disposition.dart";
 import "../files/file_transfer.dart";
 import "../files/storage_gate.dart";
 import "api_json.dart";
@@ -105,7 +106,9 @@ final class FileEndpoints {
       }
       final DownloadTicket? ticket = _tickets.resolve(token);
       final Account? account = ticket == null ? null : await _accounts.findById(ticket.accountId);
-      if (ticket == null || account == null) return ApiResponse.error(HttpStatus.notFound, "not_found");
+      if (ticket == null || account == null || !account.isEnabled) {
+        return ApiResponse.error(HttpStatus.notFound, "not_found");
+      }
 
       final StorageRoot root = await _root(ticket.rootId);
       final StoragePath path = _parse(root, ticket.path, allowRoot: false);
@@ -232,11 +235,24 @@ final class FileEndpoints {
         "path": _fmt(path),
         "entries": <Object?>[
           for (final StorageEntry entry in page)
-            if (!(path.isRoot && StorageGate.isReservedName(entry.name))) _entry(entry),
+            if (!(path.isRoot && StorageGate.isReservedName(entry.name)) && _mayList(caller, root, path, entry))
+              _entry(entry),
         ],
         "nextCursor": hasMore ? page.last.name : null,
       },
     );
+  }
+
+  /// A listing shows only what the caller may read (a member granted one folder
+  /// sees just the way down to it).
+  bool _mayList(ApiCaller caller, StorageRoot root, StoragePath directory, StorageEntry entry) {
+    final StoragePath child;
+    try {
+      child = directory.child(entry.name);
+    } on AppFailure {
+      return false; // a name that can't be represented safely is never listed
+    }
+    return _gate.allows(caller.account, Permission.read, root, child);
   }
 
   Future<ApiResponse> _stat(ApiRequest request, ApiCaller caller, String rootId) async {
@@ -314,11 +330,11 @@ final class FileEndpoints {
       contentType: plan.mimeType,
       contentLength: plan.length,
       headers: <String, String>{
-        "Content-Disposition": _disposition(plan.entry.name, inline: inline),
+        "Content-Disposition": contentDisposition(plan.entry.name, inline: inline),
         "Accept-Ranges": plan.canRange ? "bytes" : "none",
         if (plan.contentRange != null) "Content-Range": plan.contentRange!,
         // Even a "safe" inline type gets no scripting: a hostile file can't act as the site.
-        "Content-Security-Policy": "sandbox; default-src 'none'; style-src 'unsafe-inline'",
+        "Content-Security-Policy": downloadContentSecurityPolicy,
         if (modified != null) "Last-Modified": HttpDate.format(modified.toUtc()),
       },
     );
@@ -364,12 +380,6 @@ final class FileEndpoints {
       result.created ? HttpStatus.created : HttpStatus.ok,
       json: <String, Object?>{"path": _fmt(path), "size": result.size},
     );
-  }
-
-  static String _disposition(String name, {required bool inline}) {
-    final String ascii = name.replaceAll(RegExp(r"[^A-Za-z0-9._ -]"), "_");
-    final String encoded = Uri.encodeComponent(name).replaceAll("'", "%27");
-    return "${inline ? "inline" : "attachment"}; filename=\"$ascii\"; filename*=UTF-8''$encoded";
   }
 
   // --- changes ---

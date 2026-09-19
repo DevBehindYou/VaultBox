@@ -15,21 +15,25 @@ void main() {
       expect(portalIndexHtml, _source("index.html"));
       expect(portalCss, _source("portal.css"));
       expect(portalJs, _source("portal.js"));
+      expect(portalPublicHtml, _source("public.html"));
+      expect(portalPublicJs, _source("public.js"));
     });
 
     test("the page has no inline script, inline style or event-handler attributes", () {
-      final String html = portalIndexHtml;
-      expect(RegExp(r"<script(?![^>]*\bsrc=)", caseSensitive: false).hasMatch(html), isFalse, reason: "inline <script>");
-      expect(RegExp(r"<style", caseSensitive: false).hasMatch(html), isFalse, reason: "inline <style>");
-      expect(RegExp(r"\sstyle\s*=", caseSensitive: false).hasMatch(html), isFalse, reason: "style attribute");
-      expect(RegExp(r"\son[a-z]+\s*=", caseSensitive: false).hasMatch(html), isFalse, reason: "on* handler");
-      expect(html, isNot(contains("http://")));
-      expect(html, isNot(contains("https://")), reason: "nothing may load from another site");
+      for (final String html in <String>[portalIndexHtml, portalPublicHtml]) {
+        expect(RegExp(r"<script(?![^>]*\bsrc=)", caseSensitive: false).hasMatch(html), isFalse, reason: "inline <script>");
+        expect(RegExp(r"<style", caseSensitive: false).hasMatch(html), isFalse, reason: "inline <style>");
+        expect(RegExp(r"\sstyle\s*=", caseSensitive: false).hasMatch(html), isFalse, reason: "style attribute");
+        expect(RegExp(r"\son[a-z]+\s*=", caseSensitive: false).hasMatch(html), isFalse, reason: "on* handler");
+        expect(html, isNot(contains("http://")));
+        expect(html, isNot(contains("https://")), reason: "nothing may load from another site");
+      }
     });
 
     test("the script never builds HTML from data", () {
       for (final String banned in <String>["innerHTML", "outerHTML", "insertAdjacentHTML", "document.write", "eval(", "new Function"]) {
         expect(portalJs, isNot(contains(banned)), reason: banned);
+        expect(portalPublicJs, isNot(contains(banned)), reason: "public.js: $banned");
       }
     });
 
@@ -38,6 +42,7 @@ void main() {
       expect(portalCss, isNot(contains("@import")));
       // (The SVG namespace URI is an identifier, not a request.)
       expect(RegExp(r"""["']https?://""").hasMatch(portalJs.replaceAll("http://www.w3.org/2000/svg", "")), isFalse);
+      expect(RegExp(r"""["']https?://""").hasMatch(portalPublicJs), isFalse);
     });
   });
 
@@ -97,6 +102,27 @@ void main() {
       final (int postStatus, HttpHeaders postHeaders, _) = await get("/portal.js", method: "POST");
       expect(postStatus, 405);
       expect(postHeaders.value("allow"), "GET, HEAD");
+    });
+
+    test("share links are served the public page, whatever the token", () async {
+      const String token = "AbC_dEf-0123456789AbC_dEf-0123456789AbC_dEf";
+      for (final String path in <String>["/s/$token", "/u/$token", "/s/$token/"]) {
+        final (int status, HttpHeaders headers, String body) = await get(path);
+        expect(status, 200, reason: path);
+        expect(body, portalPublicHtml, reason: path);
+        expect(headers.value("content-security-policy"), PortalAssets.contentSecurityPolicy);
+      }
+      final (int jsStatus, _, String js) = await get("/public.js");
+      expect(jsStatus, 200);
+      expect(js, portalPublicJs);
+    });
+
+    test("only well-formed share paths match", () async {
+      expect((await get("/s/")).$1, 404);
+      expect((await get("/s")).$1, 404);
+      expect((await get("/x/abc")).$1, 404);
+      expect((await get("/s/abc/def")).$1, 404);
+      expect((await get("/s/a%20b")).$1, 404);
     });
 
     test("other paths are still a plain 404", () async {

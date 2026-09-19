@@ -83,7 +83,9 @@ final class DavAuthenticator {
     if (remembered != null) {
       if (now.isBefore(remembered.until)) {
         final Account? account = await _accounts.findById(remembered.accountId);
-        if (account != null) return DavAllowed(account);
+        if (account != null && account.isEnabled && account.credentialVersion == remembered.credentialVersion) {
+          return DavAllowed(account);
+        }
       }
       _verified.remove(key);
     }
@@ -95,7 +97,7 @@ final class DavAuthenticator {
     );
     switch (check) {
       case CredentialsValid(:final Account account):
-        _verified[key] = _Verified(account.id, now.add(cacheFor));
+        _verified[key] = _Verified(account.id, now.add(cacheFor), account.credentialVersion);
         if (_verified.length > maxEntries) _verified.remove(_verified.keys.first);
         return DavAllowed(account);
       case CredentialsRejected():
@@ -130,8 +132,9 @@ final class DavAuthenticator {
 }
 
 final class _Verified {
-  const _Verified(this.accountId, this.until);
+  const _Verified(this.accountId, this.until, this.credentialVersion);
 
   final String accountId;
   final DateTime until;
+  final int credentialVersion;
 }

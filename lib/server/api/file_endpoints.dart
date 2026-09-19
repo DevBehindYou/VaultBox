@@ -6,6 +6,7 @@ import "../../domain/entities/storage_root.dart";
 import "../../domain/models/file_ref.dart";
 import "../../domain/models/operation_batch.dart";
 import "../../domain/repositories/file_repository.dart";
+import "../../domain/repositories/storage_backend.dart";
 import "../../domain/repositories/storage_root_repository.dart";
 import "../../domain/security/authorizer.dart";
 import "../../domain/usecases/copy_items.dart";

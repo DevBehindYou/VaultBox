@@ -1,0 +1,569 @@
+00:00 +0: loading /home/runner/work/VaultBox/VaultBox/test/domain/create_admin_account_test.dart
+00:00 +0: /home/runner/work/VaultBox/VaultBox/test/domain/create_admin_account_test.dart: creates the account: normalized name, HASHED password, timestamp
+00:00 +1: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: CopyItems copies every item and reports each outcome
+00:00 +2: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: CopyItems copies every item and reports each outcome
+00:00 +3: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: CopyItems copies every item and reports each outcome
+00:00 +4: /home/runner/work/VaultBox/VaultBox/test/domain/create_admin_account_test.dart: only one admin can ever be created this way
+00:00 +5: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: CopyItems one failing item does not abort the batch (ADR-011)
+00:00 +6: /home/runner/work/VaultBox/VaultBox/test/domain/create_admin_account_test.dart: two racing first-admin requests: exactly one wins
+00:00 +7: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: CopyItems keepBoth resolves a naming conflict instead of failing
+00:00 +8: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: CopyItems keepBoth resolves a naming conflict instead of failing
+00:00 +9: /home/runner/work/VaultBox/VaultBox/test/domain/create_admin_account_test.dart: UsernamePolicy accepts sensible names
+00:00 +10: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: CopyItems skip policy reports skipped, not failed
+00:00 +11: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: MoveItems removes the source only after the copy lands
+00:00 +12: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: MoveItems a failed copy leaves the source intact (doc §26)
+00:00 +13: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: DeleteItemsToRecycleBin moves items into the per-root recycle location and records metadata
+00:00 +14: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: DeleteItemsToRecycleBin is idempotent about creating the recycle directory
+00:00 +15: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: RestoreItems and PermanentlyDeleteRecycled restore copies bytes back and removes the recycled copy + metadata
+00:00 +16: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: RestoreItems and PermanentlyDeleteRecycled restore reports a conflict without overwriting what's now there
+00:00 +17: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: RestoreItems and PermanentlyDeleteRecycled permanent delete removes bytes and metadata together
+00:00 +18: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: RestoreItems and PermanentlyDeleteRecycled permanent delete on an id that's already gone is a silent no-op
+00:00 +19: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: Data-loss guards (same-folder and containment) Replace-copying a file onto itself is skipped and the file survives
+00:00 +20: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: Data-loss guards (same-folder and containment) Replace-moving a file into the folder it is already in is a no-op
+00:00 +21: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: Data-loss guards (same-folder and containment) Keep-both move into its own folder does not silently rename the file
+00:00 +22: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: Data-loss guards (same-folder and containment) Keep-both copy into its own folder still duplicates (Duplicate behaviour)
+00:00 +23: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: Data-loss guards (same-folder and containment) Replace cannot delete a folder that contains the source
+00:00 +24: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: Data-loss guards (same-folder and containment) a folder can't be copied into itself at the repository level either
+00:00 +25: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: Recycle use cases survive a failing lookup PermanentlyDeleteRecycled reports a failed outcome instead of throwing
+00:00 +26: /home/runner/work/VaultBox/VaultBox/test/domain/file_operations_test.dart: Recycle use cases survive a failing lookup RestoreItems reports a failed outcome instead of throwing
+00:00 +27: /home/runner/work/VaultBox/VaultBox/test/domain/import_files_test.dart: imports every file, reports each outcome, and disposes every source
+00:00 +28: /home/runner/work/VaultBox/VaultBox/test/domain/import_files_test.dart: keep-both never overwrites: the incoming file gets a free name
+00:00 +29: /home/runner/work/VaultBox/VaultBox/test/domain/import_files_test.dart: skip leaves the existing file alone and reports skipped, not failed
+00:00 +30: /home/runner/work/VaultBox/VaultBox/test/domain/import_files_test.dart: replace overwrites the existing file
+00:00 +31: /home/runner/work/VaultBox/VaultBox/test/domain/import_files_test.dart: a size mismatch fails the item and leaves no half-copy behind
+00:00 +32: /home/runner/work/VaultBox/VaultBox/test/domain/import_files_test.dart: one unreadable file does not stop the rest (ADR-011)
+00:00 +33: /home/runner/work/VaultBox/VaultBox/test/domain/import_files_test.dart: a file name that can't be a single path segment fails cleanly
+00:00 +34: /home/runner/work/VaultBox/VaultBox/test/domain/import_files_test.dart: a dispose that throws never turns a finished import into a failure
+00:00 +35: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parse — normalization collapses redundant separators and dot segments
+00:00 +36: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parse — normalization root path has no segments
+00:00 +37: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parse — normalization parent walks up one level and stops at root
+00:00 +38: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parse — normalization equality is by root plus segments, not identity
+00:00 +39: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parse — traversal rejection rejects plain .. segments
+00:00 +40: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parse — traversal rejection rejects percent-encoded traversal
+00:00 +41: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parse — traversal rejection rejects double-encoded traversal
+00:00 +42: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parse — traversal rejection rejects backslash separator escape
+00:00 +43: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parse — traversal rejection rejects absolute Android-style paths
+00:00 +44: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parse — traversal rejection rejects control characters in a segment
+00:00 +45: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parse — traversal rejection child() re-validates its argument
+00:00 +46: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.child — literal names, not wire paths does not percent-decode: a real name like 100%25.txt survives
+00:00 +47: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.child — literal names, not wire paths an encoded slash or dot-dot is just an odd literal name, never a separator
+00:00 +48: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.child — literal names, not wire paths does not trim: leading/trailing spaces are part of the name
+00:00 +49: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.child — literal names, not wire paths allows a colon that is not a Windows drive letter
+00:00 +50: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.child — literal names, not wire paths still rejects drive letters, separators, dots, blanks and control chars
+00:00 +51: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.child — literal names, not wire paths parse() still decodes once and rejects encoded traversal (wire behaviour unchanged)
+00:00 +52: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.isDescendantOfOrEqualTo true for the same path
+00:00 +53: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.isDescendantOfOrEqualTo true for a path nested underneath
+00:00 +54: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.isDescendantOfOrEqualTo false for a sibling that merely shares a name prefix
+00:00 +55: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.isDescendantOfOrEqualTo false across different roots
+00:00 +56: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.isDescendantOfOrEqualTo false when checking a parent against its child (direction matters)
+00:00 +57: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parse - a stray % is a file name, not an error a lone % (as in 100%.txt) is kept as typed
+00:00 +58: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parse - a stray % is a file name, not an error valid encoding is still decoded once, and traversal is still caught
+00:00 +59: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parseDecoded - already-decoded input is a literal name percent sequences in a name are NOT decoded again
+00:00 +60: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parseDecoded - already-decoded input is a literal name separators, dots and empties are normalised like parse()
+00:00 +61: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parseDecoded - already-decoded input is a literal name traversal is refused, plain or hidden behind percent-encoding
+00:00 +62: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parseDecoded - already-decoded input is a literal name absolute-looking segments and control characters are refused
+00:00 +63: /home/runner/work/VaultBox/VaultBox/test/domain/storage_path_test.dart: StoragePath.parseDecoded - already-decoded input is a literal name an ordinary colon in a name is fine
+00:01 +64: /home/runner/work/VaultBox/VaultBox/test/data/saf_storage_backend_test.dart: stat reports non-existence for an unknown path without throwing
+00:01 +65: /home/runner/work/VaultBox/VaultBox/test/data/saf_storage_backend_test.dart: createDirectory then stat resolves it as a directory
+00:01 +66: /home/runner/work/VaultBox/VaultBox/test/data/saf_storage_backend_test.dart: createDirectory rejects a duplicate name
+00:01 +67: /home/runner/work/VaultBox/VaultBox/test/data/saf_storage_backend_test.dart: list resolves nested paths by walking documentIds level by level
+00:01 +68: /home/runner/work/VaultBox/VaultBox/test/data/saf_storage_backend_test.dart: list on an unknown directory reports StorageDisconnectedFailure
+00:01 +69: /home/runner/work/VaultBox/VaultBox/test/data/saf_storage_backend_test.dart: rename changes the name the entry is found under
+00:01 +70: /home/runner/work/VaultBox/VaultBox/test/data/saf_storage_backend_test.dart: delete removes the entry
+00:01 +71: /home/runner/work/VaultBox/VaultBox/test/data/saf_storage_backend_test.dart: copy of an empty directory tree recurses without touching file I/O
+00:01 +72: /home/runner/work/VaultBox/VaultBox/test/data/saf_storage_backend_test.dart: copy refuses to clobber an existing target
+00:01 +73: /home/runner/work/VaultBox/VaultBox/test/data/drift_repositories_test.dart: DriftStorageRootRepository round-trips every field, including nullable byte counts
+00:02 +74: /home/runner/work/VaultBox/VaultBox/test/data/drift_repositories_test.dart: DriftStorageRootRepository a SAF root round-trips its root document id and gets SAF capabilities
+00:02 +75: /home/runner/work/VaultBox/VaultBox/test/data/drift_repositories_test.dart: DriftStorageRootRepository a non-SAF root has no root document id and full local capabilities
+00:02 +76: /home/runner/work/VaultBox/VaultBox/test/data/drift_repositories_test.dart: DriftStorageRootRepository getRoot returns null for an id that was never added
+00:02 +77: /home/runner/work/VaultBox/VaultBox/test/data/drift_repositories_test.dart: DriftStorageRootRepository setDefault clears every other root's flag
+00:02 +78: /home/runner/work/VaultBox/VaultBox/test/data/drift_repositories_test.dart: DriftStorageRootRepository removeRoot deletes it
+00:02 +79: /home/runner/work/VaultBox/VaultBox/test/data/drift_repositories_test.dart: DriftStorageRootRepository watchRoots emits on every mutation
+00:02 +80: /home/runner/work/VaultBox/VaultBox/test/data/drift_repositories_test.dart: DriftRecycleBinRepository round-trips paths through StoragePath.parse correctly
+00:02 +81: /home/runner/work/VaultBox/VaultBox/test/data/drift_repositories_test.dart: DriftRecycleBinRepository listItems only returns items for the requested root, newest first
+00:02 +82: /home/runner/work/VaultBox/VaultBox/test/data/drift_repositories_test.dart: DriftRecycleBinRepository remove deletes the metadata row
+00:02 +83: /home/runner/work/VaultBox/VaultBox/test/data/drift_repositories_test.dart: DriftAccountRepository createFirst stores the first account and refuses every later one
+00:02 +84: /home/runner/work/VaultBox/VaultBox/test/data/drift_repositories_test.dart: DriftAccountRepository findByUsername round-trips every field
+00:02 +85: /home/runner/work/VaultBox/VaultBox/test/data/drift_repositories_test.dart: DriftAccountRepository findById returns the account, or null for an unknown id
+00:02 +86: /home/runner/work/VaultBox/VaultBox/test/data/drift_repositories_test.dart: DriftAccountRepository updatePasswordHash replaces only the hash
+00:02 +87: /home/runner/work/VaultBox/VaultBox/test/data/backend_registry_test.dart: builds the right backend for each root type
+00:02 +88: /home/runner/work/VaultBox/VaultBox/test/data/backend_registry_test.dart: caches one backend instance per root id
+00:02 +89: /home/runner/work/VaultBox/VaultBox/test/data/backend_registry_test.dart: a SAF root without a root document id fails loudly
+00:02 +90: /home/runner/work/VaultBox/VaultBox/test/data/backend_registry_test.dart: a SAF root with no native host available fails loudly
+00:02 +91: /home/runner/work/VaultBox/VaultBox/test/data/backend_registry_test.dart: SAF capabilities are honest (no native move, no atomic replace)
+00:02 +92: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: MemoryStorageBackend names are literal: percent sequences and edge spaces survive a round-trip
+00:02 +93: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: MemoryStorageBackend stat reports non-existence rather than throwing
+00:02 +94: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: MemoryStorageBackend write then read round-trips content
+00:02 +95: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: MemoryStorageBackend aborted write leaves nothing at the destination
+00:02 +96: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: MemoryStorageBackend openWrite in create mode refuses an existing path
+00:02 +97: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: MemoryStorageBackend openWrite in replace mode overwrites
+00:02 +98: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: MemoryStorageBackend createDirectory rejects duplicates
+00:02 +99: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: MemoryStorageBackend list returns direct children only
+00:02 +100: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: MemoryStorageBackend list pages by entry name cursor
+00:02 +101: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: MemoryStorageBackend openRead honours an inclusive byte range
+00:02 +102: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: MemoryStorageBackend copy duplicates a file without touching the source
+00:02 +103: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: MemoryStorageBackend copy refuses to clobber an existing target
+00:02 +104: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: MemoryStorageBackend copy recurses into directories
+00:02 +105: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: MemoryStorageBackend rename moves within the same parent
+00:02 +106: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: MemoryStorageBackend delete removes a directory and everything under it
+00:02 +107: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend names are literal: percent sequences and edge spaces survive a round-trip
+00:02 +108: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend stat reports non-existence rather than throwing
+00:02 +109: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend write then read round-trips content
+00:02 +110: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend aborted write leaves nothing at the destination
+00:02 +111: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend openWrite in create mode refuses an existing path
+00:02 +112: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend openWrite in replace mode overwrites
+00:02 +113: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend createDirectory rejects duplicates
+00:02 +114: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend list returns direct children only
+00:02 +115: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend list pages by entry name cursor
+00:03 +116: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend openRead honours an inclusive byte range
+00:03 +117: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend copy duplicates a file without touching the source
+00:03 +118: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend copy refuses to clobber an existing target
+00:03 +119: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend copy recurses into directories
+00:03 +120: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend rename moves within the same parent
+00:03 +121: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend delete removes a directory and everything under it
+00:03 +122: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend refuses to resolve a path belonging to another root
+00:03 +123: /home/runner/work/VaultBox/VaultBox/test/data/storage_backend_contract_test.dart: DirectPathStorageBackend one unrepresentable on-disk name is skipped, not fatal to the listing
+00:03 +124: /home/runner/work/VaultBox/VaultBox/test/features/onboarding_saf_test.dart: a cancelled picker adds nothing
+00:03 +125: /home/runner/work/VaultBox/VaultBox/test/features/onboarding_saf_test.dart: registers the folder as a SAF root, proves it is writable, and makes it default
+00:03 +126: /home/runner/work/VaultBox/VaultBox/test/features/onboarding_saf_test.dart: picking the same folder twice returns the existing root
+00:03 +127: /home/runner/work/VaultBox/VaultBox/test/features/onboarding_saf_test.dart: a second, different folder does not steal the default
+00:03 +128: /home/runner/work/VaultBox/VaultBox/test/features/onboarding_saf_test.dart: if the write probe fails, nothing is added and the grant is released
+00:03 +129: /home/runner/work/VaultBox/VaultBox/test/features/file_row_test.dart: dark theme: selected row uses the dark selection fill
+00:04 +130: /home/runner/work/VaultBox/VaultBox/test/features/files_screen_test.dart: renders folders and files from the backend
+00:04 +131: /home/runner/work/VaultBox/VaultBox/test/features/files_screen_test.dart: renders folders and files from the backend
+00:04 +132: /home/runner/work/VaultBox/VaultBox/test/features/files_screen_test.dart: renders folders and files from the backend
+00:05 +133: /home/runner/work/VaultBox/VaultBox/test/features/files_screen_test.dart: shows an empty state for an empty folder
+00:05 +134: /home/runner/work/VaultBox/VaultBox/test/features/files_screen_test.dart: long press enters selection mode with Copy/Move/Delete all live
+00:05 +135: /home/runner/work/VaultBox/VaultBox/test/features/files_screen_test.dart: creating a folder refreshes the listing
+00:05 +136: /home/runner/work/VaultBox/VaultBox/test/features/files_screen_test.dart: delete then restore round-trips through the Recycle Bin
+00:09 +137: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: start -> running shows the endpoint; stop returns to off
+00:11 +138: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: start -> running shows the endpoint; stop returns to off
+00:11 +139: /home/runner/work/VaultBox/VaultBox/test/features/admin_setup_screen_test.dart: live feedback comes from the real policies
+00:11 +140: /home/runner/work/VaultBox/VaultBox/test/features/admin_setup_screen_test.dart: live feedback comes from the real policies
+00:11 +141: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: a failed start shows Try again and hides details behind a disclosure
+00:11 +142: /home/runner/work/VaultBox/VaultBox/test/features/admin_setup_screen_test.dart: a password containing the username is refused
+00:11 +143: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: if asking the service to start throws, the person sees a message
+00:11 +144: /home/runner/work/VaultBox/VaultBox/test/features/admin_setup_screen_test.dart: submitting stores a hashed, lower-cased account and finishes
+00:11 +145: /home/runner/work/VaultBox/VaultBox/test/features/admin_setup_screen_test.dart: submitting stores a hashed, lower-cased account and finishes
+00:11 +146: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: network access is OFF by default and asks before turning on
+00:11 +147: /home/runner/work/VaultBox/VaultBox/test/features/admin_setup_screen_test.dart: if an admin already exists the person is told, and nothing changes
+00:12 +148: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: turning network access off needs no confirmation
+00:12 +149: /home/runner/work/VaultBox/VaultBox/test/features/admin_setup_screen_test.dart: Skip only appears in onboarding and calls onSkip
+00:12 +150: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: the switch is locked while the server runs
+00:12 +151: /home/runner/work/VaultBox/VaultBox/test/features/admin_setup_screen_test.dart: the password is hidden until asked, and the toggle works
+00:12 +152: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: copy is honest about exposure: local-only vs reachable on the network
+00:12 +153: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: HTTPS is on and HTTP is off by default
+00:12 +154: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: turning HTTP on warns first and saves only after confirming
+00:12 +155: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: turning HTTP off needs no confirmation
+00:12 +156: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: at least one protocol must stay on
+00:12 +157: /home/runner/work/VaultBox/VaultBox/test/features/files_view_model_test.dart: findConflicts reports only names that collide at the destination
+00:12 +158: /home/runner/work/VaultBox/VaultBox/test/features/files_view_model_test.dart: findConflicts reports only names that collide at the destination
+00:12 +159: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: the protocol switches lock while the server runs
+00:12 +160: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: the protocol switches lock while the server runs
+00:12 +161: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: the protocol switches lock while the server runs
+00:12 +162: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: the protocol switches lock while the server runs
+00:12 +163: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: every endpoint is listed and a LAN HTTP one is flagged as not encrypted
+00:13 +164: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: no admin yet: an admin card is shown and network access can't be turned on
+00:13 +165: /home/runner/work/VaultBox/VaultBox/test/features/home_server_test.dart: with an admin the prompt card is hidden
+00:13 +166: /home/runner/work/VaultBox/VaultBox/test/features/import_files_view_model_test.dart: imports the picked files, refreshes the list, and deletes the cache copies
+00:13 +167: /home/runner/work/VaultBox/VaultBox/test/features/import_files_view_model_test.dart: a cancelled picker does nothing
+00:13 +168: /home/runner/work/VaultBox/VaultBox/test/features/import_files_view_model_test.dart: only names that already exist are offered as conflicts
+00:13 +169: /home/runner/work/VaultBox/VaultBox/test/features/import_files_view_model_test.dart: cancelling at the conflict prompt imports nothing and still deletes the copies
+00:13 +170: /home/runner/work/VaultBox/VaultBox/test/features/import_files_view_model_test.dart: replace overwrites the existing file with the picked one
+00:13 +171: /home/runner/work/VaultBox/VaultBox/test/features/import_files_view_model_test.dart: a picker failure surfaces as a failure state, not an exception
+00:13 +172: /home/runner/work/VaultBox/VaultBox/test/core/mime_types_test.dart: known extensions, case-insensitively
+00:13 +173: /home/runner/work/VaultBox/VaultBox/test/core/mime_types_test.dart: unknown, missing and hidden-file extensions fall back to octet-stream
+00:13 +174: /home/runner/work/VaultBox/VaultBox/test/core/mime_types_test.dart: only script-free types may be shown inline
+00:14 +175: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: with the API mounted login, then use the token
+00:14 +176: /home/runner/work/VaultBox/VaultBox/test/server/request_router_test.dart: GET /health/ answers ok JSON
+00:14 +177: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: with the API mounted the Bearer scheme is case-insensitive
+00:14 +178: /home/runner/work/VaultBox/VaultBox/test/server/request_router_test.dart: the root path is a plain 404 (nothing is served there)
+00:14 +179: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: with the API mounted query parameters reach the API (a folder listing)
+00:14 +180: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: with the API mounted query parameters reach the API (a folder listing)
+00:14 +181: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: with the API mounted query parameters reach the API (a folder listing)
+00:14 +182: /home/runner/work/VaultBox/VaultBox/test/server/request_router_test.dart: the wrong method is 405 with an Allow header
+00:14 +183: /home/runner/work/VaultBox/VaultBox/test/server/request_router_test.dart: the wrong method is 405 with an Allow header
+00:14 +184: /home/runner/work/VaultBox/VaultBox/test/server/request_router_test.dart: plain-HTTP router omits HSTS (meaningless without TLS) but keeps the other headers
+00:14 +185: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: with the API mounted other Authorization schemes and empty tokens don't authenticate
+00:14 +186: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: with the API mounted other Authorization schemes and empty tokens don't authenticate
+00:14 +187: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: with the API mounted other Authorization schemes and empty tokens don't authenticate
+00:14 +188: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: with the API mounted other Authorization schemes and empty tokens don't authenticate
+00:14 +189: /home/runner/work/VaultBox/VaultBox/test/server/request_router_test.dart: isPrivateIPv4 rejects public, loopback, link-local and junk
+00:14 +190: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: with the API mounted a body over the limit is refused with 413
+00:14 +191: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: with the API mounted garbage JSON is a 400, not a crash
+00:14 +192: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: with the API mounted upload, download, byte range and HEAD over real HTTP
+00:14 +193: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: with the API mounted an upload without a token is refused and stores nothing
+00:14 +194: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: with the API mounted path traversal in a query string is refused
+00:14 +195: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: with the API mounted /health/ still answers, and the API prefix doesn't swallow other paths
+00:14 +196: /home/runner/work/VaultBox/VaultBox/test/server/api_over_http_test.dart: without the API /api/v1 is simply not there
+00:15 +197: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: login returns a bearer token and who you are — and nothing about the password
+00:15 +198: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: login wrong credentials are a plain 401
+00:15 +199: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: login malformed bodies are 400
+00:15 +200: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: login garbage bytes are 400 too
+00:15 +201: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: login an oversized body is 413 and asks to close the connection
+00:15 +202: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: login repeated failures answer 429 with Retry-After
+00:15 +203: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: login only POST is allowed
+00:15 +204: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: authentication no token: 401 with a Bearer challenge
+00:15 +205: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: authentication a made-up token is 401
+00:15 +206: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: authentication strangers can't probe which routes exist: unknown paths are 401 too
+00:15 +207: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: authentication a logged-in caller gets 404 for an unknown route
+00:15 +208: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: authentication /me returns the account
+00:15 +209: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: authentication logout revokes the token
+00:15 +210: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: authentication an idle session expires
+00:15 +211: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: authentication a session whose account no longer exists is refused and dropped
+00:15 +212: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: authentication wrong methods on authenticated routes are 405
+00:15 +213: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: roots lists enabled roots and never the raw path or URI
+00:15 +214: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: entries lists a folder with type, size and time — and hides .vaultbox at the top
+00:15 +215: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: entries lists a subfolder
+00:15 +216: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: entries pages with a cursor until the end
+00:15 +217: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: entries bad limits are 400
+00:15 +218: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: entries unknown, disabled and unplugged roots
+00:15 +219: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: entries path traversal is rejected
+00:15 +220: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: entries the recycle bin folder can't be listed or reached
+00:15 +221: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: entries a missing folder is 404 and a file is not a folder
+00:15 +222: /home/runner/work/VaultBox/VaultBox/test/server/vault_api_test.dart: entries needs a token
+00:15 +223: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: xmlEscape escapes the five characters that matter
+00:15 +224: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: parsePropfind an empty body is allprop
+00:15 +225: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: parsePropfind allprop and propname
+00:15 +226: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: parsePropfind prop lists names with their namespaces, whatever the prefix
+00:15 +227: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: parsePropfind a default namespace declared higher up applies
+00:15 +228: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: parsePropfind wrong root, wrong namespace, no children and broken XML are rejected
+00:15 +229: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: parsePropfind DTDs and entities are refused before parsing
+00:15 +230: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: parseLockInfo reads scope and owner
+00:15 +231: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: parseLockInfo needs a scope and a write type
+00:15 +232: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: parseLockInfo a very long owner is cut
+00:15 +233: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: parsePropertyUpdate collects set and remove properties
+00:15 +234: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: MultiStatus builds escaped, well-formed XML
+00:15 +235: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: MultiStatus emptyPropXml refuses names that aren't safe XML names
+00:15 +236: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: DavLockManager tokens look like opaquelocktoken:<uuid> and are unique
+00:15 +237: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: DavLockManager an exclusive lock blocks any other lock on the same or covered resource
+00:15 +238: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: DavLockManager a lock above an existing lock conflicts when it is deep, not when it is shallow
+00:15 +239: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: DavLockManager shared locks coexist; an exclusive one can't join them
+00:15 +240: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: DavLockManager names that merely share a prefix are different resources
+00:15 +241: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: DavLockManager mayModify: unlocked is free; locked needs the owner AND the token
+00:15 +242: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: DavLockManager includeDescendants: touching a folder is blocked by locks inside it
+00:15 +243: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: DavLockManager locks expire, and the timeout is capped
+00:15 +244: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: DavLockManager refresh extends; only the owner can refresh or unlock
+00:15 +245: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: DavLockManager the number of locks is bounded
+00:15 +246: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: DavLockManager tokensIn finds every token in an If header
+00:15 +247: /home/runner/work/VaultBox/VaultBox/test/server/dav_xml_and_locks_test.dart: DavLockManager parseTimeout reads Second-N and Infinite
+00:16 +248: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download streams the file with safe headers
+00:16 +249: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download byte ranges: from-to, open-ended and suffix
+00:16 +250: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download a range outside the file is 416 with the size
+00:16 +251: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download ranges the server doesn't split are ignored, not errors
+00:16 +252: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download a root without random access ignores Range and says so
+00:16 +253: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download inline only for types that can't run script
+00:16 +254: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download unusual names get an ASCII fallback and a UTF-8 filename*
+00:16 +255: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download HEAD answers headers and no bytes
+00:16 +256: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download folders, missing files, traversal and the recycle bin
+00:16 +257: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download other methods are 405 and list what is allowed
+00:16 +258: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: upload creates a file
+00:16 +259: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: upload an existing file needs overwrite=1
+00:16 +260: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: upload a folder is never overwritten by a file
+00:16 +261: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: upload the parent folder must exist
+00:16 +262: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: upload a name with %-sequences is that exact name, never a decoded neighbour
+00:16 +263: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: upload bad and reserved paths
+00:16 +264: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: upload a read-only root refuses uploads
+00:16 +265: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: upload a connection that breaks mid-upload leaves nothing half-written
+00:16 +266: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: embedded bundle matches assets/portal (run: python tool/embed_portal.py)
+00:16 +267: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: embedded bundle matches assets/portal (run: python tool/embed_portal.py)
+00:16 +268: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: embedded bundle matches assets/portal (run: python tool/embed_portal.py)
+00:16 +269: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: embedded bundle matches assets/portal (run: python tool/embed_portal.py)
+00:16 +270: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: embedded bundle matches assets/portal (run: python tool/embed_portal.py)
+00:16 +271: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: embedded bundle matches assets/portal (run: python tool/embed_portal.py)
+00:16 +272: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: move, copy and delete move takes the file out of its old place
+00:16 +273: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: move, copy and delete move takes the file out of its old place
+00:16 +274: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: embedded bundle the script never builds HTML from data
+00:16 +275: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: move, copy and delete a clash is skipped by default and reported per item
+00:16 +276: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: embedded bundle the style sheet and script reach out to no other site
+00:16 +277: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: move, copy and delete conflict=replace overwrites and keepBoth renames
+00:16 +278: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router / and /index.html are the page, with a strict CSP
+00:16 +279: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router / and /index.html are the page, with a strict CSP
+00:16 +280: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router / and /index.html are the page, with a strict CSP
+00:16 +281: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router / and /index.html are the page, with a strict CSP
+00:16 +282: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router / and /index.html are the page, with a strict CSP
+00:16 +283: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router / and /index.html are the page, with a strict CSP
+00:16 +284: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router / and /index.html are the page, with a strict CSP
+00:16 +285: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: every path goes through the Authorizer reads ask for read
+00:16 +286: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router the script and style sheet have the right types
+00:16 +287: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router the script and style sheet have the right types
+00:16 +288: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router the script and style sheet have the right types
+00:16 +289: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router the script and style sheet have the right types
+00:16 +290: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: every path goes through the Authorizer move is refused when delete is denied on the source, and nothing moves
+00:16 +291: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router HEAD works and other methods are 405
+00:16 +292: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router HEAD works and other methods are 405
+00:16 +293: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router HEAD works and other methods are 405
+00:16 +294: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download tickets a logged-in caller gets a link that downloads without any header
+00:16 +295: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router other paths are still a plain 404
+00:16 +296: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router other paths are still a plain 404
+00:16 +297: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router other paths are still a plain 404
+00:16 +298: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download tickets an unknown ticket is a plain 404
+00:16 +299: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router /health/ is unaffected
+00:16 +300: /home/runner/work/VaultBox/VaultBox/test/server/portal_bundle_test.dart: served by the router /health/ is unaffected
+00:16 +301: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download tickets logging out kills the links that session made
+00:16 +302: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download tickets a ticket opens one file and only reads
+00:16 +303: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download tickets no tickets for folders, missing files or the recycle bin
+00:16 +304: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download tickets asking for a ticket needs a login
+00:16 +305: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download tickets the Authorizer is asked again when the link is used
+00:16 +306: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: download tickets a ticket for a file that has since been deleted is a 404
+00:16 +307: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: stat describes one item and the root
+00:16 +308: /home/runner/work/VaultBox/VaultBox/test/server/file_endpoints_test.dart: every endpoint needs a token
+test/server/webdav_over_http_test.dart:157:28: Error: String starting with " must end with ".
+          "PROPFIND $target HTTP/1.1
+                           ^^^^^^^^^
+test/server/webdav_over_http_test.dart:159:1: Error: String starting with " must end with ".
+"
+^
+test/server/webdav_over_http_test.dart:160:11: Error: String starting with " must end with ".
+          "Authorization: ${DavHarness.basic("admin", DavHarness.password)}
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test/server/webdav_over_http_test.dart:161:1: Error: String starting with " must end with ".
+"
+^
+test/server/webdav_over_http_test.dart:162:11: Error: String starting with " must end with ".
+          "Depth: 0
+          ^^^^^^^^^
+test/server/webdav_over_http_test.dart:165:1: Error: String starting with " must end with ".
+",
+^^
+test/server/webdav_over_http_test.dart:169:28: Error: String starting with " must end with ".
+        return reply.split("
+                           ^
+test/server/webdav_over_http_test.dart:170:1: Error: String starting with " must end with ".
+").first;
+^^^^^^^^^
+test/server/webdav_over_http_test.dart:169:27: Error: Can't find ')' to match '('.
+        return reply.split("
+                          ^
+test/server/webdav_over_http_test.dart:158:1: Error: Expected ',' before this.
+Host: x
+^^^^
+test/server/webdav_over_http_test.dart:158:7: Error: Undefined name 'x'.
+Host: x
+      ^
+test/server/webdav_over_http_test.dart:159:1: Error: Expected ',' before this.
+"
+^
+test/server/webdav_over_http_test.dart:163:1: Error: Expected ',' before this.
+Connection: close
+^^^^^^^^^^
+test/server/webdav_over_http_test.dart:163:13: Error: Undefined name 'close'.
+Connection: close
+            ^^^^^
+test/server/webdav_over_http_test.dart:165:1: Error: Expected ',' before this.
+",
+^^
+test/server/webdav_over_http_test.dart:170:1: Error: Expected ';' after this.
+").first;
+^^^^^^^^^
+test/server/webdav_over_http_test.dart:156:21: Error: Too many positional arguments: 1 allowed, but 3 found.
+Try removing the extra positional arguments.
+        socket.write(
+                    ^
+test/server/webdav_over_http_test.dart:169:22: Error: A value of type 'List<String>' can't be returned from an async function with return type 'Future<String>'.
+ - 'List' is from 'dart:core'.
+ - 'Future' is from 'dart:async'.
+        return reply.split("
+                     ^
+00:16 +309 -1: loading /home/runner/work/VaultBox/VaultBox/test/server/webdav_over_http_test.dart [E]
+  Failed to load "/home/runner/work/VaultBox/VaultBox/test/server/webdav_over_http_test.dart":
+  Compilation failed for testPath=/home/runner/work/VaultBox/VaultBox/test/server/webdav_over_http_test.dart: test/server/webdav_over_http_test.dart:157:28: Error: String starting with " must end with ".
+            "PROPFIND $target HTTP/1.1
+                             ^^^^^^^^^
+  test/server/webdav_over_http_test.dart:159:1: Error: String starting with " must end with ".
+  "
+  ^
+  test/server/webdav_over_http_test.dart:160:11: Error: String starting with " must end with ".
+            "Authorization: ${DavHarness.basic("admin", DavHarness.password)}
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  test/server/webdav_over_http_test.dart:161:1: Error: String starting with " must end with ".
+  "
+  ^
+  test/server/webdav_over_http_test.dart:162:11: Error: String starting with " must end with ".
+            "Depth: 0
+            ^^^^^^^^^
+  test/server/webdav_over_http_test.dart:165:1: Error: String starting with " must end with ".
+  ",
+  ^^
+  test/server/webdav_over_http_test.dart:169:28: Error: String starting with " must end with ".
+          return reply.split("
+                             ^
+  test/server/webdav_over_http_test.dart:170:1: Error: String starting with " must end with ".
+  ").first;
+  ^^^^^^^^^
+  test/server/webdav_over_http_test.dart:169:27: Error: Can't find ')' to match '('.
+          return reply.split("
+                            ^
+  test/server/webdav_over_http_test.dart:158:1: Error: Expected ',' before this.
+  Host: x
+  ^^^^
+  test/server/webdav_over_http_test.dart:158:7: Error: Undefined name 'x'.
+  Host: x
+        ^
+  test/server/webdav_over_http_test.dart:159:1: Error: Expected ',' before this.
+  "
+  ^
+  test/server/webdav_over_http_test.dart:163:1: Error: Expected ',' before this.
+  Connection: close
+  ^^^^^^^^^^
+  test/server/webdav_over_http_test.dart:163:13: Error: Undefined name 'close'.
+  Connection: close
+              ^^^^^
+  test/server/webdav_over_http_test.dart:165:1: Error: Expected ',' before this.
+  ",
+  ^^
+  test/server/webdav_over_http_test.dart:170:1: Error: Expected ';' after this.
+  ").first;
+  ^^^^^^^^^
+  test/server/webdav_over_http_test.dart:156:21: Error: Too many positional arguments: 1 allowed, but 3 found.
+  Try removing the extra positional arguments.
+          socket.write(
+                      ^
+  test/server/webdav_over_http_test.dart:169:22: Error: A value of type 'List<String>' can't be returned from an async function with return type 'Future<String>'.
+   - 'List' is from 'dart:core'.
+   - 'Future' is from 'dart:async'.
+          return reply.split("
+                       ^
+  .
+00:16 +309 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: authentication no credentials: 401 with a Basic challenge, for any method
+00:17 +310 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: authentication wrong password, unknown user and garbage headers are 401
+00:17 +311 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: authentication a right answer is remembered, so Argon2 isn't repeated for every request
+00:17 +312 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: authentication the memory expires, and clear() forgets it at once
+00:17 +313 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: authentication repeated wrong passwords are throttled with 429 and Retry-After
+00:17 +314 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: authentication the memory is keyed by the exact password: another password is still 401
+00:17 +315 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: OPTIONS announces class 1+2 and the methods
+00:17 +316 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: OPTIONS unknown methods are 405 and list what is allowed
+00:17 +317 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPFIND the top folder lists the storage roots as collections
+00:17 +318 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPFIND depth 0 answers about the folder only
+00:17 +319 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPFIND a folder lists its children — and never the hidden .vaultbox
+00:17 +320 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPFIND a file's properties: size, type, etag and dates
+00:17 +321 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPFIND only the requested properties come back, unknown ones as 404
+00:17 +322 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPFIND propname lists names without values
+00:17 +323 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPFIND an empty body means allprop; no Depth header means 1
+00:17 +324 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPFIND Depth: infinity is refused with the standard error body
+00:17 +325 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPFIND storage quota is offered on a root when asked for
+00:17 +326 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPFIND names with spaces, %, & and non-ASCII are percent-encoded in hrefs and round-trip
+00:17 +327 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPFIND missing items are 404; bad XML and DTDs are 400
+00:17 +328 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPFIND the hidden folder and traversal never resolve
+00:17 +329 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPFIND an oversized body is 413
+00:17 +330 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPFIND items the Authorizer hides are left out of a listing
+00:17 +331 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: GET and HEAD GET streams the file with validators
+00:17 +332 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: GET and HEAD byte ranges give 206 and the right slice
+00:17 +333 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: GET and HEAD HEAD has the headers and no body
+00:17 +334 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: GET and HEAD a folder answers with a short note, not an error
+00:17 +335 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: GET and HEAD missing files, the hidden folder and traversal
+00:17 +336 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: GET and HEAD a denied read is 403
+00:17 +337 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PUT creates (201) then replaces (204)
+00:17 +338 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PUT an empty file is fine
+00:17 +339 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PUT If-None-Match: * refuses to overwrite
+00:17 +340 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PUT the parent must exist, and a folder can't be overwritten by a file
+00:17 +341 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PUT not on a storage root itself, the top folder, the hidden folder or a read-only card
+00:17 +342 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PUT a connection that breaks mid-upload keeps the old file and creates nothing
+00:17 +343 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: MKCOL creates a folder
+00:17 +344 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: MKCOL existing (405), missing parent (409), body (415), read-only (403), root (403)
+00:17 +345 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: DELETE moves the item to the Recycle Bin
+00:17 +346 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: DELETE a folder goes as one item
+00:17 +347 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: DELETE missing is 404; roots, the top folder, read-only and the hidden folder are refused
+00:17 +348 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: DELETE a denied delete is 403 and leaves the file
+00:17 +349 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: COPY and MOVE COPY leaves the source and creates the copy (201)
+00:17 +350 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: COPY and MOVE COPY of a folder copies what is inside; Depth 0 copies only the folder
+00:17 +351 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: COPY and MOVE MOVE renames in place and moves between folders
+00:17 +352 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: COPY and MOVE destination percent-encoding is decoded once
+00:17 +353 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: COPY and MOVE Overwrite: F refuses (412); the default replaces a file (204) in place
+00:17 +354 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: COPY and MOVE overwriting a folder keeps the old one in the Recycle Bin
+00:17 +355 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: COPY and MOVE onto itself or into its own subtree is 403
+00:17 +356 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: COPY and MOVE missing pieces: no Destination (400), missing source (404), missing parent (409)
+00:17 +357 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: COPY and MOVE between storage locations: copy from the read-only card works, moving out of it doesn't
+00:17 +358 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: COPY and MOVE roots and the top folder can't be copied or moved
+00:17 +359 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: locks LOCK on an existing file returns a token and the lock description
+00:17 +360 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: locks LOCK on a new name reserves it as an empty file (201)
+00:17 +361 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: locks while locked, writing needs the token (423 without, ok with)
+00:17 +362 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: locks a second exclusive lock on the same file is 423
+00:17 +363 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: locks a lock on a folder covers what is inside it
+00:17 +364 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: locks deleting a folder is blocked by a lock on something inside it
+00:17 +365 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: locks refresh extends the lock; UNLOCK releases it
+00:17 +366 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: locks UNLOCK with a wrong token is 409; without a header 400
+00:17 +367 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: locks a lock expires by itself
+00:17 +368 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: locks PROPFIND shows the active lock
+00:17 +369 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: locks bad lock requests: garbage body 400, refresh with no lock 412, read-only card 403
+00:17 +370 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPPATCH Microsoft's cosmetic properties are accepted, real ones refused honestly
+00:17 +371 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: PROPPATCH missing item 404, garbage 400, read-only 403, locked 423
+00:17 +372 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: root names names that would collide get -2, -3 (ignoring case); odd characters become dashes
+00:17 +373 -1: /home/runner/work/VaultBox/VaultBox/test/server/webdav_handler_test.dart: root names a root is addressed case-insensitively
+00:18 +374 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_android_storage_host_test.dart: a cancelled picker (null from native) comes back as null
+00:18 +375 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_android_storage_host_test.dart: maps a picked tree, including the root document id
+00:18 +376 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_android_storage_host_test.dart: a tree message missing required fields fails loudly, not silently
+00:18 +377 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_android_storage_host_test.dart: maps directory and file entries; an unknown size stays null (not zero)
+00:18 +378 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_android_storage_host_test.dart: an entry missing its documentId or name is rejected
+00:18 +379 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_android_storage_host_test.dart: permission_revoked from native becomes PermissionRevokedFailure
+00:18 +380 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_android_storage_host_test.dart: any other native error becomes UnexpectedFailure and keeps the detail
+00:18 +381 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_android_storage_host_test.dart: passes the file descriptor straight through
+00:18 +382 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_android_storage_host_test.dart: maps picked files (cache path, real name, size, mime)
+00:18 +383 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_android_storage_host_test.dart: a cancelled pick is an empty list
+00:18 +384 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_android_storage_host_test.dart: a picked-file message missing its path or name is rejected
+00:18 +385 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_server_host_test.dart: first emission is the native snapshot
+00:18 +386 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_server_host_test.dart: every reported endpoint reaches the UI
+00:18 +387 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_server_host_test.dart: pushed changes follow the snapshot, mapped
+00:18 +388 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_server_host_test.dart: a push that lands before a slow snapshot wins (snapshot is dropped)
+00:18 +389 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_server_host_test.dart: a missing state maps to stopped
+00:18 +390 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_server_host_test.dart: start and stop call native
+00:18 +391 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_server_host_test.dart: a native error becomes UnexpectedFailure with the detail
+00:18 +392 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_server_host_test.dart: config maps native settings; missing values fall back to safe defaults
+00:18 +393 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_server_host_test.dart: saveConfig sends both fields to native
+00:18 +394 -1: /home/runner/work/VaultBox/VaultBox/test/platform/pigeon_server_host_test.dart: tlsFingerprint passes through
+00:19 +395 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_service_test.dart: the right password issues a session that validates
+00:19 +396 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_service_test.dart: the username is trimmed and case-insensitive
+00:19 +397 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_service_test.dart: a wrong password and an unknown user look exactly the same
+00:19 +398 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_service_test.dart: an unknown user still costs a password check (no timing tell)
+00:19 +399 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_service_test.dart: the decoy password can't be used to log in as a missing user
+00:19 +400 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_service_test.dart: input that can't match anything is refused without hashing
+00:19 +401 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_service_test.dart: five failures lock that account+address, even for the right password
+00:19 +402 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_service_test.dart: locking one address doesn't lock the owner out from another
+00:19 +403 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_service_test.dart: rotating usernames from one address is caught by the per-address limit
+00:19 +404 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_service_test.dart: a success clears the account's failure count
+00:19 +405 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_service_test.dart: too many checks at once are turned away, not queued
+00:19 +406 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_service_test.dart: a hash made with old parameters is upgraded on a good login
+00:19 +407 -1: /home/runner/work/VaultBox/VaultBox/test/security/argon2id_password_hasher_test.dart: hash is self-describing PHC-style and salted
+00:19 +408 -1: /home/runner/work/VaultBox/VaultBox/test/security/argon2id_password_hasher_test.dart: verifies the right password and rejects wrong ones
+00:19 +409 -1: /home/runner/work/VaultBox/VaultBox/test/security/argon2id_password_hasher_test.dart: a tampered digest does not verify
+00:19 +410 -1: /home/runner/work/VaultBox/VaultBox/test/security/argon2id_password_hasher_test.dart: malformed or implausible hashes fail closed (never throw)
+00:19 +411 -1: /home/runner/work/VaultBox/VaultBox/test/security/argon2id_password_hasher_test.dart: needsRehash: weaker parameters or garbage => true; current => false
+00:19 +412 -1: /home/runner/work/VaultBox/VaultBox/test/security/argon2id_password_hasher_test.dart: an old, weaker hash still verifies under a stronger hasher
+00:19 +413 -1: /home/runner/work/VaultBox/VaultBox/test/security/argon2id_password_hasher_test.dart: works when derivation runs in a separate isolate
+00:19 +414 -1: /home/runner/work/VaultBox/VaultBox/test/security/argon2id_password_hasher_test.dart: production defaults are OWASP's minimum
+00:19 +415 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_throttle_and_policy_test.dart: LoginThrottle the first four failures are free
+00:19 +416 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_throttle_and_policy_test.dart: LoginThrottle the fifth failure locks for 30 seconds
+00:19 +417 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_throttle_and_policy_test.dart: LoginThrottle the lock counts down and then lifts
+00:19 +418 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_throttle_and_policy_test.dart: LoginThrottle each further failure doubles the lock, up to the cap
+00:19 +419 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_throttle_and_policy_test.dart: LoginThrottle success clears the key
+00:19 +420 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_throttle_and_policy_test.dart: LoginThrottle keys are independent
+00:19 +421 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_throttle_and_policy_test.dart: LoginThrottle a quiet key is forgotten after an hour
+00:19 +422 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_throttle_and_policy_test.dart: LoginThrottle memory is bounded: the oldest key is evicted
+00:19 +423 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_throttle_and_policy_test.dart: PasswordPolicy accepts a long passphrase
+00:19 +424 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_throttle_and_policy_test.dart: PasswordPolicy rejects short passwords
+00:19 +425 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_throttle_and_policy_test.dart: PasswordPolicy rejects overlong passwords
+00:19 +426 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_throttle_and_policy_test.dart: PasswordPolicy rejects trivially repetitive passwords
+00:19 +427 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_throttle_and_policy_test.dart: PasswordPolicy rejects only-spaces and control characters
+00:19 +428 -1: /home/runner/work/VaultBox/VaultBox/test/security/login_throttle_and_policy_test.dart: PasswordPolicy rejects a password containing the username
+00:20 +429 -1: /home/runner/work/VaultBox/VaultBox/test/security/download_tickets_test.dart: a ticket resolves to exactly what it was issued for
+00:20 +430 -1: /home/runner/work/VaultBox/VaultBox/test/security/download_tickets_test.dart: tickets are long, random and different every time
+00:20 +431 -1: /home/runner/work/VaultBox/VaultBox/test/security/download_tickets_test.dart: unknown, empty and oversized tokens resolve to nothing
+00:20 +432 -1: /home/runner/work/VaultBox/VaultBox/test/security/download_tickets_test.dart: a ticket expires after its lifetime
+00:20 +433 -1: /home/runner/work/VaultBox/VaultBox/test/security/download_tickets_test.dart: a ticket can be used more than once until it expires (ranges, seeking)
+00:20 +434 -1: /home/runner/work/VaultBox/VaultBox/test/security/download_tickets_test.dart: revoking a session kills only that session's tickets
+00:20 +435 -1: /home/runner/work/VaultBox/VaultBox/test/security/download_tickets_test.dart: purgeExpired removes only the expired ones
+00:20 +436 -1: /home/runner/work/VaultBox/VaultBox/test/security/download_tickets_test.dart: the store is bounded: the oldest ticket is dropped first
+00:20 +437 -1: /home/runner/work/VaultBox/VaultBox/test/security/session_manager_test.dart: issues a 256-bit url-safe token and validates it
+00:20 +438 -1: /home/runner/work/VaultBox/VaultBox/test/security/session_manager_test.dart: only the hash is stored — never the token
+00:20 +439 -1: /home/runner/work/VaultBox/VaultBox/test/security/session_manager_test.dart: tokens are unique
+00:20 +440 -1: /home/runner/work/VaultBox/VaultBox/test/security/session_manager_test.dart: unknown, empty, oversized and altered tokens are rejected
+00:20 +441 -1: /home/runner/work/VaultBox/VaultBox/test/security/session_manager_test.dart: idle timeout: expires after 30 minutes of silence
+00:20 +442 -1: /home/runner/work/VaultBox/VaultBox/test/security/session_manager_test.dart: activity slides the idle window forward
+00:20 +443 -1: /home/runner/work/VaultBox/VaultBox/test/security/session_manager_test.dart: absolute timeout: a constantly-used token still dies at 12 hours
+00:20 +444 -1: /home/runner/work/VaultBox/VaultBox/test/security/session_manager_test.dart: revoke logs one session out
+00:20 +445 -1: /home/runner/work/VaultBox/VaultBox/test/security/session_manager_test.dart: revokeAllFor logs an account out everywhere, and only that account
+00:20 +446 -1: /home/runner/work/VaultBox/VaultBox/test/security/session_manager_test.dart: purgeExpired removes only expired sessions
+00:20 +447 -1: Some tests failed.
+
+Failing tests:
+  /home/runner/work/VaultBox/VaultBox/test/server/webdav_over_http_test.dart: loading /home/runner/work/VaultBox/VaultBox/test/server/webdav_over_http_test.dart

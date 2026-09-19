@@ -1,0 +1,22 @@
+  compiling builders/aot
+  36s compiling builders/aot
+W These options have been removed and were ignored: --delete-conflicting-outputs
+  0s drift_dev on 536 inputs; lib/app/providers.dart
+  8s drift_dev on 536 inputs: 1 output; spent 5s analyzing, 1s sdk, 1s resolving; lib/app/router.dart
+  12s drift_dev on 536 inputs: 2 output; spent 9s analyzing, 2s resolving, 1s sdk; lib/app/shell_scaffold.dart
+W drift_dev on test/server/webdav_over_http_test.dart:
+  Could not resolve Dart library asset:vaultbox/test/server/webdav_over_http_test.dart
+  158:1: Expected to find ','.
+  159:1: Expected to find ','.
+  163:1: Expected to find ','.
+  And 11 more.
+W drift_dev on test/server/webdav_over_http_test.dart:
+  Could not resolve Dart library asset:vaultbox/test/server/webdav_over_http_test.dart
+  158:1: Expected to find ','.
+  159:1: Expected to find ','.
+  163:1: Expected to find ','.
+  And 11 more.
+  13s drift_dev on 536 inputs: 134 skipped, 251 output, 151 no-op; spent 9s analyzing, 2s resolving, 1s sdk
+  0s source_gen:combining_builder on 268 inputs; lib/app/providers.dart
+  0s source_gen:combining_builder on 268 inputs: 134 skipped, 1 output, 133 no-op
+  Built with build_runner/aot in 50s; wrote 252 outputs.

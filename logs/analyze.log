@@ -1,0 +1,24 @@
+Analyzing VaultBox...                                           
+
+  error • Unterminated string literal • test/server/webdav_over_http_test.dart:157:36 • unterminated_string_literal
+  error • Expected to find ',' • test/server/webdav_over_http_test.dart:158:1 • expected_token
+  error • The named parameter 'Host' isn't defined. Try correcting the name to an existing named parameter's name, or defining a named parameter with the name 'Host' • test/server/webdav_over_http_test.dart:158:1 • undefined_named_parameter
+  error • Undefined name 'x'. Try correcting the name to one that is defined, or defining the name • test/server/webdav_over_http_test.dart:158:7 • undefined_identifier
+  error • Expected to find ',' • test/server/webdav_over_http_test.dart:159:1 • expected_token
+  error • Too many positional arguments: 1 expected, but 3 found. Try removing the extra arguments • test/server/webdav_over_http_test.dart:159:1 • extra_positional_arguments
+  error • Unterminated string literal • test/server/webdav_over_http_test.dart:159:1 • unterminated_string_literal
+  error • Unterminated string literal • test/server/webdav_over_http_test.dart:160:75 • unterminated_string_literal
+  error • Unterminated string literal • test/server/webdav_over_http_test.dart:161:1 • unterminated_string_literal
+  error • Unterminated string literal • test/server/webdav_over_http_test.dart:162:19 • unterminated_string_literal
+  error • Expected to find ',' • test/server/webdav_over_http_test.dart:163:1 • expected_token
+  error • The named parameter 'Connection' isn't defined. Try correcting the name to an existing named parameter's name, or defining a named parameter with the name 'Connection' • test/server/webdav_over_http_test.dart:163:1 • undefined_named_parameter
+  error • Undefined name 'close'. Try correcting the name to one that is defined, or defining the name • test/server/webdav_over_http_test.dart:163:13 • undefined_identifier
+  error • Expected to find ',' • test/server/webdav_over_http_test.dart:165:1 • expected_token
+  error • Unterminated string literal • test/server/webdav_over_http_test.dart:165:2 • unterminated_string_literal
+  error • A value of type 'List<String>' can't be returned from the function 'rawStatusLine' because it has a return type of 'Future<String>' • test/server/webdav_over_http_test.dart:169:16 • return_of_invalid_type
+  error • Unterminated string literal • test/server/webdav_over_http_test.dart:169:28 • unterminated_string_literal
+  error • Expected to find ';' • test/server/webdav_over_http_test.dart:170:1 • expected_token
+  error • Unterminated string literal • test/server/webdav_over_http_test.dart:170:9 • unterminated_string_literal
+  error • Expected to find ')' • test/server/webdav_over_http_test.dart:171:7 • expected_token
+
+20 issues found. (ran in 18.8s)

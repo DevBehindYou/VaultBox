@@ -1,0 +1,166 @@
+Changed lib/app/providers.dart
+Changed lib/app/router.dart
+Changed lib/app/shell_scaffold.dart
+Changed lib/core/design/aurora_spacing.dart
+Changed lib/core/design/aurora_theme.dart
+Changed lib/core/design/aurora_widgets.dart
+Changed lib/core/errors/app_failure.dart
+Changed lib/core/utils/byte_format.dart
+Changed lib/core/utils/mime_types.dart
+Changed lib/data/db/app_database.dart
+Changed lib/data/repositories/drift_account_repository.dart
+Changed lib/data/repositories/drift_recycle_bin_repository.dart
+Changed lib/data/repositories/drift_storage_root_repository.dart
+Changed lib/data/repositories/file_repository_impl.dart
+Changed lib/data/repositories/in_memory_recycle_bin_repository.dart
+Changed lib/data/repositories/in_memory_storage_root_repository.dart
+Changed lib/data/security/argon2id_password_hasher.dart
+Changed lib/data/security/in_memory_session_store.dart
+Changed lib/data/services/direct_path_storage_backend.dart
+Changed lib/data/services/memory_storage_backend.dart
+Changed lib/data/services/saf_storage_backend.dart
+Changed lib/domain/entities/server_config.dart
+Changed lib/domain/models/operation_batch.dart
+Changed lib/domain/repositories/file_repository.dart
+Changed lib/domain/repositories/storage_backend.dart
+Changed lib/domain/security/authorizer.dart
+Changed lib/domain/security/download_tickets.dart
+Changed lib/domain/security/login_service.dart
+Changed lib/domain/security/login_throttle.dart
+Changed lib/domain/security/password_policy.dart
+Changed lib/domain/security/session.dart
+Changed lib/domain/security/session_manager.dart
+Changed lib/domain/security/username_policy.dart
+Changed lib/domain/usecases/copy_items.dart
+Changed lib/domain/usecases/create_admin_account.dart
+Changed lib/domain/usecases/delete_items_to_recycle_bin.dart
+Changed lib/domain/usecases/import_files.dart
+Changed lib/domain/usecases/move_items.dart
+Changed lib/domain/usecases/permanently_delete_recycled.dart
+Changed lib/domain/usecases/restore_items.dart
+Changed lib/domain/value_objects/storage_capabilities.dart
+Changed lib/domain/value_objects/storage_path.dart
+Changed lib/features/files/presentation/destination_picker_screen.dart
+Changed lib/features/files/presentation/files_screen.dart
+Changed lib/features/files/presentation/recycle_bin_screen.dart
+Changed lib/features/files/presentation/widgets/conflict_dialog.dart
+Changed lib/features/files/presentation/widgets/file_row.dart
+Changed lib/features/files/viewmodel/files_view_model.dart
+Changed lib/features/home/presentation/home_screen.dart
+Changed lib/features/onboarding/onboarding_actions.dart
+Changed lib/features/onboarding/presentation/admin_setup_screen.dart
+Changed lib/features/onboarding/presentation/onboarding_ready_screen.dart
+Changed lib/features/onboarding/presentation/onboarding_storage_screen.dart
+Changed lib/features/onboarding/presentation/onboarding_welcome_screen.dart
+Changed lib/platform/adapters/android_storage_host.dart
+Changed lib/platform/adapters/pigeon_android_storage_host.dart
+Changed lib/platform/adapters/pigeon_server_host.dart
+Changed lib/platform/pigeon/storage_api.g.dart
+Changed lib/server/api/api_json.dart
+Changed lib/server/api/api_types.dart
+Changed lib/server/api/file_endpoints.dart
+Changed lib/server/api/vault_api.dart
+Changed lib/server/files/file_transfer.dart
+Changed lib/server/files/storage_gate.dart
+Changed lib/server/http_listener.dart
+Changed lib/server/https_listener.dart
+Changed lib/server/network_addresses.dart
+Changed lib/server/portal/portal_assets.dart
+Changed lib/server/portal/portal_bundle.dart
+Changed lib/server/request_router.dart
+Changed lib/server/server_main.dart
+Changed lib/server/server_services.dart
+Changed lib/server/webdav/dav_auth.dart
+Changed lib/server/webdav/dav_locks.dart
+Changed lib/server/webdav/dav_xml.dart
+Changed lib/server/webdav/webdav_handler.dart
+Changed test/core/mime_types_test.dart
+Changed test/data/backend_registry_test.dart
+Changed test/data/drift_repositories_test.dart
+Changed test/data/saf_storage_backend_test.dart
+Changed test/data/storage_backend_contract_test.dart
+Changed test/domain/create_admin_account_test.dart
+Changed test/domain/file_operations_test.dart
+Changed test/domain/import_files_test.dart
+Changed test/domain/storage_path_test.dart
+Changed test/features/admin_setup_screen_test.dart
+Changed test/features/file_row_test.dart
+Changed test/features/files_screen_test.dart
+Changed test/features/files_view_model_test.dart
+Changed test/features/home_server_test.dart
+Changed test/features/import_files_view_model_test.dart
+Changed test/features/onboarding_saf_test.dart
+Changed test/helpers/api_harness.dart
+Changed test/helpers/dav_harness.dart
+Changed test/helpers/fake_android_storage_host.dart
+Changed test/helpers/fake_clock.dart
+Changed test/helpers/fake_server_host.dart
+Changed test/platform/pigeon_android_storage_host_test.dart
+Changed test/platform/pigeon_server_host_test.dart
+Changed test/security/argon2id_password_hasher_test.dart
+Changed test/security/download_tickets_test.dart
+Changed test/security/login_service_test.dart
+Changed test/security/login_throttle_and_policy_test.dart
+Changed test/security/session_manager_test.dart
+Changed test/server/api_over_http_test.dart
+Changed test/server/dav_xml_and_locks_test.dart
+Changed test/server/file_endpoints_test.dart
+Changed test/server/portal_bundle_test.dart
+Changed test/server/request_router_test.dart
+Changed test/server/vault_api_test.dart
+Changed test/server/webdav_handler_test.dart
+Could not format because the source could not be parsed:
+
+line 159, column 1 of test/server/webdav_over_http_test.dart: Expected to find ','.
+    ╷
+159 │ Host: x
+    │ ^^^^
+    ╵
+line 161, column 1 of test/server/webdav_over_http_test.dart: Expected to find ','.
+    ╷
+161 │ "
+    │ ^
+    ╵
+line 167, column 1 of test/server/webdav_over_http_test.dart: Expected to find ','.
+    ╷
+167 │ Connection: close
+    │ ^^^^^^^^^^
+    ╵
+line 171, column 1 of test/server/webdav_over_http_test.dart: Expected to find ','.
+    ╷
+171 │ ",
+    │ ^^
+    ╵
+line 177, column 1 of test/server/webdav_over_http_test.dart: Expected to find ';'.
+    ╷
+177 │ ").first;
+    │ ^^^^^^^^^
+    ╵
+line 157, column 36 of test/server/webdav_over_http_test.dart: Unterminated string literal.
+    ╷
+157 │           "PROPFIND $target HTTP/1.1
+    │                                    ^
+    ╵
+line 161, column 1 of test/server/webdav_over_http_test.dart: Unterminated string literal.
+    ╷
+161 │ "
+    │ ^
+    ╵
+line 162, column 75 of test/server/webdav_over_http_test.dart: Unterminated string literal.
+    ╷
+162 │           "Authorization: ${DavHarness.basic("admin", DavHarness.password)}
+    │                                                                           ^
+    ╵
+line 164, column 1 of test/server/webdav_over_http_test.dart: Unterminated string literal.
+    ╷
+164 │ "
+    │ ^
+    ╵
+line 165, column 19 of test/server/webdav_over_http_test.dart: Unterminated string literal.
+    ╷
+165 │           "Depth: 0
+    │                   ^
+    ╵
+(4 more errors...)
+Changed pigeons/storage_api.dart
+Formatted 136 files (112 changed) in 0.32 seconds.

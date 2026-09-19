@@ -6,6 +6,7 @@ import "api/api_types.dart";
 import "api/vault_api.dart";
 import "network_addresses.dart";
 import "portal/portal_assets.dart";
+import "webdav/webdav_handler.dart";
 
 /// Routes and answers HTTP requests. Transport-agnostic so it can be exercised
 /// over plain loopback sockets in tests; `HttpsListener` / `HttpListener`
@@ -21,17 +22,28 @@ final class RequestRouter {
   /// private network — used for the unencrypted HTTP listener.
   /// [api]: the `/api/v1/*` handlers; without it only `/health/` exists.
   /// [portal]: the browser page served at `/`; without it `/` is a plain 404.
+  /// [dav]: WebDAV at `/dav/`; without it that path is a plain 404.
   const RequestRouter({
     this.secure = true,
     this.privateClientsOnly = false,
     this.api,
     this.portal,
+    this.dav,
   });
 
   final bool secure;
   final bool privateClientsOnly;
   final VaultApi? api;
   final PortalAssets? portal;
+  final WebDavHandler? dav;
+
+  /// Status lines dart:io has no name for.
+  static const Map<int, String> _reasonPhrases = <int, String>{
+    207: "Multi-Status",
+    423: "Locked",
+    424: "Failed Dependency",
+    507: "Insufficient Storage",
+  };
 
   /// Accepts connections from [server] until it is closed.
   Future<void> serve(HttpServer server) async {
@@ -60,8 +72,10 @@ final class RequestRouter {
           response.headers.set(HttpHeaders.allowHeader, "GET");
           _json(response, HttpStatus.methodNotAllowed, <String, Object?>{"error": "method_not_allowed"});
         }
+      } else if (dav != null && (path == "/dav" || path.startsWith("/dav/"))) {
+        await _handleDelegated(request, response, dav!.handle);
       } else if (api != null && (path == "/api/v1" || path.startsWith("/api/v1/") || path.startsWith("/d/"))) {
-        await _handleApi(request, response);
+        await _handleDelegated(request, response, api!.handle);
       } else if (portal?.lookup(path) case final PortalAsset asset) {
         if (request.method == "GET" || request.method == "HEAD") {
           await _write(
@@ -103,13 +117,17 @@ final class RequestRouter {
     }
   }
 
-  Future<void> _handleApi(HttpRequest request, HttpResponse response) async {
+  Future<void> _handleDelegated(
+    HttpRequest request,
+    HttpResponse response,
+    Future<ApiResponse> Function(ApiRequest) handler,
+  ) async {
     final Map<String, String> headers = <String, String>{};
     request.headers.forEach((String name, List<String> values) {
       if (values.isNotEmpty) headers[name.toLowerCase()] = values.first;
     });
 
-    final ApiResponse result = await api!.handle(
+    final ApiResponse result = await handler(
       ApiRequest(
         method: request.method,
         segments: request.uri.pathSegments.where((String s) => s.isNotEmpty).toList(),
@@ -127,6 +145,8 @@ final class RequestRouter {
 
   Future<void> _write(HttpRequest request, HttpResponse response, ApiResponse result) async {
     response.statusCode = result.status;
+    final String? phrase = _reasonPhrases[result.status];
+    if (phrase != null) response.reasonPhrase = phrase;
     result.headers.forEach(response.headers.set);
     if (result.closeConnection) response.persistentConnection = false;
 

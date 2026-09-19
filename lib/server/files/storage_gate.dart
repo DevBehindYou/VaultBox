@@ -123,8 +123,11 @@ final class StorageGate {
   }
 
   void require(Account account, Permission permission, StorageRoot root, StoragePath path) {
-    if (!_authorizer.allows(account, permission, root, path)) {
-      throw const StorageFault(FaultKind.forbidden);
-    }
+    if (!allows(account, permission, root, path)) throw const StorageFault(FaultKind.forbidden);
+  }
+
+  /// Like [require] but answers instead of throwing — for filtering listings.
+  bool allows(Account account, Permission permission, StorageRoot root, StoragePath path) {
+    return _authorizer.allows(account, permission, root, path);
   }
 }

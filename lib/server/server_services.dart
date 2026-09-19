@@ -13,6 +13,9 @@ import "../domain/security/session_manager.dart";
 import "api/file_endpoints.dart";
 import "api/vault_api.dart";
 import "files/storage_gate.dart";
+import "webdav/dav_auth.dart";
+import "webdav/dav_locks.dart";
+import "webdav/webdav_handler.dart";
 
 /// Everything the server's isolate needs, wired once. It reuses the app's own
 /// providers (same repositories, hasher and storage backends as the UI) in a
@@ -23,7 +26,7 @@ import "files/storage_gate.dart";
 /// server: stopping it (or an OS kill) logs everyone out, and no token
 /// material is written to disk.
 final class ServerServices {
-  ServerServices._(this.api, this._container, this._purgeTimer);
+  ServerServices._(this.api, this.dav, this._container, this._purgeTimer);
 
   factory ServerServices.create() {
     final ProviderContainer container = ProviderContainer();
@@ -62,6 +65,18 @@ final class ServerServices {
       ),
     );
 
+    final WebDavHandler dav = WebDavHandler(
+      gate: gate,
+      files: container.read(fileRepositoryProvider),
+      delete: container.read(deleteItemsProvider),
+      auth: DavAuthenticator(
+        login: login,
+        accounts: container.read(accountRepositoryProvider),
+        clock: clock,
+      ),
+      locks: DavLockManager(clock: clock),
+    );
+
     final Timer purge = Timer.periodic(
       const Duration(minutes: 5),
       (Timer _) {
@@ -69,10 +84,11 @@ final class ServerServices {
         tickets.purgeExpired();
       },
     );
-    return ServerServices._(api, container, purge);
+    return ServerServices._(api, dav, container, purge);
   }
 
   final VaultApi api;
+  final WebDavHandler dav;
   final ProviderContainer _container;
   final Timer _purgeTimer;
 

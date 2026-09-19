@@ -36,6 +36,31 @@ final class LoginBusy extends LoginOutcome {
   const LoginBusy();
 }
 
+/// The result of checking a username + password, before any session exists.
+sealed class CredentialCheck {
+  const CredentialCheck();
+}
+
+final class CredentialsValid extends CredentialCheck {
+  const CredentialsValid(this.account);
+
+  final Account account;
+}
+
+final class CredentialsRejected extends CredentialCheck {
+  const CredentialsRejected();
+}
+
+final class CredentialsThrottled extends CredentialCheck {
+  const CredentialsThrottled(this.retryAfter);
+
+  final Duration retryAfter;
+}
+
+final class CredentialsBusy extends CredentialCheck {
+  const CredentialsBusy();
+}
+
 /// Password login: throttle → look up → verify (constant work whether or not the
 /// account exists) → issue a session.
 ///
@@ -75,7 +100,31 @@ final class LoginService {
 
   Future<String> _decoy() => _dummyHash ??= _hasher.hash("vaultbox-decoy-password");
 
+  /// Checks a password login and, if it is right, opens a session.
   Future<LoginOutcome> login({
+    required String username,
+    required String password,
+    required String remoteAddress,
+  }) async {
+    final CredentialCheck check = await checkCredentials(
+      username: username,
+      password: password,
+      remoteAddress: remoteAddress,
+    );
+    return switch (check) {
+      CredentialsValid(:final Account account) => LoginSucceeded(
+        issued: await _sessions.issue(accountId: account.id),
+        account: account,
+      ),
+      CredentialsRejected() => const LoginRejected(),
+      CredentialsThrottled(:final Duration retryAfter) => LoginThrottled(retryAfter),
+      CredentialsBusy() => const LoginBusy(),
+    };
+  }
+
+  /// The password check on its own — throttled, constant-work, concurrency
+  /// limited — for callers that don't want a session (WebDAV's Basic auth).
+  Future<CredentialCheck> checkCredentials({
     required String username,
     required String password,
     required String remoteAddress,
@@ -87,7 +136,7 @@ final class LoginService {
       _perAccount.lockedFor(accountKey),
       _perAddress.lockedFor(remoteAddress),
     );
-    if (wait != null) return LoginThrottled(wait);
+    if (wait != null) return CredentialsThrottled(wait);
 
     // Can't possibly match anything stored: fail without spending a hash.
     if (name.isEmpty ||
@@ -95,10 +144,10 @@ final class LoginService {
         password.isEmpty ||
         password.length > PasswordPolicy.maxLength) {
       _recordFailure(accountKey, remoteAddress);
-      return const LoginRejected();
+      return const CredentialsRejected();
     }
 
-    if (_inFlight >= maxConcurrentChecks) return const LoginBusy();
+    if (_inFlight >= maxConcurrentChecks) return const CredentialsBusy();
     _inFlight++;
     try {
       final Account? account = await _accounts.findByUsername(name);
@@ -107,17 +156,14 @@ final class LoginService {
 
       if (account == null || !matches) {
         _recordFailure(accountKey, remoteAddress);
-        return const LoginRejected();
+        return const CredentialsRejected();
       }
 
       _perAccount.recordSuccess(accountKey);
       if (_hasher.needsRehash(account.passwordHash)) {
         await _accounts.updatePasswordHash(account.id, await _hasher.hash(password));
       }
-      return LoginSucceeded(
-        issued: await _sessions.issue(accountId: account.id),
-        account: account,
-      );
+      return CredentialsValid(account);
     } finally {
       _inFlight--;
     }

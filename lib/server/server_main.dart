@@ -46,7 +46,7 @@ Future<void> serverMain() async {
 
     if (config.httpsEnabled ?? true) {
       final TlsIdentityMessage identity = await runtime.getTlsIdentity();
-      https = HttpsListener(router: RequestRouter(api: api, portal: const PortalAssets()));
+      https = HttpsListener(router: RequestRouter(api: api, portal: const PortalAssets(), dav: services.dav));
       await https.start(
         certificatePem: identity.certificatePem!,
         privateKeyPem: identity.privateKeyPem!,
@@ -59,7 +59,13 @@ Future<void> serverMain() async {
     if (config.httpEnabled ?? false) {
       // Unencrypted, opt-in, and private-network clients only.
       http = HttpListener(
-        router: RequestRouter(secure: false, privateClientsOnly: true, api: api, portal: const PortalAssets()),
+        router: RequestRouter(
+          secure: false,
+          privateClientsOnly: true,
+          api: api,
+          portal: const PortalAssets(),
+          dav: services.dav,
+        ),
       );
       await http.start(allowNetworkAccess: network, port: config.httpPort ?? 8080);
       endpoints.add("http://$host:${http.port}/");

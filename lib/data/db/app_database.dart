@@ -109,5 +109,10 @@ final class AppDatabase extends _$AppDatabase {
         await m.createTable(accounts);
       }
     },
+    beforeOpen: (OpeningDetails details) async {
+      // The UI engine and the server's engine each open this file. Wait briefly
+      // for the other one's write instead of failing the request outright.
+      await customStatement("PRAGMA busy_timeout = 5000");
+    },
   );
 }

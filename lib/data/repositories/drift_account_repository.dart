@@ -21,6 +21,14 @@ final class DriftAccountRepository implements AccountRepository {
   }
 
   @override
+  Future<Account?> findById(String id) async {
+    final AccountRow? row = await (_db.select(
+      _db.accounts,
+    )..where((Accounts t) => t.id.equals(id))).getSingleOrNull();
+    return row == null ? null : _toEntity(row);
+  }
+
+  @override
   Future<Account?> createFirst(Account account) {
     return _db.transaction(() async {
       if ((await _db.select(_db.accounts).get()).isNotEmpty) return null;

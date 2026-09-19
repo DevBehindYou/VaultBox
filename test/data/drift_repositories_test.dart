@@ -224,6 +224,13 @@ void main() {
       expect(await repo.findByUsername("nobody"), isNull);
     });
 
+    test("findById returns the account, or null for an unknown id", () async {
+      await repo.createFirst(account("a1", "admin"));
+
+      expect((await repo.findById("a1"))?.username, "admin");
+      expect(await repo.findById("nope"), isNull);
+    });
+
     test("updatePasswordHash replaces only the hash", () async {
       await repo.createFirst(account("a1", "admin"));
       await repo.updatePasswordHash("a1", r"$argon2id$upgraded");

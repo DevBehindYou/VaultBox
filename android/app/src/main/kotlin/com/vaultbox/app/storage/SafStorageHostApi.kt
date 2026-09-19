@@ -340,6 +340,18 @@ class ActivityTreePickerLauncher : TreePickerLauncher {
     }
 }
 
+/**
+ * Pickers need an Activity. The server's background service has none, so in its
+ * engine they answer "cancelled" — the service only READS existing grants.
+ */
+object NoTreePicker : TreePickerLauncher {
+    override suspend fun launch(): Uri? = null
+}
+
+object NoDocumentPicker : DocumentPickerLauncher {
+    override suspend fun launch(): List<Uri> = emptyList()
+}
+
 /** Suspends until the user picks (or cancels) documents with `ACTION_OPEN_DOCUMENT`. */
 interface DocumentPickerLauncher {
     suspend fun launch(): List<Uri>

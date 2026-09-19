@@ -4,10 +4,12 @@ import "dart:ui";
 import "package:flutter/widgets.dart";
 
 import "../platform/pigeon/storage_api.g.dart";
+import "api/vault_api.dart";
 import "http_listener.dart";
 import "https_listener.dart";
 import "network_addresses.dart";
 import "request_router.dart";
+import "server_services.dart";
 
 /// Entrypoint of the service's HEADLESS Flutter engine
 /// (`ServerForegroundService` runs it by name: library
@@ -20,7 +22,8 @@ import "request_router.dart";
 /// is attached and updates the notification. The engine being destroyed
 /// (service stop) ends this isolate, which closes the listeners.
 ///
-/// STATUS: HTTPS verified on a device; the HTTP listener is new.
+/// STATUS: HTTPS health check verified on a device; HTTP listener and the
+/// login/roots/entries API are new and untested on a device.
 @pragma("vm:entry-point")
 Future<void> serverMain() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +32,7 @@ Future<void> serverMain() async {
   final ServerRuntimeApi runtime = ServerRuntimeApi();
   await runtime.reportState(ServerStateMessage(state: ServerRunStateMessage.starting));
 
+  ServerServices? services;
   HttpsListener? https;
   HttpListener? http;
   try {
@@ -36,10 +40,12 @@ Future<void> serverMain() async {
     final bool network = config.allowNetworkAccess ?? false;
     final String host = network ? (await lanAddress() ?? "0.0.0.0") : "127.0.0.1";
     final List<String> endpoints = <String>[];
+    services = ServerServices.create();
+    final VaultApi api = services.api;
 
     if (config.httpsEnabled ?? true) {
       final TlsIdentityMessage identity = await runtime.getTlsIdentity();
-      https = HttpsListener(router: const RequestRouter());
+      https = HttpsListener(router: RequestRouter(api: api));
       await https.start(
         certificatePem: identity.certificatePem!,
         privateKeyPem: identity.privateKeyPem!,
@@ -51,7 +57,7 @@ Future<void> serverMain() async {
 
     if (config.httpEnabled ?? false) {
       // Unencrypted, opt-in, and private-network clients only.
-      http = HttpListener(router: const RequestRouter(secure: false, privateClientsOnly: true));
+      http = HttpListener(router: RequestRouter(secure: false, privateClientsOnly: true, api: api));
       await http.start(allowNetworkAccess: network, port: config.httpPort ?? 8080);
       endpoints.add("http://$host:${http.port}/");
     }
@@ -67,6 +73,7 @@ Future<void> serverMain() async {
     // A partial start is a failed start: don't leave one listener up.
     await https?.stop();
     await http?.stop();
+    services?.dispose();
     await runtime.reportState(
       ServerStateMessage(
         state: ServerRunStateMessage.failed,

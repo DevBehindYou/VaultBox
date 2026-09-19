@@ -10,11 +10,15 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import com.vaultbox.app.MainActivity
+import com.vaultbox.app.pigeon.AndroidStorageApi
 import com.vaultbox.app.pigeon.ServerConfigMessage
 import com.vaultbox.app.pigeon.ServerRunStateMessage
 import com.vaultbox.app.pigeon.ServerRuntimeApi
 import com.vaultbox.app.pigeon.ServerStateMessage
 import com.vaultbox.app.pigeon.TlsIdentityMessage
+import com.vaultbox.app.storage.NoDocumentPicker
+import com.vaultbox.app.storage.NoTreePicker
+import com.vaultbox.app.storage.SafStorageHostApi
 import io.flutter.FlutterInjector
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.dart.DartExecutor
@@ -67,7 +71,14 @@ class ServerForegroundService : Service() {
             loader.ensureInitializationComplete(applicationContext, null)
 
             val newEngine = FlutterEngine(applicationContext)
-            ServerRuntimeApi.setUp(newEngine.dartExecutor.binaryMessenger, RuntimeHost())
+            val messenger = newEngine.dartExecutor.binaryMessenger
+            ServerRuntimeApi.setUp(messenger, RuntimeHost())
+            // The server lists files through the same SAF bridge as the UI. Granted
+            // trees are app-wide, so no Activity is needed (pickers are disabled).
+            AndroidStorageApi.setUp(
+                messenger,
+                SafStorageHostApi(applicationContext, NoTreePicker, NoDocumentPicker),
+            )
             newEngine.dartExecutor.executeDartEntrypoint(
                 DartExecutor.DartEntrypoint(
                     loader.findAppBundlePath(),

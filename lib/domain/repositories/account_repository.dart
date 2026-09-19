@@ -6,6 +6,8 @@ abstract interface class AccountRepository {
   /// [username] must already be normalized (`UsernamePolicy.normalize`).
   Future<Account?> findByUsername(String username);
 
+  Future<Account?> findById(String id);
+
   /// Creates [account] ONLY if no account exists yet — check and insert are one
   /// atomic step, so two racing "first admin" requests can't both win. Returns
   /// `null` (and stores nothing) if an account already exists.

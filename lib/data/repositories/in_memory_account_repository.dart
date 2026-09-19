@@ -21,6 +21,14 @@ final class InMemoryAccountRepository implements AccountRepository {
   }
 
   @override
+  Future<Account?> findById(String id) async {
+    for (final Account account in _accounts) {
+      if (account.id == id) return account;
+    }
+    return null;
+  }
+
+  @override
   Future<Account?> createFirst(Account account) async {
     if (_accounts.isNotEmpty) return null;
     _accounts.add(account);

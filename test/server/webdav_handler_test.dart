@@ -244,8 +244,10 @@ void main() {
 
     test("the hidden folder and traversal never resolve", () async {
       expect((await h.send("PROPFIND", "/dav/Phone/.vaultbox/", body: _propfindAll)).status, 404);
-      expect((await h.send("PROPFIND", "/dav/Phone/%2e%2e/", body: _propfindAll)).status, 400);
-      expect((await h.send("PROPFIND", "/dav/Phone/docs/..", body: _propfindAll)).status, 400);
+      // (Plain and %2e-encoded ".." are already resolved away by URI parsing; what can still
+      // arrive is a double-encoded one, which is a literal "%2e%2e" name and is refused.)
+      expect((await h.send("PROPFIND", "/dav/Phone/%252e%252e/", body: _propfindAll)).status, 400);
+      expect((await h.send("PROPFIND", "/dav/Phone/docs/%252E%252E", body: _propfindAll)).status, 400);
     });
 
     test("an oversized body is 413", () async {
@@ -304,7 +306,7 @@ void main() {
     test("missing files, the hidden folder and traversal", () async {
       expect((await h.send("GET", "/dav/Phone/nope.txt")).status, 404);
       expect((await h.send("GET", "/dav/Phone/.vaultbox/recycle/keep.txt")).status, 404);
-      expect((await h.send("GET", "/dav/Phone/%2e%2e/etc")).status, 400);
+      expect((await h.send("GET", "/dav/Phone/%252e%252e/etc")).status, 400);
     });
 
     test("a denied read is 403", () async {

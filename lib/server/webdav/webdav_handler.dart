@@ -764,11 +764,10 @@ final class _DavResource {
     this.size,
     this.modified,
     this.mimeType,
-    this.quotaAvailable,
-    this.quotaUsed,
     this.lockKey,
     this.lockRootHref,
-  });
+  }) : quotaAvailable = null,
+       quotaUsed = null;
 
   const _DavResource.collection({required this.displayName, this.quotaAvailable, this.quotaUsed})
     : isCollection = true,

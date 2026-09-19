@@ -148,6 +148,12 @@ void main() {
     expect(ok.status, 207);
   });
 
+  test("dot-dot in the URL is resolved away before it can leave /dav/", () async {
+    expect((await dav("GET", "/dav/Phone/%2e%2e/%2e%2e/api/v1/me")).status, 404);
+    expect((await dav("GET", "/dav/Phone/../../api/v1/me")).status, 404);
+    expect((await dav("PROPFIND", "/dav/Phone/docs/../../../secret")).status, 404);
+  });
+
   test("the API and the portal are separate: /dav is all this router serves here", () async {
     expect((await dav("GET", "/api/v1/me")).status, 404);
     expect((await dav("GET", "/")).status, 404);

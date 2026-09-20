@@ -312,6 +312,10 @@ void main() {
 
   group("a person's page", () {
     Future<void> openBob(WidgetTester tester) async {
+      // A tall screen: the page is a long list and its last button must be built.
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
       await tester.pumpWidget(app());
       await tester.pumpAndSettle();
       await openPeople(tester);

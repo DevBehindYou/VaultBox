@@ -92,6 +92,7 @@ void main() {
     }
 
     testWidgets("lists what exists: Diagnostics and About", (WidgetTester tester) async {
+      _tall(tester);
       await tester.pumpWidget(settings());
       await tester.pumpAndSettle();
 
@@ -102,6 +103,7 @@ void main() {
     });
 
     testWidgets("Diagnostics opens and runs the checks", (WidgetTester tester) async {
+      _tall(tester);
       await tester.pumpWidget(settings());
       await tester.pumpAndSettle();
 
@@ -115,6 +117,7 @@ void main() {
 
   group("Diagnostics", () {
     testWidgets("a healthy phone: every check OK and a reassuring banner", (WidgetTester tester) async {
+      _tall(tester);
       await tester.pumpWidget(diagnostics());
       await tester.pumpAndSettle();
 
@@ -128,6 +131,7 @@ void main() {
     });
 
     testWidgets("trouble is counted, described, and comes with what to do", (WidgetTester tester) async {
+      _tall(tester);
       accounts = InMemoryAccountRepository();
       roots = <StorageRoot>[];
       await tester.pumpWidget(diagnostics());
@@ -142,6 +146,7 @@ void main() {
     });
 
     testWidgets("a server that failed shows why", (WidgetTester tester) async {
+      _tall(tester);
       host = FakeServerHost(const ServerState(run: ServerRunState.failed, detail: "Address already in use"));
       await tester.pumpWidget(diagnostics());
       await tester.pumpAndSettle();
@@ -151,6 +156,7 @@ void main() {
     });
 
     testWidgets("Run the checks again picks up a fix", (WidgetTester tester) async {
+      _tall(tester);
       accounts = InMemoryAccountRepository();
       await tester.pumpWidget(diagnostics());
       await tester.pumpAndSettle();
@@ -164,6 +170,7 @@ void main() {
     });
 
     testWidgets("Copy support bundle puts a shareable summary on the clipboard", (WidgetTester tester) async {
+      _tall(tester);
       captureClipboard();
       host.savedConfig = const ServerConfig(allowNetworkAccess: true);
       await activity.addEvent(
@@ -192,4 +199,11 @@ void main() {
       expect(find.textContaining("Support bundle copied"), findsOneWidget);
     });
   });
+}
+
+/// A tall screen: the checks and the buttons below them all get built.
+void _tall(WidgetTester tester) {
+  tester.view.physicalSize = const Size(800, 2400);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
 }

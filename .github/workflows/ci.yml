@@ -127,7 +127,7 @@ jobs:
         id: test
         if: steps.pub_get.outcome == 'success'
         continue-on-error: true
-        run: flutter test --reporter expanded 2>&1 | tee ci-report/logs/test.log
+        run: flutter test --reporter failures-only 2>&1 | tee ci-report/logs/test.log
 
       - name: flutter build apk (debug)
         id: apk

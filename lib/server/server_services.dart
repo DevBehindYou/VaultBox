@@ -9,6 +9,7 @@ import "../domain/security/download_tickets.dart";
 import "../domain/security/login_service.dart";
 import "../domain/security/login_throttle.dart";
 import "../domain/security/session_manager.dart";
+import "activity/activity_log.dart";
 import "api/file_endpoints.dart";
 import "api/public_endpoints.dart";
 import "api/vault_api.dart";
@@ -50,11 +51,18 @@ final class ServerServices {
       authorizer: container.read(authorizerProvider),
     );
     final ShareUnlocks unlocks = ShareUnlocks(clock: clock);
+    // History for the Activity tab: written here, read by the app from the shared database.
+    final ActivityLog activity = ActivityLog(
+      repository: container.read(activityRepositoryProvider),
+      clock: clock,
+      ids: container.read(idGeneratorProvider),
+    )..serverStarted();
     final VaultApi api = VaultApi(
       login: login,
       sessions: sessions,
       accounts: container.read(accountRepositoryProvider),
       gate: gate,
+      activity: activity,
       public: PublicEndpoints(
         shares: container.read(shareRepositoryProvider),
         accounts: container.read(accountRepositoryProvider),
@@ -63,6 +71,7 @@ final class ServerServices {
         hasher: container.read(passwordHasherProvider),
         clock: clock,
         unlocks: unlocks,
+        activity: activity,
       ),
       files: FileEndpoints(
         gate: gate,
@@ -72,6 +81,7 @@ final class ServerServices {
         copy: container.read(copyItemsProvider),
         move: container.read(moveItemsProvider),
         delete: container.read(deleteItemsProvider),
+        activity: activity,
       ),
     );
 
@@ -85,6 +95,7 @@ final class ServerServices {
         clock: clock,
       ),
       locks: DavLockManager(clock: clock),
+      activity: activity,
     );
 
     final Timer purge = Timer.periodic(

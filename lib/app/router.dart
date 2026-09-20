@@ -8,6 +8,7 @@ import "../core/design/aurora_typography.dart";
 import "../core/design/aurora_widgets.dart";
 import "../domain/entities/account.dart";
 import "../domain/entities/storage_root.dart";
+import "../features/activity/presentation/activity_screen.dart";
 import "../features/files/presentation/files_screen.dart";
 import "../features/files/viewmodel/files_view_model.dart";
 import "../features/home/presentation/home_screen.dart";
@@ -15,9 +16,10 @@ import "../features/onboarding/presentation/admin_setup_screen.dart";
 import "../features/onboarding/presentation/onboarding_ready_screen.dart";
 import "../features/onboarding/presentation/onboarding_storage_screen.dart";
 import "../features/onboarding/presentation/onboarding_welcome_screen.dart";
-import "../features/placeholder_screen.dart";
 import "../features/share/presentation/add_person_screen.dart";
 import "../features/share/presentation/person_screen.dart";
+import "../features/settings/presentation/diagnostics_screen.dart";
+import "../features/settings/presentation/settings_screen.dart";
 import "../features/share/presentation/share_screen.dart";
 import "providers.dart";
 import "shell_scaffold.dart";
@@ -112,14 +114,7 @@ GoRouter buildRouter(Ref ref) {
             routes: <RouteBase>[
               GoRoute(
                 path: "/activity",
-                builder: (BuildContext context, GoRouterState state) =>
-                    const PlaceholderScreen(
-                      title: "Activity",
-                      phase: "Phase 6",
-                      description:
-                          "Transfers, connected clients and the event log land "
-                          "alongside the transfer engine and server.",
-                    ),
+                builder: (BuildContext context, GoRouterState state) => const ActivityScreen(),
               ),
             ],
           ),
@@ -127,14 +122,13 @@ GoRouter buildRouter(Ref ref) {
             routes: <RouteBase>[
               GoRoute(
                 path: "/settings",
-                builder: (BuildContext context, GoRouterState state) =>
-                    const PlaceholderScreen(
-                      title: "Settings",
-                      phase: "Phase 2+",
-                      description:
-                          "Storage, Server, Network, Security, Sharing, API, "
-                          "Appearance and Diagnostics groups.",
-                    ),
+                builder: (BuildContext context, GoRouterState state) => const SettingsScreen(),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: "diagnostics",
+                    builder: (BuildContext context, GoRouterState state) => const DiagnosticsScreen(),
+                  ),
+                ],
               ),
             ],
           ),

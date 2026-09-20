@@ -3,6 +3,7 @@ import "dart:io";
 import "../../core/errors/app_failure.dart";
 import "../../core/utils/mime_types.dart";
 import "../../domain/entities/account.dart";
+import "../../domain/entities/activity.dart";
 import "../../domain/entities/storage_root.dart";
 import "../../domain/models/file_ref.dart";
 import "../../domain/models/operation_batch.dart";
@@ -16,6 +17,7 @@ import "../../domain/usecases/move_items.dart";
 import "../../domain/value_objects/storage_entry.dart";
 import "../../domain/value_objects/storage_path.dart";
 import "../../domain/value_objects/write_mode.dart";
+import "../activity/activity_log.dart";
 import "../files/content_disposition.dart";
 import "../files/file_transfer.dart";
 import "../files/storage_gate.dart";
@@ -40,6 +42,7 @@ final class FileEndpoints {
     required CopyItems copy,
     required MoveItems move,
     required DeleteItemsToRecycleBin delete,
+    ActivityLog? activity,
   }) : _gate = gate,
        _files = files,
        _transfer = FileTransfer(files),
@@ -47,7 +50,8 @@ final class FileEndpoints {
        _tickets = tickets,
        _copy = copy,
        _move = move,
-       _delete = delete;
+       _delete = delete,
+       _activity = activity ?? ActivityLog.none();
 
   final StorageGate _gate;
   final FileRepository _files;
@@ -57,6 +61,7 @@ final class FileEndpoints {
   final CopyItems _copy;
   final MoveItems _move;
   final DeleteItemsToRecycleBin _delete;
+  final ActivityLog _activity;
 
   static const int defaultPageSize = 200;
   static const int maxPageSize = 500;
@@ -324,9 +329,23 @@ final class FileEndpoints {
     final bool inline = request.query["inline"] == "1" && MimeTypes.isSafeToDisplayInline(plan.mimeType);
     final DateTime? modified = plan.entry.modifiedAt;
 
+    // One row per download: a HEAD moves nothing, and a resumed range isn't a new file.
+    Stream<List<int>> body = request.method == "HEAD" ? Stream<List<int>>.empty() : plan.open();
+    if (request.method == "GET" && (plan.range == null || plan.range!.start == 0)) {
+      body = _activity
+          .transfer(
+            direction: TransferDirection.download,
+            via: AccessVia.web,
+            actor: account.username,
+            name: plan.entry.name,
+            totalBytes: plan.length,
+          )
+          .watchDownload(body);
+    }
+
     return ApiResponse(
       plan.status,
-      stream: request.method == "HEAD" ? Stream<List<int>>.empty() : plan.open(),
+      stream: body,
       contentType: plan.mimeType,
       contentLength: plan.length,
       headers: <String, String>{
@@ -370,11 +389,17 @@ final class FileEndpoints {
     final StoragePath path = _parse(root, request.query["path"], allowRoot: false);
     _require(caller, Permission.write, root, path);
 
-    final UploadResult result = await _transfer.receive(
-      root,
-      path,
+    final TransferMeter meter = _activity.transfer(
+      direction: TransferDirection.upload,
+      via: AccessVia.web,
+      actor: caller.account.username,
+      name: path.name,
+      totalBytes: request.contentLength >= 0 ? request.contentLength : null,
+    );
+    final UploadResult result = await meter.upload(
       request.bodyStream,
-      overwrite: request.query["overwrite"] == "1",
+      (Stream<List<int>> counted) =>
+          _transfer.receive(root, path, counted, overwrite: request.query["overwrite"] == "1"),
     );
     return ApiResponse(
       result.created ? HttpStatus.created : HttpStatus.ok,

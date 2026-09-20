@@ -3,6 +3,7 @@ import "dart:convert";
 import "package:vaultbox/app/providers.dart";
 import "package:vaultbox/data/repositories/file_repository_impl.dart";
 import "package:vaultbox/data/repositories/in_memory_account_repository.dart";
+import "package:vaultbox/data/repositories/in_memory_activity_repository.dart";
 import "package:vaultbox/data/repositories/in_memory_recycle_bin_repository.dart";
 import "package:vaultbox/data/repositories/in_memory_share_repository.dart";
 import "package:vaultbox/data/repositories/in_memory_storage_root_repository.dart";
@@ -22,6 +23,7 @@ import "package:vaultbox/domain/usecases/create_share.dart";
 import "package:vaultbox/domain/usecases/delete_items_to_recycle_bin.dart";
 import "package:vaultbox/domain/usecases/move_items.dart";
 import "package:vaultbox/domain/value_objects/storage_capabilities.dart";
+import "package:vaultbox/server/activity/activity_log.dart";
 import "package:vaultbox/server/api/api_types.dart";
 import "package:vaultbox/server/api/file_endpoints.dart";
 import "package:vaultbox/server/api/public_endpoints.dart";
@@ -46,6 +48,8 @@ final class ApiHarness {
     required this.unlocks,
     required this.tickets,
     required this.createShare,
+    required this.activityRepository,
+    required this.activity,
     required this.api,
   });
 
@@ -72,6 +76,8 @@ final class ApiHarness {
     final InMemoryShareRepository shareRepository = InMemoryShareRepository();
     final ShareUnlocks unlocks = ShareUnlocks(clock: clock);
     final DownloadTicketService tickets = DownloadTicketService(clock: clock);
+    final InMemoryActivityRepository activityRepository = InMemoryActivityRepository();
+    final ActivityLog activity = ActivityLog(repository: activityRepository, clock: clock, ids: UuidIdGenerator());
 
     final VaultApi api = VaultApi(
       login: LoginService(
@@ -84,6 +90,7 @@ final class ApiHarness {
       sessions: sessions,
       accounts: accounts,
       gate: gate,
+      activity: activity,
       public: PublicEndpoints(
         shares: shareRepository,
         accounts: accounts,
@@ -92,6 +99,7 @@ final class ApiHarness {
         hasher: hasher,
         clock: clock,
         unlocks: unlocks,
+        activity: activity,
       ),
       files: FileEndpoints(
         gate: gate,
@@ -101,6 +109,7 @@ final class ApiHarness {
         copy: CopyItems(files),
         move: MoveItems(files),
         delete: DeleteItemsToRecycleBin(files, InMemoryRecycleBinRepository(), clock, UuidIdGenerator()),
+        activity: activity,
       ),
     );
     return ApiHarness._(
@@ -122,6 +131,8 @@ final class ApiHarness {
         clock: clock,
         authorizer: authorizer,
       ),
+      activityRepository: activityRepository,
+      activity: activity,
       api: api,
     );
   }
@@ -139,6 +150,8 @@ final class ApiHarness {
   final ShareUnlocks unlocks;
   final DownloadTicketService tickets;
   final CreateShare createShare;
+  final InMemoryActivityRepository activityRepository;
+  final ActivityLog activity;
   final VaultApi api;
 
   static StorageRoot root({

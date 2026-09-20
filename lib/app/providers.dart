@@ -4,6 +4,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../data/db/app_database.dart";
 import "../data/repositories/drift_account_repository.dart";
+import "../data/repositories/drift_activity_repository.dart";
 import "../data/repositories/drift_recycle_bin_repository.dart";
 import "../data/repositories/drift_share_repository.dart";
 import "../data/repositories/drift_storage_root_repository.dart";
@@ -14,12 +15,14 @@ import "../data/services/memory_storage_backend.dart";
 import "../data/services/saf_storage_backend.dart";
 import "../data/services/system_clock.dart";
 import "../domain/entities/account.dart";
+import "../domain/entities/activity.dart";
 import "../domain/entities/recycle_item.dart";
 import "../domain/entities/server_config.dart";
 import "../domain/entities/server_state.dart";
 import "../domain/entities/share.dart";
 import "../domain/entities/storage_root.dart";
 import "../domain/repositories/account_repository.dart";
+import "../domain/repositories/activity_repository.dart";
 import "../domain/repositories/clock.dart";
 import "../domain/repositories/file_repository.dart";
 import "../domain/repositories/id_generator.dart";
@@ -39,6 +42,7 @@ import "../domain/usecases/manage_accounts.dart";
 import "../domain/usecases/move_items.dart";
 import "../domain/usecases/permanently_delete_recycled.dart";
 import "../domain/usecases/restore_items.dart";
+import "../domain/usecases/run_diagnostics.dart";
 import "../platform/adapters/android_storage_host.dart";
 import "../platform/adapters/pigeon_android_storage_host.dart";
 import "../platform/adapters/pigeon_server_host.dart";
@@ -310,3 +314,63 @@ final FutureProvider<Account?> ownerAccountProvider = FutureProvider<Account?>((
   }
   return null;
 });
+
+// --- Activity and diagnostics (Phase 6) ---
+
+final Provider<ActivityRepository> activityRepositoryProvider =
+    Provider<ActivityRepository>((Ref ref) => DriftActivityRepository(ref.watch(appDatabaseProvider)));
+
+final Provider<RunDiagnostics> runDiagnosticsProvider = Provider<RunDiagnostics>((Ref ref) {
+  return RunDiagnostics(
+    roots: ref.watch(storageRootRepositoryProvider),
+    files: ref.watch(fileRepositoryProvider),
+    accounts: ref.watch(accountRepositoryProvider),
+    shares: ref.watch(shareRepositoryProvider),
+    server: ref.watch(serverHostProvider),
+    clock: ref.watch(clockProvider),
+  );
+});
+
+/// How often the Activity lists re-read. The server writes them from another
+/// engine, so there is nothing to subscribe to; polling stops with the screen.
+const Duration activityPollInterval = Duration(seconds: 3);
+
+/// Emits [read] now and then every [every], until the provider is dropped.
+Stream<T> _polled<T>(Ref ref, Future<T> Function() read, {Duration every = activityPollInterval}) {
+  final StreamController<T> controller = StreamController<T>();
+  Future<void> tick() async {
+    try {
+      final T value = await read();
+      if (!controller.isClosed) controller.add(value);
+    } on Object catch (error, trace) {
+      if (!controller.isClosed) controller.addError(error, trace);
+    }
+  }
+
+  unawaited(tick());
+  final Timer timer = Timer.periodic(every, (Timer _) => unawaited(tick()));
+  ref.onDispose(() {
+    timer.cancel();
+    unawaited(controller.close());
+  });
+  return controller.stream;
+}
+
+final StreamProvider<List<ActivityEvent>> activityEventsProvider = StreamProvider.autoDispose<List<ActivityEvent>>(
+  (Ref ref) => _polled(ref, () => ref.read(activityRepositoryProvider).recentEvents()),
+);
+
+final StreamProvider<List<TransferRecord>> activityTransfersProvider =
+    StreamProvider.autoDispose<List<TransferRecord>>(
+      (Ref ref) => _polled(ref, () => ref.read(activityRepositoryProvider).recentTransfers()),
+    );
+
+/// Clients seen in the last day.
+final StreamProvider<List<ClientRecord>> activityClientsProvider = StreamProvider.autoDispose<List<ClientRecord>>(
+  (Ref ref) => _polled(
+    ref,
+    () => ref.read(activityRepositoryProvider).recentClients(
+      since: ref.read(clockProvider).now().subtract(const Duration(days: 1)),
+    ),
+  ),
+);

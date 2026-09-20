@@ -126,7 +126,79 @@ class Shares extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
 
-@DriftDatabase(tables: <Type>[StorageRoots, RecycleItems, Accounts, AccessRules, Shares])
+/// Schema v5. What happened on the server, one readable sentence each.
+@DataClassName("ActivityEventRow")
+class ActivityEvents extends Table {
+  TextColumn get id => text()();
+  DateTimeColumn get occurredAt => dateTime()();
+
+  /// [ActivityKind.name].
+  TextColumn get kind => text()();
+
+  /// [ActivitySeverity.name].
+  TextColumn get severity => text()();
+  TextColumn get message => text()();
+  TextColumn get actor => text().nullable()();
+  TextColumn get address => text().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
+/// Schema v5. Files moving in or out ([TransferRecord]).
+@DataClassName("TransferRow")
+class TransferLog extends Table {
+  TextColumn get id => text()();
+
+  /// [TransferDirection.name].
+  TextColumn get direction => text()();
+
+  /// [AccessVia.name].
+  TextColumn get via => text()();
+  TextColumn get actor => text()();
+  TextColumn get name => text()();
+  DateTimeColumn get startedAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  DateTimeColumn get finishedAt => dateTime().nullable()();
+  IntColumn get bytes => integer().withDefault(const Constant<int>(0))();
+  IntColumn get totalBytes => integer().nullable()();
+
+  /// [TransferState.name].
+  TextColumn get state => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
+/// Schema v5. Who has been talking to the server ([ClientRecord]).
+@DataClassName("ClientRow")
+class ClientSightings extends Table {
+  /// `"$actor|$address"`.
+  TextColumn get clientKey => text()();
+  TextColumn get actor => text()();
+  TextColumn get address => text()();
+
+  /// [AccessVia.name].
+  TextColumn get via => text()();
+  DateTimeColumn get firstSeenAt => dateTime()();
+  DateTimeColumn get lastSeenAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{clientKey};
+}
+
+@DriftDatabase(
+  tables: <Type>[
+    StorageRoots,
+    RecycleItems,
+    Accounts,
+    AccessRules,
+    Shares,
+    ActivityEvents,
+    TransferLog,
+    ClientSightings,
+  ],
+)
 final class AppDatabase extends _$AppDatabase {
   /// Production use: `AppDatabase()` opens (or creates) the on-device
   /// database. `drift_flutter`'s `driftDatabase()` stores `vaultbox.sqlite`
@@ -142,7 +214,7 @@ final class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: "vaultbox"));
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -166,6 +238,12 @@ final class AppDatabase extends _$AppDatabase {
         await m.addColumn(accounts, accounts.credentialVersion);
         await m.createTable(accessRules);
         await m.createTable(shares);
+      }
+      if (from < 5) {
+        // v5: activity (events, transfers, clients) for the Activity tab.
+        await m.createTable(activityEvents);
+        await m.createTable(transferLog);
+        await m.createTable(clientSightings);
       }
     },
     beforeOpen: (OpeningDetails details) async {

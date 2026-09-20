@@ -11,7 +11,6 @@ import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
 import "../../../domain/entities/account.dart";
 import "../../../domain/entities/share.dart";
-import "../../../domain/repositories/clock.dart";
 import "../share_links.dart";
 
 /// The Share tab: links made for people without an account, and the people who

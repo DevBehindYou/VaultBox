@@ -8,6 +8,7 @@ import "package:crypto/crypto.dart";
 import "../../core/errors/app_failure.dart";
 import "../../core/utils/mime_types.dart";
 import "../../domain/entities/account.dart";
+import "../../domain/entities/activity.dart";
 import "../../domain/entities/share.dart";
 import "../../domain/entities/storage_root.dart";
 import "../../domain/models/file_ref.dart";
@@ -21,6 +22,7 @@ import "../../domain/security/permission.dart";
 import "../../domain/security/share_tokens.dart";
 import "../../domain/value_objects/storage_entry.dart";
 import "../../domain/value_objects/storage_path.dart";
+import "../activity/activity_log.dart";
 import "../files/content_disposition.dart";
 import "../files/file_transfer.dart";
 import "../files/storage_gate.dart";
@@ -104,7 +106,9 @@ final class PublicEndpoints {
     required ShareUnlocks unlocks,
     LoginThrottle? unlockThrottle,
     LoginThrottle? probeThrottle,
-  }) : _shares = shares,
+    ActivityLog? activity,
+  }) : _activity = activity ?? ActivityLog.none(),
+       _shares = shares,
        _accounts = accounts,
        _gate = gate,
        _files = files,
@@ -125,6 +129,7 @@ final class PublicEndpoints {
   final PasswordHasher _hasher;
   final Clock _clock;
   final ShareUnlocks _unlocks;
+  final ActivityLog _activity;
 
   /// Wrong passwords, keyed by link + address.
   final LoginThrottle _unlockThrottle;
@@ -319,6 +324,14 @@ final class PublicEndpoints {
     }
     if (!ok) {
       _unlockThrottle.recordFailure(key);
+      _activity.event(
+        ActivityKind.linkUsed,
+        "Someone typed the wrong password for a link.",
+        severity: ActivitySeverity.warning,
+        address: request.remoteAddress,
+        throttleKey: "linkpw|$key",
+        throttleFor: const Duration(seconds: 30),
+      );
       return ApiResponse.error(HttpStatus.unauthorized, "invalid_password");
     }
     _unlockThrottle.recordSuccess(key);
@@ -443,9 +456,27 @@ final class PublicEndpoints {
 
     final bool inline = request.query["inline"] == "1" && MimeTypes.isSafeToDisplayInline(plan.mimeType);
     final DateTime? modified = plan.entry.modifiedAt;
+
+    Stream<List<int>> stream = request.method == "HEAD" ? Stream<List<int>>.empty() : plan.open();
+    if (request.method == "GET" && fromStart) {
+      _activity.event(
+        ActivityKind.linkUsed,
+        "Someone downloaded “${plan.entry.name}” with a link.",
+        address: request.remoteAddress,
+      );
+      stream = _activity
+          .transfer(
+            direction: TransferDirection.download,
+            via: AccessVia.link,
+            actor: "Link",
+            name: plan.entry.name,
+            totalBytes: plan.length,
+          )
+          .watchDownload(stream);
+    }
     return ApiResponse(
       plan.status,
-      stream: request.method == "HEAD" ? Stream<List<int>>.empty() : plan.open(),
+      stream: stream,
       contentType: plan.mimeType,
       contentLength: plan.length,
       headers: <String, String>{
@@ -494,9 +525,9 @@ final class PublicEndpoints {
 
     bool tooLarge = false;
     int received = 0;
-    final Stream<List<int>> body = limit == null
-        ? request.bodyStream
-        : request.bodyStream.transform(
+    Stream<List<int>> limited(Stream<List<int>> source) => limit == null
+        ? source
+        : source.transform(
             StreamTransformer<List<int>, List<int>>.fromHandlers(
               handleData: (List<int> chunk, EventSink<List<int>> sink) {
                 if (tooLarge) return; // already refused: the rest is unwanted
@@ -511,8 +542,23 @@ final class PublicEndpoints {
             ),
           );
 
+    final TransferMeter meter = _activity.transfer(
+      direction: TransferDirection.upload,
+      via: AccessVia.link,
+      actor: "Link",
+      name: finalName,
+      totalBytes: request.contentLength >= 0 ? request.contentLength : null,
+    );
     try {
-      final UploadResult result = await _transfer.receive(open.root, target, body, overwrite: false);
+      final UploadResult result = await meter.upload(
+        request.bodyStream,
+        (Stream<List<int>> counted) => _transfer.receive(open.root, target, limited(counted), overwrite: false),
+      );
+      _activity.event(
+        ActivityKind.linkUsed,
+        "Someone sent “$finalName” through an upload link.",
+        address: request.remoteAddress,
+      );
       return ApiResponse(HttpStatus.created, json: <String, Object?>{"name": finalName, "size": result.size});
     } on StorageFault {
       if (tooLarge) return ApiResponse.error(HttpStatus.requestEntityTooLarge, "file_too_large", closeConnection: true);

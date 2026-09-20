@@ -1,6 +1,7 @@
 import "dart:io";
 
 import "../../domain/entities/account.dart";
+import "../../domain/entities/activity.dart";
 import "../../domain/entities/storage_root.dart";
 import "../../domain/repositories/account_repository.dart";
 import "../../domain/security/authorizer.dart";
@@ -8,6 +9,7 @@ import "../../domain/security/login_service.dart";
 import "../../domain/security/session.dart";
 import "../../domain/security/session_manager.dart";
 import "../../domain/value_objects/storage_path.dart";
+import "../activity/activity_log.dart";
 import "../files/storage_gate.dart";
 import "api_json.dart";
 import "api_types.dart";
@@ -38,12 +40,14 @@ final class VaultApi {
     required StorageGate gate,
     required FileEndpoints files,
     PublicEndpoints? public,
+    ActivityLog? activity,
   }) : _login = login,
        _sessions = sessions,
        _accounts = accounts,
        _gate = gate,
        _files = files,
-       _public = public;
+       _public = public,
+       _activity = activity ?? ActivityLog.none();
 
   final LoginService _login;
   final SessionManager _sessions;
@@ -51,6 +55,7 @@ final class VaultApi {
   final StorageGate _gate;
   final FileEndpoints _files;
   final PublicEndpoints? _public;
+  final ActivityLog _activity;
 
   Future<ApiResponse> handle(ApiRequest request) async {
     try {
@@ -140,6 +145,37 @@ final class VaultApi {
       password: password,
       remoteAddress: request.remoteAddress,
     );
+    switch (outcome) {
+      case LoginSucceeded(:final Account account):
+        _activity.event(
+          ActivityKind.signedIn,
+          "${account.username} signed in.",
+          actor: account.username,
+          address: request.remoteAddress,
+        );
+        _activity.seen(actor: account.username, address: request.remoteAddress, via: AccessVia.web);
+      case LoginRejected():
+        // The name that was typed is deliberately not recorded: it may be a password.
+        _activity.event(
+          ActivityKind.signInRefused,
+          "A sign-in was refused: wrong name or password.",
+          severity: ActivitySeverity.warning,
+          address: request.remoteAddress,
+          throttleKey: "refused|${request.remoteAddress}",
+          throttleFor: const Duration(seconds: 10),
+        );
+      case LoginThrottled():
+        _activity.event(
+          ActivityKind.signInRefused,
+          "Too many failed sign-ins: further attempts from this address are being delayed.",
+          severity: ActivitySeverity.warning,
+          address: request.remoteAddress,
+          throttleKey: "locked|${request.remoteAddress}",
+          throttleFor: const Duration(minutes: 5),
+        );
+      case LoginBusy():
+        break;
+    }
     return switch (outcome) {
       LoginSucceeded(:final IssuedSession issued, :final Account account) => ApiResponse(
         HttpStatus.ok,
@@ -168,6 +204,12 @@ final class VaultApi {
   Future<ApiResponse> _handleLogout(ApiRequest request, ApiCaller caller) async {
     await _sessions.revoke(request.bearerToken!);
     _files.revokeTickets(caller.session.tokenHash);
+    _activity.event(
+      ActivityKind.signedOut,
+      "${caller.account.username} signed out.",
+      actor: caller.account.username,
+      address: request.remoteAddress,
+    );
     return const ApiResponse(HttpStatus.noContent);
   }
 
@@ -209,6 +251,7 @@ final class VaultApi {
       await _sessions.revoke(token);
       return null;
     }
+    _activity.seen(actor: account.username, address: request.remoteAddress, via: AccessVia.web);
     return ApiCaller(session: session, account: account);
   }
 

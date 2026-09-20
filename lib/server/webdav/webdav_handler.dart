@@ -4,6 +4,7 @@ import "dart:io";
 import "../../core/errors/app_failure.dart";
 import "../../core/utils/mime_types.dart";
 import "../../domain/entities/account.dart";
+import "../../domain/entities/activity.dart";
 import "../../domain/entities/storage_root.dart";
 import "../../domain/models/file_ref.dart";
 import "../../domain/models/operation_batch.dart";
@@ -13,6 +14,7 @@ import "../../domain/usecases/delete_items_to_recycle_bin.dart";
 import "../../domain/value_objects/storage_entry.dart";
 import "../../domain/value_objects/storage_path.dart";
 import "../../domain/value_objects/write_mode.dart";
+import "../activity/activity_log.dart";
 import "../api/api_types.dart";
 import "../files/file_transfer.dart";
 import "../files/storage_gate.dart";
@@ -42,7 +44,9 @@ final class WebDavHandler {
     required DeleteItemsToRecycleBin delete,
     required DavAuthenticator auth,
     required DavLockManager locks,
-  }) : _gate = gate,
+    ActivityLog? activity,
+  }) : _activity = activity ?? ActivityLog.none(),
+       _gate = gate,
        _files = files,
        _transfer = FileTransfer(files),
        _delete = delete,
@@ -55,6 +59,7 @@ final class WebDavHandler {
   final DeleteItemsToRecycleBin _delete;
   final DavAuthenticator _auth;
   final DavLockManager _locks;
+  final ActivityLog _activity;
 
   /// First URL segment that belongs to WebDAV.
   static const String prefix = "dav";
@@ -68,14 +73,39 @@ final class WebDavHandler {
 
   static const String _xmlType = "application/xml; charset=utf-8";
 
+  Future<ApiResponse> _allowed(ApiRequest request, Account account) {
+    _activity.seen(actor: account.username, address: request.remoteAddress, via: AccessVia.webdav);
+    return _dispatch(request, account);
+  }
+
+  /// A request that arrived with no (or wrong) credentials. Only one that
+  /// actually offered some is worth noting: a client's first, header-less probe
+  /// is just how Basic authentication starts.
+  ApiResponse _refused(ApiRequest request, ApiResponse response) {
+    if (request.header("authorization") != null) {
+      _activity.event(
+        ActivityKind.signInRefused,
+        "A WebDAV sign-in was refused: wrong name or password.",
+        severity: ActivitySeverity.warning,
+        address: request.remoteAddress,
+        throttleKey: "davrefused|${request.remoteAddress}",
+        throttleFor: const Duration(seconds: 10),
+      );
+    }
+    return response;
+  }
+
   Future<ApiResponse> handle(ApiRequest request) async {
     try {
       final DavAuthResult who = await _auth.authenticate(request);
       return switch (who) {
-        DavAllowed(:final Account account) => await _dispatch(request, account),
-        DavUnauthorized() => const ApiResponse(
+        DavAllowed(:final Account account) => await _allowed(request, account),
+        DavUnauthorized() => _refused(
+          request,
+          const ApiResponse(
           HttpStatus.unauthorized,
           headers: <String, String>{HttpHeaders.wwwAuthenticateHeader: 'Basic realm="VaultBox", charset="UTF-8"'},
+          ),
         ),
         DavThrottled(:final Duration retryAfter) => ApiResponse(
           HttpStatus.tooManyRequests,
@@ -494,9 +524,21 @@ final class WebDavHandler {
     }
 
     final DateTime? modified = plan.entry.modifiedAt;
+    Stream<List<int>> body = request.method == "HEAD" ? Stream<List<int>>.empty() : plan.open();
+    if (request.method == "GET" && (plan.range == null || plan.range!.start == 0)) {
+      body = _activity
+          .transfer(
+            direction: TransferDirection.download,
+            via: AccessVia.webdav,
+            actor: account.username,
+            name: plan.entry.name,
+            totalBytes: plan.length,
+          )
+          .watchDownload(body);
+    }
     return ApiResponse(
       plan.status,
-      stream: request.method == "HEAD" ? Stream<List<int>>.empty() : plan.open(),
+      stream: body,
       contentType: plan.mimeType,
       contentLength: plan.length,
       headers: <String, String>{
@@ -535,7 +577,17 @@ final class WebDavHandler {
       return const ApiResponse(HttpStatus.preconditionFailed);
     }
 
-    final UploadResult result = await _transfer.receive(root, path, request.bodyStream, overwrite: true);
+    final TransferMeter meter = _activity.transfer(
+      direction: TransferDirection.upload,
+      via: AccessVia.webdav,
+      actor: account.username,
+      name: path.name,
+      totalBytes: request.contentLength >= 0 ? request.contentLength : null,
+    );
+    final UploadResult result = await meter.upload(
+      request.bodyStream,
+      (Stream<List<int>> counted) => _transfer.receive(root, path, counted, overwrite: true),
+    );
     return ApiResponse(result.created ? HttpStatus.created : HttpStatus.noContent);
   }
 

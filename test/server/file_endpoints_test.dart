@@ -448,6 +448,7 @@ void main() {
 
       expect(authorizer.asked, <(Permission, String)>[
         (Permission.read, "/docs"),
+        (Permission.read, "/docs/a.txt"), // each listed entry is checked, so a member sees only what they may
         (Permission.read, "/readme.txt"),
       ]);
     });

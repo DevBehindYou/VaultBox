@@ -262,7 +262,13 @@ class ShareCreatedDialog extends ConsumerWidget {
                   color: Colors.white,
                   child: Padding(
                     padding: const EdgeInsets.all(AuroraSpacing.sm),
-                    child: QrImageView(data: text, size: 180, backgroundColor: Colors.white),
+                    // A fixed box: the dialog measures its content's intrinsic size, which
+                    // QrImageView (a LayoutBuilder) can't answer.
+                    child: SizedBox(
+                      width: 180,
+                      height: 180,
+                      child: QrImageView(data: text, size: 180, backgroundColor: Colors.white),
+                    ),
                   ),
                 ),
               ),

@@ -68,7 +68,7 @@ void main() {
     testWidgets("is the first section, and says what will appear when empty", (WidgetTester tester) async {
       await show(tester);
 
-      expect(find.text("Activity"), findsOneWidget);
+      expect(find.text("Transfers"), findsOneWidget);
       expect(find.textContaining("Nothing has moved yet"), findsOneWidget);
     });
 

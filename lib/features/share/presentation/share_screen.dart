@@ -6,6 +6,8 @@ import "package:go_router/go_router.dart";
 
 import "../../../app/providers.dart";
 import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_components.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
@@ -30,14 +32,12 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AuroraSpacing.marginCompact),
-          child: Column(
+      backgroundColor: Colors.transparent,
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(AuroraSpacing.marginCompact, AuroraSpacing.sm, AuroraSpacing.marginCompact, 0),
+        child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text("Share", style: AuroraTypography.headlineLg),
-              const SizedBox(height: AuroraSpacing.md),
               SegmentedButton<_Section>(
                 segments: const <ButtonSegment<_Section>>[
                   ButtonSegment<_Section>(value: _Section.links, label: Text("Links"), icon: Icon(Icons.link)),
@@ -50,7 +50,6 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
               Expanded(child: _section == _Section.links ? const _LinksView() : const _PeopleView()),
             ],
           ),
-        ),
       ),
     );
   }
@@ -71,11 +70,12 @@ class _LinksView extends ConsumerWidget {
       error: (Object error, StackTrace trace) => const Text("Couldn't load your links."),
       data: (List<Share> list) {
         if (list.isEmpty) {
-          return const AuroraCard(
-            child: Text(
-              "No links yet. In Files, select a file or folder and tap Share to make a "
-              "link anyone can open — or Ask for files to let people send you some.",
-            ),
+          return const AuroraEmptyState(
+            icon: Icons.link,
+            title: "No links yet",
+            message:
+                "In Files, select a file or folder and tap Share to make a link anyone can open — "
+                "or Ask for files to let people send you some.",
           );
         }
         return ListView.separated(
@@ -150,7 +150,7 @@ class _ShareCard extends ConsumerWidget {
                 const SizedBox(height: AuroraSpacing.xs),
                 Text(
                   "${describeExpiry(share.expiresAt, now)} · $uses",
-                  style: AuroraTypography.bodySm.copyWith(color: AuroraColors.inkSecondary),
+                  style: AuroraTypography.bodySm.copyWith(color: context.inkSecondary),
                 ),
               ],
             ),
@@ -182,8 +182,10 @@ class _PeopleView extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           if (list.isEmpty)
-            const AuroraCard(
-              child: Text("No accounts yet. Create the admin account on the Home tab first."),
+            const AuroraEmptyState(
+              icon: Icons.group_outlined,
+              title: "No accounts yet",
+              message: "Create the admin account on the Home tab first.",
             )
           else
             Expanded(

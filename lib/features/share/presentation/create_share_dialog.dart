@@ -7,6 +7,7 @@ import "package:qr_flutter/qr_flutter.dart";
 
 import "../../../app/providers.dart";
 import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/errors/app_failure.dart";
@@ -149,11 +150,11 @@ class _CreateShareDialogState extends ConsumerState<_CreateShareDialog> {
                         "They can't see what is already there."
                   : "Anyone with the link can download “${widget.itemName}”, "
                         "without an account.",
-              style: AuroraTypography.bodyMd.copyWith(color: AuroraColors.inkSecondary),
+              style: AuroraTypography.bodyMd.copyWith(color: context.inkSecondary),
             ),
             const SizedBox(height: AuroraSpacing.md),
             if (_error != null) ...<Widget>[
-              Text(_error!, style: AuroraTypography.bodyMd.copyWith(color: AuroraColors.statusDanger)),
+              Text(_error!, style: AuroraTypography.bodyMd.copyWith(color: context.statusDanger)),
               const SizedBox(height: AuroraSpacing.sm),
             ],
             DropdownButtonFormField<int>(
@@ -244,7 +245,7 @@ class ShareCreatedDialog extends ConsumerWidget {
             Text(
               "Copy it now — for safety VaultBox keeps only a fingerprint of the link, "
               "so it can't be shown again.",
-              style: AuroraTypography.bodyMd.copyWith(color: AuroraColors.inkSecondary),
+              style: AuroraTypography.bodyMd.copyWith(color: context.inkSecondary),
             ),
             const SizedBox(height: AuroraSpacing.md),
             SelectableText(text, style: AuroraTypography.tabularFigures(AuroraTypography.labelMonoMd)),
@@ -253,7 +254,7 @@ class ShareCreatedDialog extends ConsumerWidget {
               Text(
                 "The server isn't running, so there's no address yet. Start it on the Home "
                 "tab and put its address in front of the part above.",
-                style: AuroraTypography.bodySm.copyWith(color: AuroraColors.statusWarning),
+                style: AuroraTypography.bodySm.copyWith(color: context.statusWarning),
               ),
             ] else ...<Widget>[
               const SizedBox(height: AuroraSpacing.md),
@@ -277,14 +278,14 @@ class ShareCreatedDialog extends ConsumerWidget {
               const SizedBox(height: AuroraSpacing.sm),
               Text(
                 "This address is not encrypted — use it only on a network you trust.",
-                style: AuroraTypography.bodySm.copyWith(color: AuroraColors.statusWarning),
+                style: AuroraTypography.bodySm.copyWith(color: context.statusWarning),
               ),
             ],
             if (created.share.hasPassword) ...<Widget>[
               const SizedBox(height: AuroraSpacing.sm),
               Text(
                 "It asks for the password you chose. Send that separately.",
-                style: AuroraTypography.bodySm.copyWith(color: AuroraColors.inkSecondary),
+                style: AuroraTypography.bodySm.copyWith(color: context.inkSecondary),
               ),
             ],
           ],

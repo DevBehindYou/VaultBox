@@ -5,6 +5,8 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../../app/providers.dart";
 import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_components.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
@@ -52,31 +54,31 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AuroraSpacing.marginCompact),
-          child: Column(
+      backgroundColor: Colors.transparent,
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(AuroraSpacing.marginCompact, AuroraSpacing.sm, AuroraSpacing.marginCompact, 0),
+        child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  Expanded(child: Text("Activity", style: AuroraTypography.headlineLg)),
+                  Expanded(
+                    child: SegmentedButton<_Section>(
+                      segments: const <ButtonSegment<_Section>>[
+                        ButtonSegment<_Section>(value: _Section.transfers, label: Text("Transfers")),
+                        ButtonSegment<_Section>(value: _Section.clients, label: Text("Clients")),
+                        ButtonSegment<_Section>(value: _Section.events, label: Text("Events")),
+                      ],
+                      selected: <_Section>{_section},
+                      onSelectionChanged: (Set<_Section> chosen) => setState(() => _section = chosen.first),
+                    ),
+                  ),
                   IconButton(
                     tooltip: "Clear the history",
                     icon: const Icon(Icons.delete_sweep_outlined),
                     onPressed: () => unawaited(_clear()),
                   ),
                 ],
-              ),
-              const SizedBox(height: AuroraSpacing.md),
-              SegmentedButton<_Section>(
-                segments: const <ButtonSegment<_Section>>[
-                  ButtonSegment<_Section>(value: _Section.transfers, label: Text("Transfers")),
-                  ButtonSegment<_Section>(value: _Section.clients, label: Text("Clients")),
-                  ButtonSegment<_Section>(value: _Section.events, label: Text("Events")),
-                ],
-                selected: <_Section>{_section},
-                onSelectionChanged: (Set<_Section> chosen) => setState(() => _section = chosen.first),
               ),
               const SizedBox(height: AuroraSpacing.md),
               Expanded(
@@ -88,7 +90,6 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
               ),
             ],
           ),
-        ),
       ),
     );
   }
@@ -96,10 +97,18 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
 
 /// Loading / error / empty / list, shared by the three lists.
 class _ActivityList<T> extends StatelessWidget {
-  const _ActivityList({required this.value, required this.empty, required this.itemBuilder});
+  const _ActivityList({
+    required this.value,
+    required this.emptyIcon,
+    required this.emptyTitle,
+    required this.emptyMessage,
+    required this.itemBuilder,
+  });
 
   final AsyncValue<List<T>> value;
-  final String empty;
+  final IconData emptyIcon;
+  final String emptyTitle;
+  final String emptyMessage;
   final Widget Function(BuildContext context, T item) itemBuilder;
 
   @override
@@ -108,7 +117,11 @@ class _ActivityList<T> extends StatelessWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (Object error, StackTrace trace) => const Text("Couldn't load this list."),
       data: (List<T> items) {
-        if (items.isEmpty) return AuroraCard(child: Text(empty));
+        if (items.isEmpty) {
+          return SingleChildScrollView(
+            child: AuroraEmptyState(icon: emptyIcon, title: emptyTitle, message: emptyMessage),
+          );
+        }
         return ListView.separated(
           itemCount: items.length,
           separatorBuilder: (BuildContext context, int index) => const SizedBox(height: AuroraSpacing.sm),
@@ -129,9 +142,9 @@ class _TransfersView extends ConsumerWidget {
     final DateTime now = ref.watch(clockProvider).now();
     return _ActivityList<TransferRecord>(
       value: ref.watch(activityTransfersProvider),
-      empty:
-          "Nothing has moved yet. Files sent or received through the web page, a "
-          "WebDAV app or a link will show up here.",
+      emptyIcon: Icons.swap_vert,
+      emptyTitle: "Nothing has moved yet",
+      emptyMessage: "Files sent or received through the web page, a WebDAV app or a link will show up here.",
       itemBuilder: (BuildContext context, TransferRecord transfer) => _TransferCard(transfer: transfer, now: now),
     );
   }
@@ -177,7 +190,7 @@ class _TransferCard extends StatelessWidget {
           Text(
             "${sending ? "To" : "From"} ${transfer.actor} · ${describeVia(transfer.via)} · "
             "${describeAgo(transfer.startedAt, now)}",
-            style: AuroraTypography.bodySm.copyWith(color: AuroraColors.inkSecondary),
+            style: AuroraTypography.bodySm.copyWith(color: context.inkSecondary),
           ),
           if (transfer.isRunning && !stalled && transfer.fraction != null) ...<Widget>[
             const SizedBox(height: AuroraSpacing.sm),
@@ -204,7 +217,9 @@ class _ClientsView extends ConsumerWidget {
     final DateTime now = ref.watch(clockProvider).now();
     return _ActivityList<ClientRecord>(
       value: ref.watch(activityClientsProvider),
-      empty: "Nobody has connected in the last day.",
+      emptyIcon: Icons.devices_outlined,
+      emptyTitle: "Nobody has connected in the last day.",
+      emptyMessage: "People who sign in from a browser or a WebDAV app appear here while they are connected.",
       itemBuilder: (BuildContext context, ClientRecord client) => _ClientCard(client: client, now: now),
     );
   }
@@ -241,7 +256,7 @@ class _ClientCard extends StatelessWidget {
                 const SizedBox(height: AuroraSpacing.xs),
                 Text(
                   "Since ${describeAgo(client.firstSeenAt, now)}",
-                  style: AuroraTypography.bodySm.copyWith(color: AuroraColors.inkSecondary),
+                  style: AuroraTypography.bodySm.copyWith(color: context.inkSecondary),
                 ),
               ],
             ),
@@ -266,7 +281,9 @@ class _EventsView extends ConsumerWidget {
     final DateTime now = ref.watch(clockProvider).now();
     return _ActivityList<ActivityEvent>(
       value: ref.watch(activityEventsProvider),
-      empty: "Nothing has happened yet. Sign-ins, refused attempts and link use are listed here.",
+      emptyIcon: Icons.event_note_outlined,
+      emptyTitle: "Nothing has happened yet",
+      emptyMessage: "Sign-ins, refused attempts and link use are listed here.",
       itemBuilder: (BuildContext context, ActivityEvent event) => _EventCard(event: event, now: now),
     );
   }
@@ -281,9 +298,9 @@ class _EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (IconData icon, Color color) = switch (event.severity) {
-      ActivitySeverity.info => (Icons.info_outline, AuroraColors.inkSecondary),
-      ActivitySeverity.warning => (Icons.warning_amber_outlined, AuroraColors.statusWarning),
-      ActivitySeverity.problem => (Icons.error_outline, AuroraColors.statusDanger),
+      ActivitySeverity.info => (Icons.info_outline, context.inkSecondary),
+      ActivitySeverity.warning => (Icons.warning_amber_outlined, context.statusWarning),
+      ActivitySeverity.problem => (Icons.error_outline, context.statusDanger),
     };
     final String when = describeAgo(event.at, now);
     final String? address = event.address;
@@ -301,7 +318,7 @@ class _EventCard extends StatelessWidget {
                 const SizedBox(height: AuroraSpacing.xs),
                 Text(
                   address == null ? when : "$when · $address",
-                  style: AuroraTypography.bodySm.copyWith(color: AuroraColors.inkSecondary),
+                  style: AuroraTypography.bodySm.copyWith(color: context.inkSecondary),
                 ),
               ],
             ),

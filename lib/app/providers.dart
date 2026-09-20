@@ -6,6 +6,7 @@ import "../data/db/app_database.dart";
 import "../data/repositories/drift_account_repository.dart";
 import "../data/repositories/drift_activity_repository.dart";
 import "../data/repositories/drift_recycle_bin_repository.dart";
+import "../data/repositories/drift_settings_repository.dart";
 import "../data/repositories/drift_share_repository.dart";
 import "../data/repositories/drift_storage_root_repository.dart";
 import "../data/repositories/file_repository_impl.dart";
@@ -28,6 +29,7 @@ import "../domain/repositories/file_repository.dart";
 import "../domain/repositories/id_generator.dart";
 import "../domain/repositories/recycle_bin_repository.dart";
 import "../domain/repositories/server_host.dart";
+import "../domain/repositories/settings_repository.dart";
 import "../domain/repositories/share_repository.dart";
 import "../domain/repositories/storage_backend.dart";
 import "../domain/repositories/storage_root_repository.dart";
@@ -43,9 +45,12 @@ import "../domain/usecases/move_items.dart";
 import "../domain/usecases/permanently_delete_recycled.dart";
 import "../domain/usecases/restore_items.dart";
 import "../domain/usecases/run_diagnostics.dart";
+import "../domain/usecases/test_storage_access.dart";
 import "../platform/adapters/android_storage_host.dart";
 import "../platform/adapters/pigeon_android_storage_host.dart";
 import "../platform/adapters/pigeon_server_host.dart";
+import "../platform/adapters/url_opener.dart";
+import "../platform/adapters/volume_stats_source.dart";
 
 /// Composition root for the storage/file layer.
 ///
@@ -373,4 +378,37 @@ final StreamProvider<List<ClientRecord>> activityClientsProvider = StreamProvide
       since: ref.read(clockProvider).now().subtract(const Duration(days: 1)),
     ),
   ),
+);
+
+// --- Appearance and other small settings ---
+
+final Provider<SettingsRepository> settingsRepositoryProvider =
+    Provider<SettingsRepository>((Ref ref) => DriftSettingsRepository(ref.watch(appDatabaseProvider)));
+
+// --- Storage volumes and opening links ---
+
+final Provider<VolumeStatsSource> volumeStatsSourceProvider =
+    Provider<VolumeStatsSource>((Ref ref) => const ChannelVolumeStatsSource());
+
+/// How full the volume behind each storage location is, by root id. Locations
+/// that can't be measured (offline, unsupported) are left out. Read again each
+/// time a screen that shows it opens.
+final FutureProvider<Map<String, VolumeStats>> rootStatsProvider = FutureProvider.autoDispose<Map<String, VolumeStats>>((
+  Ref ref,
+) async {
+  final List<StorageRoot> roots = await ref.watch(storageRootsProvider.future);
+  final VolumeStatsSource source = ref.watch(volumeStatsSourceProvider);
+  final Map<String, VolumeStats> stats = <String, VolumeStats>{};
+  for (final StorageRoot root in roots) {
+    if (!root.isEnabled || !root.isAvailable) continue;
+    final VolumeStats? measured = await source.statsFor(root);
+    if (measured != null) stats[root.id] = measured;
+  }
+  return stats;
+});
+
+final Provider<UrlOpener> urlOpenerProvider = Provider<UrlOpener>((Ref ref) => const LauncherUrlOpener());
+
+final Provider<TestStorageAccess> testStorageAccessProvider = Provider<TestStorageAccess>(
+  (Ref ref) => TestStorageAccess(ref.watch(fileRepositoryProvider), ref.watch(clockProvider)),
 );

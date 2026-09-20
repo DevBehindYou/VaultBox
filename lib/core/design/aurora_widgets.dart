@@ -1,11 +1,14 @@
 import "package:flutter/material.dart";
 
 import "aurora_colors.dart";
+import "aurora_context.dart";
 import "aurora_spacing.dart";
 import "aurora_typography.dart";
 
-/// The Structural Tier card from DESIGN.md: flat surface, crisp 1.5px border,
-/// no drop shadow. This is the default container for almost everything.
+/// The card the mockups use for almost everything: a white (light) or
+/// near-black (dark) surface with rounded corners. Light cards lift with a
+/// whisper of shadow; dark cards get a thin border instead, since a shadow
+/// doesn't show on a dark page.
 class AuroraCard extends StatelessWidget {
   const AuroraCard({
     required this.child,
@@ -22,18 +25,20 @@ class AuroraCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final Color border = borderColor ??
-        (theme.brightness == Brightness.dark
-            ? AuroraColorsDark.borderDefault
-            : AuroraColors.borderDefault);
+    final bool dark = context.isDarkTheme;
+    final Color? accent = borderColor;
 
     final Widget content = Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerLowest,
-        borderRadius: AuroraRadii.mdAll,
-        border: Border.all(color: border, width: 1.5),
+        color: context.cardColor,
+        borderRadius: AuroraRadii.lgAll,
+        border: accent != null
+            ? Border.all(color: accent, width: 1.5)
+            : (dark ? Border.all(color: context.borderDefault) : null),
+        boxShadow: dark
+            ? null
+            : const <BoxShadow>[BoxShadow(color: Color(0x0F000000), blurRadius: 4, offset: Offset(0, 1))],
       ),
       child: child,
     );
@@ -43,7 +48,7 @@ class AuroraCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: AuroraRadii.mdAll,
+        borderRadius: AuroraRadii.lgAll,
         child: content,
       ),
     );
@@ -70,6 +75,7 @@ class AuroraPrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool enabled = onPressed != null;
+    final bool gradient = AuroraStyle.of(context).gradients;
     return Opacity(
       opacity: enabled ? 1 : 0.5,
       child: Material(
@@ -82,9 +88,12 @@ class AuroraPrimaryButton extends StatelessWidget {
             constraints: const BoxConstraints(minHeight: AuroraSpacing.minTouchTarget),
             padding: const EdgeInsets.symmetric(horizontal: 24),
             decoration: BoxDecoration(
-              gradient: AuroraColors.primaryAurora,
+              gradient: gradient ? AuroraColors.primaryAurora : null,
+              color: gradient ? null : AuroraColors.auroraMid,
               borderRadius: AuroraRadii.pillAll,
-              border: Border.all(color: AuroraColors.borderStrong, width: 1.5),
+              boxShadow: context.isDarkTheme
+                  ? null
+                  : const <BoxShadow>[BoxShadow(color: Color(0x14000000), blurRadius: 4, offset: Offset(0, 1))],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -5,6 +5,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../../app/providers.dart";
 import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
@@ -113,7 +114,7 @@ class _AdminSetupScreenState extends ConsumerState<AdminSetupScreen> {
               Text(
                 "This is the login for VaultBox's server. Choose a long passphrase — "
                 "it is stored only as a salted hash and can't be recovered.",
-                style: AuroraTypography.bodyMd.copyWith(color: AuroraColors.inkSecondary),
+                style: AuroraTypography.bodyMd.copyWith(color: context.inkSecondary),
               ),
               const SizedBox(height: AuroraSpacing.lg),
               if (_failure != null) ...<Widget>[

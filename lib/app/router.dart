@@ -3,6 +3,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
 
 import "../core/design/aurora_colors.dart";
+import "../core/design/aurora_context.dart";
 import "../core/design/aurora_spacing.dart";
 import "../core/design/aurora_typography.dart";
 import "../core/design/aurora_widgets.dart";
@@ -16,8 +17,12 @@ import "../features/onboarding/presentation/admin_setup_screen.dart";
 import "../features/onboarding/presentation/onboarding_ready_screen.dart";
 import "../features/onboarding/presentation/onboarding_storage_screen.dart";
 import "../features/onboarding/presentation/onboarding_welcome_screen.dart";
+import "../features/settings/presentation/appearance_screen.dart";
 import "../features/settings/presentation/diagnostics_screen.dart";
+import "../features/settings/presentation/protocols_screen.dart";
+import "../features/settings/presentation/security_screen.dart";
 import "../features/settings/presentation/settings_screen.dart";
+import "../features/settings/presentation/storage_screen.dart";
 import "../features/share/presentation/add_person_screen.dart";
 import "../features/share/presentation/person_screen.dart";
 import "../features/share/presentation/share_screen.dart";
@@ -124,6 +129,22 @@ GoRouter buildRouter(Ref ref) {
                 path: "/settings",
                 builder: (BuildContext context, GoRouterState state) => const SettingsScreen(),
                 routes: <RouteBase>[
+                  GoRoute(
+                    path: "protocols",
+                    builder: (BuildContext context, GoRouterState state) => const ProtocolsScreen(),
+                  ),
+                  GoRoute(
+                    path: "security",
+                    builder: (BuildContext context, GoRouterState state) => const SecurityScreen(),
+                  ),
+                  GoRoute(
+                    path: "storage",
+                    builder: (BuildContext context, GoRouterState state) => const StorageScreen(),
+                  ),
+                  GoRoute(
+                    path: "appearance",
+                    builder: (BuildContext context, GoRouterState state) => const AppearanceScreen(),
+                  ),
                   GoRoute(
                     path: "diagnostics",
                     builder: (BuildContext context, GoRouterState state) => const DiagnosticsScreen(),
@@ -236,7 +257,7 @@ class _NoStorageYet extends StatelessWidget {
               const SizedBox(height: AuroraSpacing.sm),
               Text(
                 "Set up a storage location to start browsing and adding files.",
-                style: AuroraTypography.bodyMd.copyWith(color: AuroraColors.inkSecondary),
+                style: AuroraTypography.bodyMd.copyWith(color: context.inkSecondary),
               ),
               const SizedBox(height: AuroraSpacing.lg),
               AuroraPrimaryButton(

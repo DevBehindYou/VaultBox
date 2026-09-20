@@ -29,6 +29,10 @@ abstract interface class AccountRepository {
   /// ends every session the account had.
   Future<void> updatePasswordHash(String id, String passwordHash);
 
+  /// Ends every session the account has, on every device, without touching its
+  /// password (bumps [Account.credentialVersion]).
+  Future<void> revokeSessions(String id);
+
   /// Enables or disables an account. Disabling bumps [Account.credentialVersion].
   Future<void> setEnabled(String id, {required bool enabled});
 

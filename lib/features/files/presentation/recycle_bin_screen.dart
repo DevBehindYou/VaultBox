@@ -3,6 +3,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../../app/providers.dart";
 import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
@@ -49,10 +50,10 @@ class RecycleBinScreen extends ConsumerWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  const Icon(
+                  Icon(
                     Icons.delete_outline,
                     size: 40,
-                    color: AuroraColors.inkTertiary,
+                    color: context.inkTertiary,
                   ),
                   const SizedBox(height: AuroraSpacing.md),
                   Text("Recycle Bin is empty", style: AuroraTypography.bodyLg),
@@ -84,7 +85,7 @@ class _RecycleItemCard extends ConsumerWidget {
     return AuroraCard(
       child: Row(
         children: <Widget>[
-          const Icon(Icons.insert_drive_file_outlined, color: AuroraColors.inkTertiary),
+          Icon(Icons.insert_drive_file_outlined, color: context.inkTertiary),
           const SizedBox(width: AuroraSpacing.md),
           Expanded(
             child: Column(
@@ -100,7 +101,7 @@ class _RecycleItemCard extends ConsumerWidget {
                 Text(
                   "Deleted ${_relative(item.deletedAt)}"
                   "${item.sizeBytes != null ? ' · ${ByteFormat.format(item.sizeBytes!)}' : ''}",
-                  style: AuroraTypography.bodySm.copyWith(color: AuroraColors.inkSecondary),
+                  style: AuroraTypography.bodySm.copyWith(color: context.inkSecondary),
                 ),
               ],
             ),
@@ -112,7 +113,7 @@ class _RecycleItemCard extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.delete_forever_outlined),
             tooltip: "Delete forever",
-            color: AuroraColors.statusDanger,
+            color: context.statusDanger,
             onPressed: () => _confirmPermanentDelete(context, ref),
           ),
         ],
@@ -153,7 +154,7 @@ class _RecycleItemCard extends ConsumerWidget {
             child: const Text("Cancel"),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AuroraColors.statusDanger),
+            style: FilledButton.styleFrom(backgroundColor: context.statusDanger),
             onPressed: () => Navigator.of(dialogContext).pop(true),
             child: const Text("Delete forever"),
           ),

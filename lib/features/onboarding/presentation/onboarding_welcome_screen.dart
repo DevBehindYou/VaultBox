@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
 
 import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
@@ -33,7 +34,7 @@ class OnboardingWelcomeScreen extends StatelessWidget {
               Text(
                 "Store files here and browse them right from the app. "
                 "Network access from other devices arrives in a later update.",
-                style: AuroraTypography.bodyLg.copyWith(color: AuroraColors.inkSecondary),
+                style: AuroraTypography.bodyLg.copyWith(color: context.inkSecondary),
               ),
               const Spacer(),
               AuroraPrimaryButton(

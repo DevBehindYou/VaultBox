@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
@@ -495,7 +496,7 @@ class _FilesHeader extends StatelessWidget {
               "${state.entries.length} item${state.entries.length == 1 ? '' : 's'}"
               "${state.hasMore ? '+' : ''}",
               style: AuroraTypography.labelMonoMd.copyWith(
-                color: AuroraColors.inkSecondary,
+                color: context.inkSecondary,
               ),
             ),
           ],
@@ -608,13 +609,13 @@ class _EmptyFolder extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const Icon(Icons.folder_open_outlined, size: 40, color: AuroraColors.inkTertiary),
+          Icon(Icons.folder_open_outlined, size: 40, color: context.inkTertiary),
           const SizedBox(height: AuroraSpacing.md),
           Text("This folder is empty", style: AuroraTypography.bodyLg),
           const SizedBox(height: AuroraSpacing.xs),
           Text(
             "Create a folder or add files to get started.",
-            style: AuroraTypography.bodySm.copyWith(color: AuroraColors.inkSecondary),
+            style: AuroraTypography.bodySm.copyWith(color: context.inkSecondary),
           ),
         ],
       ),

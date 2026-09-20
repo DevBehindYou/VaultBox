@@ -7,6 +7,8 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "../../../app/providers.dart";
 import "../../../core/app_info.dart";
 import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_context.dart";
+import "../../../core/design/aurora_components.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
@@ -95,11 +97,19 @@ class _DiagnosticsScreenState extends ConsumerState<DiagnosticsScreen> {
         : checks.where((DiagnosticCheck c) => c.status != DiagnosticStatus.ok).length;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Diagnostics")),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(AuroraSpacing.marginCompact),
+      backgroundColor: Colors.transparent,
+      body: ListView(
+          padding: const EdgeInsets.fromLTRB(
+            AuroraSpacing.marginCompact,
+            AuroraSpacing.sm,
+            AuroraSpacing.marginCompact,
+            AuroraSpacing.dockScrollClearance,
+          ),
           children: <Widget>[
+            const AuroraSubHeader(
+              title: "Diagnostics",
+              subtitle: "Check that everything works, and copy a support bundle.",
+            ),
             if (checks == null)
               const Center(child: CircularProgressIndicator())
             else ...<Widget>[
@@ -131,7 +141,6 @@ class _DiagnosticsScreenState extends ConsumerState<DiagnosticsScreen> {
             ),
           ],
         ),
-      ),
     );
   }
 }
@@ -170,7 +179,7 @@ class _CheckCard extends StatelessWidget {
           Text(check.detail, style: AuroraTypography.bodyMd),
           if (hint != null && check.status != DiagnosticStatus.ok) ...<Widget>[
             const SizedBox(height: AuroraSpacing.xs),
-            Text(hint, style: AuroraTypography.bodySm.copyWith(color: AuroraColors.inkSecondary)),
+            Text(hint, style: AuroraTypography.bodySm.copyWith(color: context.inkSecondary)),
           ],
         ],
       ),

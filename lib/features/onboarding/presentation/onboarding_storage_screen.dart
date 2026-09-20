@@ -5,6 +5,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
 
 import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
@@ -99,7 +100,7 @@ class _OnboardingStorageScreenState extends ConsumerState<OnboardingStorageScree
                           Text(
                             "VaultBox's own private storage. Works immediately.",
                             style: AuroraTypography.bodySm
-                                .copyWith(color: AuroraColors.inkSecondary),
+                                .copyWith(color: context.inkSecondary),
                           ),
                         ],
                       ),
@@ -131,7 +132,7 @@ class _OnboardingStorageScreenState extends ConsumerState<OnboardingStorageScree
                             "Pick any folder on this phone or an SD card. "
                             "You'll be asked to grant VaultBox access to it.",
                             style: AuroraTypography.bodySm
-                                .copyWith(color: AuroraColors.inkSecondary),
+                                .copyWith(color: context.inkSecondary),
                           ),
                         ],
                       ),

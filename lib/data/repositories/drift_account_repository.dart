@@ -97,6 +97,17 @@ final class DriftAccountRepository implements AccountRepository {
   }
 
   @override
+  Future<void> revokeSessions(String id) async {
+    await _db.transaction(() async {
+      final AccountRow? row = await (_db.select(_db.accounts)..where((Accounts t) => t.id.equals(id))).getSingleOrNull();
+      if (row == null) return;
+      await (_db.update(_db.accounts)..where((Accounts t) => t.id.equals(id))).write(
+        AccountsCompanion(credentialVersion: Value<int>(row.credentialVersion + 1)),
+      );
+    });
+  }
+
+  @override
   Future<void> setEnabled(String id, {required bool enabled}) async {
     await _db.transaction(() async {
       final AccountRow? row = await (_db.select(_db.accounts)..where((Accounts t) => t.id.equals(id))).getSingleOrNull();

@@ -3,6 +3,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../../app/providers.dart";
 import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../domain/entities/storage_root.dart";
@@ -82,7 +83,7 @@ class _DestinationPickerScreenState extends ConsumerState<DestinationPickerScree
                         child: Text(
                           "Nothing here",
                           style: AuroraTypography.bodyMd.copyWith(
-                            color: AuroraColors.inkSecondary,
+                            color: context.inkSecondary,
                           ),
                         ),
                       )
@@ -98,7 +99,7 @@ class _DestinationPickerScreenState extends ConsumerState<DestinationPickerScree
                                   : Icons.insert_drive_file_outlined,
                               color: entry.isDirectory
                                   ? AuroraColors.auroraLavender
-                                  : AuroraColors.inkTertiary,
+                                  : context.inkTertiary,
                             ),
                             title: Text(
                               entry.name,
@@ -106,7 +107,7 @@ class _DestinationPickerScreenState extends ConsumerState<DestinationPickerScree
                               overflow: TextOverflow.ellipsis,
                               style: entry.isDirectory
                                   ? null
-                                  : const TextStyle(color: AuroraColors.inkTertiary),
+                                  : TextStyle(color: context.inkTertiary),
                             ),
                             trailing: entry.isDirectory
                                 ? const Icon(Icons.chevron_right, size: 20)

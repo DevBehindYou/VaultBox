@@ -5,6 +5,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../../app/providers.dart";
 import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
@@ -94,7 +95,7 @@ class _AddPersonScreenState extends ConsumerState<AddPersonScreen> {
               Text(
                 "They sign in on the web page or a WebDAV app with this name and password. "
                 "They see nothing until you give them a folder.",
-                style: AuroraTypography.bodyMd.copyWith(color: AuroraColors.inkSecondary),
+                style: AuroraTypography.bodyMd.copyWith(color: context.inkSecondary),
               ),
               const SizedBox(height: AuroraSpacing.lg),
               if (_failure != null) ...<Widget>[

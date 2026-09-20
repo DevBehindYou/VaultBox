@@ -13,8 +13,10 @@ import com.vaultbox.app.server.ServerStateStore
 import com.vaultbox.app.storage.ActivityDocumentPickerLauncher
 import com.vaultbox.app.storage.ActivityTreePickerLauncher
 import com.vaultbox.app.storage.SafStorageHostApi
+import com.vaultbox.app.storage.VolumeStats
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,6 +34,18 @@ class MainActivity : FlutterActivity() {
         treePicker.bind { intent -> startActivityForResult(intent, REQUEST_OPEN_TREE) }
         documentPicker.bind { intent -> startActivityForResult(intent, REQUEST_PICK_DOCUMENTS) }
         AndroidStorageApi.setUp(messenger, SafStorageHostApi(applicationContext, treePicker, documentPicker))
+
+        // How full each storage volume is (the Storage screen and Home). A plain
+        // channel: one read-only question, no reason to grow the Pigeon contract.
+        MethodChannel(messenger, "vaultbox/storage_stats").setMethodCallHandler { call, result ->
+            when (call.method) {
+                "volumeStats" -> {
+                    val target = call.argument<String>("uriOrPath")
+                    result.success(if (target == null) null else VolumeStats.of(target))
+                }
+                else -> result.notImplemented()
+            }
+        }
 
         // Server host: this (UI) engine controls the service and receives its state.
         ServerControlApi.setUp(

@@ -56,6 +56,11 @@ final class InMemoryAccountRepository implements AccountRepository {
   }
 
   @override
+  Future<void> revokeSessions(String id) async {
+    _replace(id, (Account old) => old.copyWith(credentialVersion: old.credentialVersion + 1));
+  }
+
+  @override
   Future<void> setEnabled(String id, {required bool enabled}) async {
     _replace(id, (Account old) {
       if (old.isEnabled == enabled) return old;

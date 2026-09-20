@@ -5,6 +5,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../../app/providers.dart";
 import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
@@ -203,7 +204,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
                     child: Text(
                       "Admins can reach everything on this phone, so there are no folder "
                       "settings to choose.",
-                      style: AuroraTypography.bodyMd.copyWith(color: AuroraColors.inkSecondary),
+                      style: AuroraTypography.bodyMd.copyWith(color: context.inkSecondary),
                     ),
                   )
                 else ...<Widget>[
@@ -223,7 +224,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
                                   Text(_describe(rule, roots), style: AuroraTypography.bodyMd),
                                   Text(
                                     _permissionWords(rule.permissions),
-                                    style: AuroraTypography.bodySm.copyWith(color: AuroraColors.inkSecondary),
+                                    style: AuroraTypography.bodySm.copyWith(color: context.inkSecondary),
                                   ),
                                 ],
                               ),
@@ -249,7 +250,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: TextButton.icon(
-                    style: TextButton.styleFrom(foregroundColor: AuroraColors.statusDanger),
+                    style: TextButton.styleFrom(foregroundColor: context.statusDanger),
                     onPressed: () => unawaited(_remove(account)),
                     icon: const Icon(Icons.person_remove_outlined),
                     label: const Text("Remove this person"),

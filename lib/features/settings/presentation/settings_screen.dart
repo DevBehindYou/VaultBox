@@ -1,40 +1,112 @@
-import "dart:async";
-
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
 
+import "../../../app/providers.dart";
 import "../../../core/app_info.dart";
-import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_components.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
-import "../../../core/design/aurora_typography.dart";
-import "../../../core/design/aurora_widgets.dart";
+import "../../../domain/entities/server_config.dart";
+import "../../../domain/entities/storage_root.dart";
 
-/// Settings. Only what exists is listed: the other groups (network, security,
-/// appearance…) arrive with the phases that build them, and are not faked here.
-class SettingsScreen extends StatelessWidget {
+/// Settings: everything you can configure or check, in a few plain groups. Only
+/// what exists is listed — a setting that isn't built yet is not shown, rather
+/// than shown and broken.
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ServerConfig? config = ref.watch(serverConfigProvider).value;
+    final List<StorageRoot>? roots = ref.watch(storageRootsProvider).value;
+
+    final String protocols = config == null
+        ? "HTTPS, WebDAV, ports and network access"
+        : <String>[
+            if (config.httpsEnabled) "HTTPS ${config.port}",
+            if (config.httpEnabled) "HTTP ${config.httpPort}",
+            "WebDAV",
+          ].join(" · ");
+    final String storage = roots == null
+        ? "Where your files live"
+        : roots.isEmpty
+        ? "Nothing added yet"
+        : "${roots.length} ${roots.length == 1 ? "location" : "locations"} served";
+
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AuroraSpacing.marginCompact),
-          child: ListView(
+      backgroundColor: Colors.transparent,
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(
+          AuroraSpacing.marginCompact,
+          0,
+          AuroraSpacing.marginCompact,
+          AuroraSpacing.dockScrollClearance,
+        ),
+        children: <Widget>[
+          const AuroraSectionHeader(title: "Server"),
+          AuroraRowGroup(
             children: <Widget>[
-              Text("Settings", style: AuroraTypography.headlineLg),
-              const SizedBox(height: AuroraSpacing.md),
-              _SettingsRow(
+              AuroraSettingRow(
+                icon: Icons.hub_outlined,
+                title: "Protocols & Network",
+                subtitle: protocols,
+                onTap: () => context.go("/settings/protocols"),
+              ),
+              AuroraSettingRow(
+                icon: Icons.shield_outlined,
+                title: "Security & Sessions",
+                subtitle: "Protection, who is signed in, and the certificate",
+                onTap: () => context.go("/settings/security"),
+              ),
+            ],
+          ),
+          const AuroraSectionHeader(title: "Storage"),
+          AuroraRowGroup(
+            children: <Widget>[
+              AuroraSettingRow(
+                icon: Icons.storage_outlined,
+                title: "Storage & Volumes",
+                subtitle: storage,
+                onTap: () => context.go("/settings/storage"),
+              ),
+            ],
+          ),
+          const AuroraSectionHeader(title: "Sharing"),
+          AuroraRowGroup(
+            children: <Widget>[
+              AuroraSettingRow(
+                icon: Icons.group_outlined,
+                title: "People & links",
+                subtitle: "Accounts, folder access, share and upload links",
+                onTap: () => context.go("/share"),
+              ),
+            ],
+          ),
+          const AuroraSectionHeader(title: "App"),
+          AuroraRowGroup(
+            children: <Widget>[
+              AuroraSettingRow(
+                icon: Icons.palette_outlined,
+                title: "Appearance & Display",
+                subtitle: "Light or dark, headings and spacing",
+                onTap: () => context.go("/settings/appearance"),
+              ),
+            ],
+          ),
+          const AuroraSectionHeader(title: "System"),
+          AuroraRowGroup(
+            children: <Widget>[
+              AuroraSettingRow(
                 icon: Icons.health_and_safety_outlined,
                 title: "Diagnostics",
-                subtitle: "Check that everything works, and copy a support bundle.",
-                onTap: () => unawaited(context.push("/settings/diagnostics")),
+                subtitle: "Check that everything works, and copy a support bundle",
+                onTap: () => context.go("/settings/diagnostics"),
               ),
-              const SizedBox(height: AuroraSpacing.sm),
-              _SettingsRow(
+              AuroraSettingRow(
                 icon: Icons.info_outline,
                 title: "About VaultBox",
-                subtitle: "Version $appVersion and open-source licences.",
+                subtitle: "Version $appVersion and open-source licences",
                 onTap: () => showLicensePage(
                   context: context,
                   applicationName: "VaultBox",
@@ -43,39 +115,14 @@ class SettingsScreen extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SettingsRow extends StatelessWidget {
-  const _SettingsRow({required this.icon, required this.title, required this.subtitle, required this.onTap});
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return AuroraCard(
-      onTap: onTap,
-      child: Row(
-        children: <Widget>[
-          Icon(icon),
-          const SizedBox(width: AuroraSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(title, style: AuroraTypography.headlineSm),
-                const SizedBox(height: AuroraSpacing.xs),
-                Text(subtitle, style: AuroraTypography.bodySm.copyWith(color: AuroraColors.inkSecondary)),
-              ],
+          Padding(
+            padding: const EdgeInsets.only(top: AuroraSpacing.lg),
+            child: Text(
+              "VaultBox keeps your files on this phone. Nothing is sent to any cloud.",
+              style: context.caption,
+              textAlign: TextAlign.center,
             ),
           ),
-          const Icon(Icons.chevron_right),
         ],
       ),
     );

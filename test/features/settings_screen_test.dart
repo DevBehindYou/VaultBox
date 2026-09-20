@@ -76,6 +76,10 @@ void main() {
 
   group("Settings", () {
     Widget settings() {
+      GoRoute stub(String path) => GoRoute(
+        path: path,
+        builder: (BuildContext c, GoRouterState s) => Scaffold(body: Text("route:/settings/$path")),
+      );
       final GoRouter router = GoRouter(
         initialLocation: "/settings",
         routes: <RouteBase>[
@@ -83,23 +87,83 @@ void main() {
             path: "/settings",
             builder: (BuildContext c, GoRouterState s) => const SettingsScreen(),
             routes: <RouteBase>[
+              stub("protocols"),
+              stub("security"),
+              stub("storage"),
+              stub("appearance"),
               GoRoute(path: "diagnostics", builder: (BuildContext c, GoRouterState s) => const DiagnosticsScreen()),
             ],
           ),
+          GoRoute(path: "/share", builder: (BuildContext c, GoRouterState s) => const Scaffold(body: Text("route:/share"))),
         ],
       );
       return scoped(MaterialApp.router(theme: AuroraTheme.light(), routerConfig: router));
     }
 
-    testWidgets("lists what exists: Diagnostics and About", (WidgetTester tester) async {
+    testWidgets("lists every group and says what is inside", (WidgetTester tester) async {
       _tall(tester);
       await tester.pumpWidget(settings());
       await tester.pumpAndSettle();
 
-      expect(find.text("Settings"), findsOneWidget);
-      expect(find.text("Diagnostics"), findsOneWidget);
-      expect(find.text("About VaultBox"), findsOneWidget);
+      for (final String title in <String>[
+        "Server",
+        "Protocols & Network",
+        "Security & Sessions",
+        "Storage",
+        "Storage & Volumes",
+        "Sharing",
+        "People & links",
+        "App",
+        "Appearance & Display",
+        "System",
+        "Diagnostics",
+        "About VaultBox",
+      ]) {
+        expect(find.text(title), findsOneWidget, reason: title);
+      }
+      expect(find.text("HTTPS 8443 · WebDAV"), findsOneWidget, reason: "read from the real settings");
+      expect(find.text("1 location served"), findsOneWidget, reason: "and from the real storage list");
       expect(find.textContaining("Version 0.1.0"), findsOneWidget);
+    });
+
+    testWidgets("the protocols row follows what is switched on", (WidgetTester tester) async {
+      host.savedConfig = const ServerConfig(httpEnabled: true, port: 9443);
+      _tall(tester);
+      await tester.pumpWidget(settings());
+      await tester.pumpAndSettle();
+
+      expect(find.text("HTTPS 9443 · HTTP 8080 · WebDAV"), findsOneWidget);
+    });
+
+    testWidgets("with no storage the row says so", (WidgetTester tester) async {
+      roots = <StorageRoot>[];
+      _tall(tester);
+      await tester.pumpWidget(settings());
+      await tester.pumpAndSettle();
+
+      expect(find.text("Nothing added yet"), findsOneWidget);
+    });
+
+    testWidgets("each row opens its screen", (WidgetTester tester) async {
+      _tall(tester);
+      await tester.pumpWidget(settings());
+      await tester.pumpAndSettle();
+
+      for (final (String row, String route) in <(String, String)>[
+        ("Protocols & Network", "route:/settings/protocols"),
+        ("Security & Sessions", "route:/settings/security"),
+        ("Storage & Volumes", "route:/settings/storage"),
+        ("Appearance & Display", "route:/settings/appearance"),
+        ("People & links", "route:/share"),
+      ]) {
+        await tester.tap(find.text(row));
+        await tester.pumpAndSettle();
+        expect(find.text(route), findsOneWidget, reason: row);
+
+        final GoRouter router = GoRouter.of(tester.element(find.text(route)));
+        router.go("/settings");
+        await tester.pumpAndSettle();
+      }
     });
 
     testWidgets("Diagnostics opens and runs the checks", (WidgetTester tester) async {

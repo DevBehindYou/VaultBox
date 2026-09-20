@@ -255,6 +255,21 @@ void main() {
       expect(loaded.rules, isEmpty);
     });
 
+    test("revokeSessions bumps the version, and touches nothing else", () async {
+      await repo.createFirst(account("a1", "admin"));
+      await repo.create(member("m1", "bob"));
+
+      await repo.revokeSessions("m1");
+      await repo.revokeSessions("m1");
+      await repo.revokeSessions("nobody"); // unknown ids are ignored
+
+      final Account bob = (await repo.findById("m1"))!;
+      expect(bob.credentialVersion, 2);
+      expect(bob.passwordHash, r"$argon2id$stub");
+      expect(bob.isEnabled, isTrue);
+      expect((await repo.findById("a1"))!.credentialVersion, 0, reason: "other accounts are unaffected");
+    });
+
     test("create adds members, refuses a taken username, and listAll starts with the oldest", () async {
       await repo.createFirst(account("a1", "admin"));
       expect(await repo.create(member("m1", "bob")), isNotNull);

@@ -3,6 +3,7 @@ import "package:flutter/services.dart";
 import "package:qr_flutter/qr_flutter.dart";
 
 import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../share/share_links.dart";
@@ -29,7 +30,7 @@ Future<void> showServerQrSheet(BuildContext context, String address) {
             Text(
               "Scan this with a phone or tablet on the same Wi-Fi, or type the address into a browser.",
               textAlign: TextAlign.center,
-              style: AuroraTypography.bodyMd.copyWith(color: AuroraColors.inkSecondary),
+              style: AuroraTypography.bodyMd.copyWith(color: context.inkSecondary),
             ),
             const SizedBox(height: AuroraSpacing.md),
             ColoredBox(
@@ -46,7 +47,7 @@ Future<void> showServerQrSheet(BuildContext context, String address) {
               Text(
                 "This address is not encrypted — use it only on a network you trust.",
                 textAlign: TextAlign.center,
-                style: AuroraTypography.bodySm.copyWith(color: AuroraColors.statusWarning),
+                style: AuroraTypography.bodySm.copyWith(color: context.statusWarning),
               ),
             ],
             const SizedBox(height: AuroraSpacing.md),

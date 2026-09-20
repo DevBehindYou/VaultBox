@@ -187,6 +187,16 @@ class ClientSightings extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{clientKey};
 }
 
+/// Schema v6. Small key/value settings (appearance, and later server options).
+@DataClassName("AppSettingRow")
+class AppSettings extends Table {
+  TextColumn get settingKey => text()();
+  TextColumn get settingValue => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{settingKey};
+}
+
 @DriftDatabase(
   tables: <Type>[
     StorageRoots,
@@ -197,6 +207,7 @@ class ClientSightings extends Table {
     ActivityEvents,
     TransferLog,
     ClientSightings,
+    AppSettings,
   ],
 )
 final class AppDatabase extends _$AppDatabase {
@@ -214,7 +225,7 @@ final class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: "vaultbox"));
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -244,6 +255,10 @@ final class AppDatabase extends _$AppDatabase {
         await m.createTable(activityEvents);
         await m.createTable(transferLog);
         await m.createTable(clientSightings);
+      }
+      if (from < 6) {
+        // v6: key/value settings.
+        await m.createTable(appSettings);
       }
     },
     beforeOpen: (OpeningDetails details) async {

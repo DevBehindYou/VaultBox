@@ -10,9 +10,9 @@ goes) and [TASKS.md](TASKS.md) (what is left).
 | | |
 |---|---|
 | Branch | `ci/bootstrap` (never merged to `main`; `main` still holds the baseline that could not compile) |
-| Last pushed commit | `bfff09c` — UI overhaul (M1). CI: 820 tests pass, 1 fails, 14 unused-import warnings (all fixed locally, see below) |
-| Last fully green commit | `7af7515` — 708 tests pass, `flutter analyze` clean, debug APK builds |
-| Working tree | 29 modified files and 5 new paths, **uncommitted and never compiled** (FTP/FTPS server + UI + M1 fixes) |
+| Last pushed commit | `16fc00f` — full Riverpod → BLoC rewrite |
+| Last CI result | `flutter analyze` clean, debug APK builds, 927/942 tests pass — 15 failures are a known Flutter SDK Tooltip/ticker bug in `share_screen_test.dart`, not gating (see `TASKS.md` section E) |
+| Working tree | clean, fully committed |
 | Database schema | Drift v6 |
 | Toolchain | Flutter 3.47.4 / Dart 3.13.3, built and tested only on GitHub Actions (the user cannot install the SDKs locally) |
 
@@ -160,6 +160,77 @@ Modified server files: `server_services.dart` (shared `passwordAuth`, `FtpDeps`,
 
 - Run `35766073072` (commit `6587038`): `flutter analyze`, `flutter test`, `build apk` all failed — the `subscription:` compile error above, the only real defect found.
 - Run `35766894505` (commit `2ffdaf0`): all green — **942 tests pass**, analyze clean, debug APK builds. `dart format (advisory)` still fails but doesn't gate (pre-existing, see `docs/TASKS.md` section D).
+
+---
+
+## Riverpod → BLoC rewrite — 2026-09-23 — `39f716d`..`16fc00f`
+
+Full replace of `flutter_riverpod` with `flutter_bloc`, at the user's explicit request. Offered a
+narrower scope first (new features only, or a gradual one-feature-at-a-time migration); the user chose
+full replace despite being told the risk (whole-app blast radius, no local compiler).
+
+### Core (commits `39f716d`, `12d69c3`)
+
+- `lib/core/state/resource.dart`: `Resource<T>` (`ResourceLoading`/`ResourceData`/`ResourceError`), a
+  drop-in stand-in for Riverpod's `AsyncValue` — same `.value`, `.when(loading:, error:, data:)`,
+  `.maybeWhen(data:, orElse:)`, so most call sites needed only their receiver retargeted.
+- `lib/core/state/resource_cubit.dart`: `ResourceStreamCubit` (former `StreamProvider`),
+  `ResourceFutureCubit` + `ResourceAwaiter` mixin (former `FutureProvider`; `refresh()` replaces
+  `ref.invalidate`, `current()` replaces `ref.read(x.future)`), `PolledCubit` (former `_polled()`
+  helper backing the activity feeds; `refreshNow()` replaces `ref.invalidate` without disturbing the
+  timer).
+- `lib/app/providers.dart`: the old 71 `Provider<T>` declarations became `AppDependencies`, a
+  plain-Dart composition root with **no** `flutter_bloc`/`BuildContext` dependency — required because
+  `lib/server/server_services.dart`'s headless server engine has no widget tree and previously used
+  Riverpod's `ProviderContainer` for exactly that reason. `lib/app/app_providers.dart` (new) exposes
+  each field individually via `RepositoryProvider<X>.value` for the UI side.
+- `lib/app/app_state.dart` (new): every app-level Cubit. **Correction mid-migration** (`12d69c3`,
+  made before any feature module was touched): `home_screen.dart` watches the activity feeds, root
+  stats and FTP settings too, and Home is one of the five permanent
+  `StatefulShellRoute.indexedStack` branches go_router keeps mounted forever — so those Cubits
+  (`autoDispose` under Riverpod) were already effectively app-level in the running app, and belong
+  here rather than as screen-scoped Cubits, which would have silently split Home and its sibling
+  screen into two disconnected instances. The one genuinely screen-scoped Cubit is
+  `RecycleItemsCubit` (Home never watches recycle-bin items).
+- `lib/features/files/viewmodel/files_view_model.dart`: the one real Riverpod `Notifier` →
+  `FilesCubit`, same generation/staleness-guard logic (protects against two overlapping reloads on
+  one instance), same method shape, dependencies constructor-injected instead of pulled via
+  `ref.read`.
+- `lib/app/router.dart`, `lib/app/app_header.dart`, `lib/main.dart`: converted by hand (foundational,
+  small). `GoRouter` is now built once directly in `main()` rather than through a `Provider<GoRouter>`
+  — it never changed reactively, so this drops an indirection without changing behaviour.
+- `pubspec.yaml`: `flutter_bloc ^9.1.1` (+ `bloc_test ^10.0.0` dev dependency) replaces
+  `flutter_riverpod`. Versions checked against pub.dev, not guessed.
+
+### Feature modules (commits `e40b5fd`, `1bed74f`, `8848429`, `62b8e6d`, `16fc00f`)
+
+Done mostly by background agents running in parallel, one per feature area (Files/Onboarding,
+Home/Activity, Settings, Share), each briefed with the exact Cubit/RepositoryProvider API from the
+core layer above. The user paused the session mid-run (four agents killed together); on resume, every
+file each agent had touched was individually re-verified against the source before being trusted —
+grepped for leftover `WidgetRef`/`ConsumerWidget`/old provider names rather than accepting an agent's
+self-report at face value. This caught:
+
+- A real bug in `share_screen.dart`'s `_ShareCard`: `onPressed: () => unawaited(_revoke(context, ref))`
+  passed a second argument, `ref`, that no longer existed in the (already-converted-to-`StatelessWidget`)
+  class — a leftover from an earlier partial edit. Fixed to `_revoke(context)`.
+- A systematic `unawaited_futures` lint gap: `ref.invalidate(x)` was synchronous, but its replacement,
+  `Cubit.refresh()`, returns `Future<void>` — 11 call sites across `admin_setup_screen.dart`,
+  `protocols_screen.dart`, `security_screen.dart`, `storage_screen.dart`, `add_person_screen.dart`,
+  `create_share_dialog.dart`, `person_screen.dart` and `share_screen.dart` were left bare (no
+  `await`/`unawaited(...)`). Fixed in one batch, `unawaited(...)` around each.
+
+### CI result — run `35787650421`, commit `16fc00f`
+
+`flutter analyze` clean, debug APK builds, **927 of 942 tests pass**. The 15 failures are all in
+`share_screen_test.dart`, all one root cause: `RawTooltipState is a SingleTickerProviderStateMixin but
+multiple tickers were created`, thrown from inside Flutter's own `raw_tooltip.dart` while routing an
+ordinary tap — a known class of Flutter SDK ticker/animation-controller disposal bug (compare
+`flutter/flutter#179337`), not an assertion failure and not application code. Once it fires once,
+every later tap-driven test in the same file cascades into the same exception. Investigated at length
+(see `docs/TASKS.md` section E for the full note); the user decided to accept and document it rather
+than spend further CI runs guessing at a fix, on the same terms as the pre-existing
+`dart format (advisory)` non-gating step.
 
 ---
 

@@ -149,6 +149,30 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+      # No real signing key or R8/ProGuard rules yet (docs/TASKS.md section F):
+      # android/app/build.gradle.kts signs `release` with the debug keystore for
+      # now, same as `flutter run --release`. Fine to install and try; not what a
+      # Play Store release would ship.
+      - name: flutter build apk (release)
+        id: apk_release
+        if: steps.pub_get.outcome == 'success'
+        continue-on-error: true
+        run: |
+          if [ "$EXCLUDE_SAF_DRAFT" = "true" ]; then
+            f=android/app/src/main/kotlin/com/vaultbox/app/storage/SafStorageHostApi.kt
+            [ -f "$f" ] && mv "$f" "$RUNNER_TEMP/SafStorageHostApi.kt.draft" && echo "excluded unreconciled SAF draft from this build"
+          fi
+          flutter build apk --release 2>&1 | tee ci-report/logs/build_apk_release.log
+
+      - name: Upload release APK
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: vaultbox-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: ignore
+          retention-days: 14
+
       - name: Assemble report
         if: always()
         run: |
@@ -179,6 +203,7 @@ jobs:
             echo "| flutter analyze | ${{ steps.analyze.outcome }} |"
             echo "| flutter test | ${{ steps.test.outcome }} |"
             echo "| build apk (debug) | ${{ steps.apk.outcome }} |"
+            echo "| build apk (release) | ${{ steps.apk_release.outcome }} |"
           } > ci-report/summary.md
           cat ci-report/summary.md
 
@@ -206,4 +231,5 @@ jobs:
           check "analyze"       "${{ steps.analyze.outcome }}"
           check "test"          "${{ steps.test.outcome }}"
           check "build apk"     "${{ steps.apk.outcome }}"
+          check "build apk (release)" "${{ steps.apk_release.outcome }}"
           exit "$fail"

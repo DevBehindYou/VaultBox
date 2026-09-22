@@ -6,7 +6,6 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:qr_flutter/qr_flutter.dart";
 
 import "../../../app/providers.dart";
-import "../../../core/design/aurora_colors.dart";
 import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";

@@ -1,5 +1,3 @@
-import "package:drift/drift.dart";
-
 import "../../domain/repositories/settings_repository.dart";
 import "../db/app_database.dart";
 

@@ -1,10 +1,12 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:go_router/go_router.dart";
+import "package:vaultbox/app/app_state.dart";
 import "package:vaultbox/app/providers.dart";
 import "package:vaultbox/core/design/aurora_theme.dart";
+import "package:vaultbox/data/repositories/file_repository_impl.dart";
 import "package:vaultbox/data/repositories/in_memory_account_repository.dart";
 import "package:vaultbox/data/repositories/in_memory_activity_repository.dart";
 import "package:vaultbox/data/repositories/in_memory_share_repository.dart";
@@ -15,6 +17,14 @@ import "package:vaultbox/domain/entities/activity.dart";
 import "package:vaultbox/domain/entities/server_config.dart";
 import "package:vaultbox/domain/entities/server_state.dart";
 import "package:vaultbox/domain/entities/storage_root.dart";
+import "package:vaultbox/domain/repositories/account_repository.dart";
+import "package:vaultbox/domain/repositories/activity_repository.dart";
+import "package:vaultbox/domain/repositories/clock.dart";
+import "package:vaultbox/domain/repositories/file_repository.dart";
+import "package:vaultbox/domain/repositories/server_host.dart";
+import "package:vaultbox/domain/repositories/share_repository.dart";
+import "package:vaultbox/domain/repositories/storage_root_repository.dart";
+import "package:vaultbox/domain/usecases/run_diagnostics.dart";
 import "package:vaultbox/domain/value_objects/storage_capabilities.dart";
 import "package:vaultbox/features/settings/presentation/diagnostics_screen.dart";
 import "package:vaultbox/features/settings/presentation/settings_screen.dart";
@@ -50,17 +60,38 @@ void main() {
 
   Widget scoped(Widget child) {
     final BackendRegistry registry = BackendRegistry()..register(MemoryStorageBackend(id: "mem"));
-    return ProviderScope(
-      overrides: [
-        serverHostProvider.overrideWithValue(host),
-        accountRepositoryProvider.overrideWithValue(accounts),
-        activityRepositoryProvider.overrideWithValue(activity),
-        shareRepositoryProvider.overrideWithValue(InMemoryShareRepository()),
-        storageRootRepositoryProvider.overrideWithValue(InMemoryStorageRootRepository(initial: roots)),
-        backendRegistryProvider.overrideWithValue(registry),
-        clockProvider.overrideWithValue(FakeClock(DateTime.utc(2026, 9, 20, 12))),
+    final StorageRootRepository storageRoots = InMemoryStorageRootRepository(initial: roots);
+    final ShareRepository shares = InMemoryShareRepository();
+    final Clock clock = FakeClock(DateTime.utc(2026, 9, 20, 12));
+    final FileRepository fileRepository = FileRepositoryImpl(resolveBackend: registry.forRoot);
+    return MultiRepositoryProvider(
+      providers: <RepositoryProvider<dynamic>>[
+        RepositoryProvider<ServerHost>.value(value: host),
+        RepositoryProvider<AccountRepository>.value(value: accounts),
+        RepositoryProvider<ActivityRepository>.value(value: activity),
+        RepositoryProvider<ShareRepository>.value(value: shares),
+        RepositoryProvider<StorageRootRepository>.value(value: storageRoots),
+        RepositoryProvider<BackendRegistry>.value(value: registry),
+        RepositoryProvider<Clock>.value(value: clock),
+        RepositoryProvider<FileRepository>.value(value: fileRepository),
+        RepositoryProvider<RunDiagnostics>(
+          create: (BuildContext context) => RunDiagnostics(
+            roots: context.read<StorageRootRepository>(),
+            files: context.read<FileRepository>(),
+            accounts: context.read<AccountRepository>(),
+            shares: context.read<ShareRepository>(),
+            server: context.read<ServerHost>(),
+            clock: context.read<Clock>(),
+          ),
+        ),
       ],
-      child: child,
+      child: MultiBlocProvider(
+        providers: <BlocProvider<dynamic>>[
+          BlocProvider<ServerConfigCubit>(create: (BuildContext context) => ServerConfigCubit(context.read<ServerHost>())),
+          BlocProvider<StorageRootsCubit>(create: (BuildContext context) => StorageRootsCubit(context.read<StorageRootRepository>())),
+        ],
+        child: child,
+      ),
     );
   }
 

@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:go_router/go_router.dart";
-import "package:vaultbox/app/providers.dart";
+import "package:vaultbox/app/app_state.dart";
 import "package:vaultbox/core/design/aurora_theme.dart";
 import "package:vaultbox/data/repositories/in_memory_account_repository.dart";
 import "package:vaultbox/data/repositories/in_memory_activity_repository.dart";
@@ -12,6 +12,11 @@ import "package:vaultbox/domain/entities/account.dart";
 import "package:vaultbox/domain/entities/activity.dart";
 import "package:vaultbox/domain/entities/server_config.dart";
 import "package:vaultbox/domain/entities/share.dart";
+import "package:vaultbox/domain/repositories/account_repository.dart";
+import "package:vaultbox/domain/repositories/activity_repository.dart";
+import "package:vaultbox/domain/repositories/clock.dart";
+import "package:vaultbox/domain/repositories/server_host.dart";
+import "package:vaultbox/domain/repositories/share_repository.dart";
 import "package:vaultbox/features/settings/presentation/security_screen.dart";
 
 import "../helpers/fake_clock.dart";
@@ -51,15 +56,28 @@ void main() {
       ],
     );
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          serverHostProvider.overrideWithValue(host),
-          accountRepositoryProvider.overrideWithValue(accounts),
-          activityRepositoryProvider.overrideWithValue(activity),
-          shareRepositoryProvider.overrideWithValue(shares),
-          clockProvider.overrideWithValue(clock),
+      MultiRepositoryProvider(
+        providers: <RepositoryProvider<dynamic>>[
+          RepositoryProvider<ServerHost>.value(value: host),
+          RepositoryProvider<AccountRepository>.value(value: accounts),
+          RepositoryProvider<ActivityRepository>.value(value: activity),
+          RepositoryProvider<ShareRepository>.value(value: shares),
+          RepositoryProvider<Clock>.value(value: clock),
         ],
-        child: MaterialApp.router(theme: AuroraTheme.light(), routerConfig: router),
+        child: MultiBlocProvider(
+          providers: <BlocProvider<dynamic>>[
+            BlocProvider<ServerConfigCubit>(create: (BuildContext context) => ServerConfigCubit(context.read<ServerHost>())),
+            BlocProvider<TlsFingerprintCubit>(create: (BuildContext context) => TlsFingerprintCubit(context.read<ServerHost>())),
+            BlocProvider<AdminExistsCubit>(create: (BuildContext context) => AdminExistsCubit(context.read<AccountRepository>())),
+            BlocProvider<AccountsCubit>(create: (BuildContext context) => AccountsCubit(context.read<AccountRepository>())),
+            BlocProvider<SharesCubit>(create: (BuildContext context) => SharesCubit(context.read<ShareRepository>())),
+            BlocProvider<ActivityEventsCubit>(create: (BuildContext context) => ActivityEventsCubit(context.read<ActivityRepository>())),
+            BlocProvider<ActivityClientsCubit>(
+              create: (BuildContext context) => ActivityClientsCubit(context.read<ActivityRepository>(), context.read<Clock>()),
+            ),
+          ],
+          child: MaterialApp.router(theme: AuroraTheme.light(), routerConfig: router),
+        ),
       ),
     );
     await tester.pumpAndSettle();

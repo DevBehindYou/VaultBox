@@ -2,10 +2,10 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:go_router/go_router.dart";
 
-import "../../../app/providers.dart";
+import "../../../app/app_state.dart";
 import "../../../core/design/aurora_components.dart";
 import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
@@ -16,6 +16,7 @@ import "../../../domain/entities/ftp_settings.dart";
 import "../../../domain/entities/server_config.dart";
 import "../../../domain/entities/server_state.dart";
 import "../../../domain/repositories/server_host.dart";
+import "../../../domain/repositories/settings_repository.dart";
 import "../../home/home_summary.dart";
 import "ftp_guide_sheet.dart";
 import "webdav_guide_sheet.dart";
@@ -23,14 +24,14 @@ import "webdav_guide_sheet.dart";
 /// Protocols & Network: which ways in are switched on, on which ports, and who
 /// on the network may use them. Settings are read when the server starts, so
 /// they lock while it runs (each row says so).
-class ProtocolsScreen extends ConsumerWidget {
+class ProtocolsScreen extends StatelessWidget {
   const ProtocolsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final ServerState server = ref.watch(serverStateProvider).value ?? const ServerState.stopped();
-    final ServerConfig? config = ref.watch(serverConfigProvider).value;
-    final FtpSettings? ftp = ref.watch(ftpSettingsProvider).value;
+  Widget build(BuildContext context) {
+    final ServerState server = context.watch<ServerStateCubit>().state.value ?? const ServerState.stopped();
+    final ServerConfig? config = context.watch<ServerConfigCubit>().state.value;
+    final FtpSettings? ftp = context.watch<FtpSettingsCubit>().state.value;
     final bool canChange = server.run == ServerRunState.stopped || server.run == ServerRunState.failed;
 
     return Scaffold(
@@ -72,13 +73,13 @@ class ProtocolsScreen extends ConsumerWidget {
 
 // ------------------------------------------------------------------ service
 
-class _ServiceCard extends ConsumerWidget {
+class _ServiceCard extends StatelessWidget {
   const _ServiceCard({required this.server});
 
   final ServerState server;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final bool running = server.run == ServerRunState.running;
     final bool busy = server.run == ServerRunState.starting;
     final String? lan = lanHostPort(server);
@@ -116,7 +117,7 @@ class _ServiceCard extends ConsumerWidget {
                 ? null
                 : (bool on) async {
                     try {
-                      final ServerHost host = ref.read(serverHostProvider);
+                      final ServerHost host = context.read<ServerHost>();
                       if (on) {
                         await host.start();
                       } else {
@@ -136,7 +137,7 @@ class _ServiceCard extends ConsumerWidget {
 
 // --------------------------------------------------------------- web portal
 
-class _WebPortalCard extends ConsumerWidget {
+class _WebPortalCard extends StatelessWidget {
   const _WebPortalCard({required this.config, required this.server, required this.canChange});
 
   final ServerConfig config;
@@ -144,17 +145,17 @@ class _WebPortalCard extends ConsumerWidget {
   final bool canChange;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return _ProtocolCard(
       icon: Icons.language,
       title: "Web Portal",
       tag: "HTTPS",
       description: "The browser page for your files. Encrypted with a certificate VaultBox made itself.",
       enabled: config.httpsEnabled,
-      onToggle: canChange ? (bool on) => unawaited(_save(context, ref, config.copyWith(httpsEnabled: on))) : null,
+      onToggle: canChange ? (bool on) => unawaited(_save(context, config.copyWith(httpsEnabled: on))) : null,
       lockedNote: canChange ? null : "Stop the server to change this.",
       port: config.port,
-      onChangePort: canChange ? () => unawaited(_changePort(context, ref, config, https: true)) : null,
+      onChangePort: canChange ? () => unawaited(_changePort(context, config, https: true)) : null,
       status: server.isRunning && config.httpsEnabled ? "Listening" : (config.httpsEnabled ? "Ready" : "Off"),
       footer: TextButton.icon(
         onPressed: () => context.go("/settings/security"),
@@ -165,13 +166,13 @@ class _WebPortalCard extends ConsumerWidget {
   }
 }
 
-class _HttpCard extends ConsumerWidget {
+class _HttpCard extends StatelessWidget {
   const _HttpCard({required this.config, required this.canChange});
 
   final ServerConfig config;
   final bool canChange;
 
-  Future<void> _toggle(BuildContext context, WidgetRef ref, bool on) async {
+  Future<void> _toggle(BuildContext context, bool on) async {
     if (on) {
       final bool? confirmed = await showDialog<bool>(
         context: context,
@@ -190,21 +191,21 @@ class _HttpCard extends ConsumerWidget {
       );
       if (confirmed != true || !context.mounted) return;
     }
-    await _save(context, ref, config.copyWith(httpEnabled: on));
+    await _save(context, config.copyWith(httpEnabled: on));
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return _ProtocolCard(
       icon: Icons.no_encryption_outlined,
       title: "Plain HTTP",
       tag: "HTTP",
       description: "Opens in any browser without a certificate warning, but is not encrypted. Trusted networks only.",
       enabled: config.httpEnabled,
-      onToggle: canChange ? (bool on) => unawaited(_toggle(context, ref, on)) : null,
+      onToggle: canChange ? (bool on) => unawaited(_toggle(context, on)) : null,
       lockedNote: canChange ? null : "Stop the server to change this.",
       port: config.httpPort,
-      onChangePort: canChange ? () => unawaited(_changePort(context, ref, config, https: false)) : null,
+      onChangePort: canChange ? () => unawaited(_changePort(context, config, https: false)) : null,
       status: config.httpEnabled ? "Insecure · unencrypted" : "Off",
       warn: config.httpEnabled,
     );
@@ -213,14 +214,14 @@ class _HttpCard extends ConsumerWidget {
 
 // ------------------------------------------------------------------ WebDAV
 
-class _WebDavCard extends ConsumerWidget {
+class _WebDavCard extends StatelessWidget {
   const _WebDavCard({required this.config, required this.server});
 
   final ServerConfig config;
   final ServerState server;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final String? base = primaryAddress(server);
     final String shown = base == null
         ? "${config.httpsEnabled ? "https" : "http"}://<phone address>:${config.httpsEnabled ? config.port : config.httpPort}/dav/"
@@ -295,15 +296,15 @@ class _WebDavCard extends ConsumerWidget {
 
 // ----------------------------------------------------------------- network
 
-class _NetworkCard extends ConsumerWidget {
+class _NetworkCard extends StatelessWidget {
   const _NetworkCard({required this.config, required this.canChange});
 
   final ServerConfig config;
   final bool canChange;
 
-  Future<void> _toggle(BuildContext context, WidgetRef ref, bool enable) async {
+  Future<void> _toggle(BuildContext context, bool enable) async {
     if (enable) {
-      final bool adminExists = await ref.read(adminExistsProvider.future);
+      final bool adminExists = await context.read<AdminExistsCubit>().current();
       if (!context.mounted) return;
       if (!adminExists) {
         final bool? create = await showDialog<bool>(
@@ -338,11 +339,11 @@ class _NetworkCard extends ConsumerWidget {
       );
       if (confirmed != true || !context.mounted) return;
     }
-    await _save(context, ref, config.copyWith(allowNetworkAccess: enable));
+    await _save(context, config.copyWith(allowNetworkAccess: enable));
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return AuroraRowGroup(
       children: <Widget>[
         AuroraSwitchRow(
@@ -354,7 +355,7 @@ class _NetworkCard extends ConsumerWidget {
                     : "Off: only this phone can reach the server.")
               : "Stop the server to change this.",
           value: config.allowNetworkAccess,
-          onChanged: canChange ? (bool on) => unawaited(_toggle(context, ref, on)) : null,
+          onChanged: canChange ? (bool on) => unawaited(_toggle(context, on)) : null,
         ),
         const AuroraSettingRow(
           icon: Icons.public_off_outlined,
@@ -368,7 +369,7 @@ class _NetworkCard extends ConsumerWidget {
 
 // --------------------------------------------------------------------- FTP
 
-class _FtpCard extends ConsumerWidget {
+class _FtpCard extends StatelessWidget {
   const _FtpCard({required this.ftp, required this.config, required this.server, required this.canChange});
 
   final FtpSettings ftp;
@@ -382,10 +383,10 @@ class _FtpCard extends ConsumerWidget {
     FtpMode.plain => "FTP",
   };
 
-  Future<void> _save(BuildContext context, WidgetRef ref, FtpSettings next) async {
+  Future<void> _save(BuildContext context, FtpSettings next) async {
     try {
-      await ref.read(settingsRepositoryProvider).writeAll(next.toMap());
-      ref.invalidate(ftpSettingsProvider);
+      await context.read<SettingsRepository>().writeAll(next.toMap());
+      context.read<FtpSettingsCubit>().refresh();
     } on AppFailure catch (failure) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));
@@ -411,9 +412,9 @@ class _FtpCard extends ConsumerWidget {
     return yes ?? false;
   }
 
-  Future<void> _toggle(BuildContext context, WidgetRef ref, bool on) async {
+  Future<void> _toggle(BuildContext context, bool on) async {
     if (on) {
-      final bool adminExists = await ref.read(adminExistsProvider.future);
+      final bool adminExists = await context.read<AdminExistsCubit>().current();
       if (!context.mounted) return;
       if (!adminExists) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -424,17 +425,17 @@ class _FtpCard extends ConsumerWidget {
       if (ftp.mode == FtpMode.plain && !await _confirmPlain(context)) return;
       if (!context.mounted) return;
     }
-    await _save(context, ref, ftp.copyWith(enabled: on));
+    await _save(context, ftp.copyWith(enabled: on));
   }
 
-  Future<void> _chooseMode(BuildContext context, WidgetRef ref, FtpMode mode) async {
+  Future<void> _chooseMode(BuildContext context, FtpMode mode) async {
     if (mode == ftp.mode) return;
     if (mode == FtpMode.plain && !await _confirmPlain(context)) return;
     if (!context.mounted) return;
-    await _save(context, ref, ftp.copyWith(mode: mode));
+    await _save(context, ftp.copyWith(mode: mode));
   }
 
-  Future<void> _changePort(BuildContext context, WidgetRef ref) async {
+  Future<void> _changePort(BuildContext context) async {
     final TextEditingController controller = TextEditingController(text: "${ftp.port}");
     final int? chosen = await showDialog<int>(
       context: context,
@@ -473,10 +474,10 @@ class _FtpCard extends ConsumerWidget {
       },
     );
     if (chosen == null || !context.mounted) return;
-    await _save(context, ref, ftp.copyWith(port: chosen));
+    await _save(context, ftp.copyWith(port: chosen));
   }
 
-  Future<void> _changeRange(BuildContext context, WidgetRef ref) async {
+  Future<void> _changeRange(BuildContext context) async {
     final TextEditingController start = TextEditingController(text: "${ftp.passiveStart}");
     final TextEditingController end = TextEditingController(text: "${ftp.passiveEnd}");
     final ({int start, int end})? chosen = await showDialog<({int start, int end})>(
@@ -525,11 +526,11 @@ class _FtpCard extends ConsumerWidget {
       },
     );
     if (chosen == null || !context.mounted) return;
-    await _save(context, ref, ftp.copyWith(passiveStart: chosen.start, passiveEnd: chosen.end));
+    await _save(context, ftp.copyWith(passiveStart: chosen.start, passiveEnd: chosen.end));
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final bool running = server.isRunning;
     final Color statusColor = ftp.enabled ? (ftp.mode == FtpMode.plain ? context.statusWarning : context.statusSuccess) : context.inkTertiary;
     final String status = !ftp.enabled
@@ -568,7 +569,7 @@ class _FtpCard extends ConsumerWidget {
               ),
               Switch(
                 value: ftp.enabled,
-                onChanged: canChange ? (bool on) => unawaited(_toggle(context, ref, on)) : null,
+                onChanged: canChange ? (bool on) => unawaited(_toggle(context, on)) : null,
               ),
             ],
           ),
@@ -579,20 +580,20 @@ class _FtpCard extends ConsumerWidget {
             title: "Explicit FTPS",
             subtitle: "FTP upgraded to TLS. Best compatibility. Recommended.",
             selected: ftp.mode == FtpMode.explicitTls,
-            onTap: canChange ? () => unawaited(_chooseMode(context, ref, FtpMode.explicitTls)) : null,
+            onTap: canChange ? () => unawaited(_chooseMode(context, FtpMode.explicitTls)) : null,
           ),
           _ModeOption(
             title: "Implicit FTPS",
             subtitle: "Encrypted from the first byte. For older devices that need it.",
             selected: ftp.mode == FtpMode.implicitTls,
-            onTap: canChange ? () => unawaited(_chooseMode(context, ref, FtpMode.implicitTls)) : null,
+            onTap: canChange ? () => unawaited(_chooseMode(context, FtpMode.implicitTls)) : null,
           ),
           _ModeOption(
             title: "Plain FTP",
             subtitle: "No encryption: passwords and files can be read on the network.",
             selected: ftp.mode == FtpMode.plain,
             warn: true,
-            onTap: canChange ? () => unawaited(_chooseMode(context, ref, FtpMode.plain)) : null,
+            onTap: canChange ? () => unawaited(_chooseMode(context, FtpMode.plain)) : null,
           ),
           const SizedBox(height: AuroraSpacing.sm),
           Container(
@@ -608,7 +609,7 @@ class _FtpCard extends ConsumerWidget {
                     const Spacer(),
                     if (canChange)
                       InkWell(
-                        onTap: () => unawaited(_changePort(context, ref)),
+                        onTap: () => unawaited(_changePort(context)),
                         child: Padding(
                           padding: const EdgeInsets.all(4),
                           child: Text("Change", style: AuroraTypography.labelLg.copyWith(color: context.scheme.secondary)),
@@ -625,7 +626,7 @@ class _FtpCard extends ConsumerWidget {
                     const Spacer(),
                     if (canChange)
                       InkWell(
-                        onTap: () => unawaited(_changeRange(context, ref)),
+                        onTap: () => unawaited(_changeRange(context)),
                         child: Padding(
                           padding: const EdgeInsets.all(4),
                           child: Text("Change", style: AuroraTypography.labelLg.copyWith(color: context.scheme.secondary)),
@@ -729,7 +730,7 @@ class _ModeOption extends StatelessWidget {
 
 // -------------------------------------------------------------- shared bits
 
-Future<void> _save(BuildContext context, WidgetRef ref, ServerConfig next) async {
+Future<void> _save(BuildContext context, ServerConfig next) async {
   if (!next.httpsEnabled && !next.httpEnabled) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Keep at least one of HTTPS and HTTP on.")),
@@ -737,8 +738,8 @@ Future<void> _save(BuildContext context, WidgetRef ref, ServerConfig next) async
     return;
   }
   try {
-    await ref.read(serverHostProvider).saveConfig(next);
-    ref.invalidate(serverConfigProvider);
+    await context.read<ServerHost>().saveConfig(next);
+    context.read<ServerConfigCubit>().refresh();
   } on AppFailure catch (failure) {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));
@@ -747,9 +748,9 @@ Future<void> _save(BuildContext context, WidgetRef ref, ServerConfig next) async
 
 /// Asks for a new port and saves it. Ports below 1024 are reserved on Android,
 /// and the two listeners can't share one.
-Future<void> _changePort(BuildContext context, WidgetRef ref, ServerConfig config, {required bool https}) async {
+Future<void> _changePort(BuildContext context, ServerConfig config, {required bool https}) async {
   final TextEditingController controller = TextEditingController(text: "${https ? config.port : config.httpPort}");
-  final FtpSettings? ftp = ref.read(ftpSettingsProvider).value;
+  final FtpSettings? ftp = context.read<FtpSettingsCubit>().state.value;
   final int? chosen = await showDialog<int>(
     context: context,
     builder: (BuildContext dialogContext) {
@@ -790,7 +791,7 @@ Future<void> _changePort(BuildContext context, WidgetRef ref, ServerConfig confi
   );
   // The dialog's exit animation still uses the controller, so it is left for the garbage collector.
   if (chosen == null || !context.mounted) return;
-  await _save(context, ref, https ? config.copyWith(port: chosen) : config.copyWith(httpPort: chosen));
+  await _save(context, https ? config.copyWith(port: chosen) : config.copyWith(httpPort: chosen));
 }
 
 class _Tag extends StatelessWidget {

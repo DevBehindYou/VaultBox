@@ -1,12 +1,18 @@
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:go_router/go_router.dart";
+import "package:vaultbox/app/app_state.dart";
 import "package:vaultbox/app/providers.dart";
 import "package:vaultbox/core/design/aurora_theme.dart";
+import "package:vaultbox/data/repositories/file_repository_impl.dart";
 import "package:vaultbox/data/repositories/in_memory_storage_root_repository.dart";
 import "package:vaultbox/data/services/memory_storage_backend.dart";
 import "package:vaultbox/domain/entities/storage_root.dart";
+import "package:vaultbox/domain/repositories/clock.dart";
+import "package:vaultbox/domain/repositories/file_repository.dart";
+import "package:vaultbox/domain/repositories/storage_root_repository.dart";
+import "package:vaultbox/domain/usecases/test_storage_access.dart";
 import "package:vaultbox/domain/value_objects/storage_capabilities.dart";
 import "package:vaultbox/features/settings/presentation/storage_screen.dart";
 import "package:vaultbox/platform/adapters/volume_stats_source.dart";
@@ -62,9 +68,12 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
 
+    final StorageRootRepository storageRoots = roots ?? repo;
     final BackendRegistry registry = BackendRegistry()
       ..register(MemoryStorageBackend(id: "int"))
       ..register(MemoryStorageBackend(id: "sd"));
+    final FileRepository fileRepository = FileRepositoryImpl(resolveBackend: registry.forRoot);
+    final Clock clock = FakeClock();
     final GoRouter router = GoRouter(
       routes: <RouteBase>[
         GoRoute(path: "/", builder: (BuildContext c, GoRouterState s) => const StorageScreen()),
@@ -75,14 +84,26 @@ void main() {
       ],
     );
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          storageRootRepositoryProvider.overrideWithValue(roots ?? repo),
-          backendRegistryProvider.overrideWithValue(registry),
-          volumeStatsSourceProvider.overrideWithValue(_FakeStats(stats)),
-          clockProvider.overrideWithValue(FakeClock()),
+      MultiRepositoryProvider(
+        providers: <RepositoryProvider<dynamic>>[
+          RepositoryProvider<StorageRootRepository>.value(value: storageRoots),
+          RepositoryProvider<BackendRegistry>.value(value: registry),
+          RepositoryProvider<VolumeStatsSource>.value(value: _FakeStats(stats)),
+          RepositoryProvider<Clock>.value(value: clock),
+          RepositoryProvider<TestStorageAccess>.value(value: TestStorageAccess(fileRepository, clock)),
         ],
-        child: MaterialApp.router(theme: AuroraTheme.light(), routerConfig: router),
+        child: MultiBlocProvider(
+          providers: <BlocProvider<dynamic>>[
+            BlocProvider<StorageRootsCubit>(
+              create: (BuildContext context) => StorageRootsCubit(context.read<StorageRootRepository>()),
+            ),
+            BlocProvider<RootStatsCubit>(
+              create: (BuildContext context) =>
+                  RootStatsCubit(context.read<StorageRootsCubit>(), context.read<VolumeStatsSource>()),
+            ),
+          ],
+          child: MaterialApp.router(theme: AuroraTheme.light(), routerConfig: router),
+        ),
       ),
     );
     await tester.pumpAndSettle();

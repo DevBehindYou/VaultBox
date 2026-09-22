@@ -1,9 +1,10 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:go_router/go_router.dart";
 
+import "../../../app/app_state.dart";
 import "../../../app/providers.dart";
 import "../../../core/design/aurora_colors.dart";
 import "../../../core/design/aurora_components.dart";
@@ -13,20 +14,22 @@ import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
 import "../../../core/errors/app_failure.dart";
 import "../../../core/utils/byte_format.dart";
+import "../../../core/state/resource.dart";
 import "../../../domain/entities/storage_root.dart";
+import "../../../domain/repositories/storage_root_repository.dart";
 import "../../../domain/usecases/test_storage_access.dart";
 import "../../../platform/adapters/volume_stats_source.dart";
 import "../../storage/storage_location.dart";
 
 /// Storage & Volumes: every folder VaultBox serves, where it really is (which
 /// volume, which path), how full it is, and what you can do with it.
-class StorageScreen extends ConsumerWidget {
+class StorageScreen extends StatelessWidget {
   const StorageScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<List<StorageRoot>> roots = ref.watch(storageRootsProvider);
-    final Map<String, VolumeStats> stats = ref.watch(rootStatsProvider).value ?? const <String, VolumeStats>{};
+  Widget build(BuildContext context) {
+    final Resource<List<StorageRoot>> roots = context.watch<StorageRootsCubit>().state;
+    final Map<String, VolumeStats> stats = context.watch<RootStatsCubit>().state.value ?? const <String, VolumeStats>{};
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -175,7 +178,7 @@ class _AggregateCard extends StatelessWidget {
   }
 }
 
-class _RootCard extends ConsumerStatefulWidget {
+class _RootCard extends StatefulWidget {
   const _RootCard({required this.root, required this.stats, required this.canRemove});
 
   final StorageRoot root;
@@ -183,10 +186,10 @@ class _RootCard extends ConsumerStatefulWidget {
   final bool canRemove;
 
   @override
-  ConsumerState<_RootCard> createState() => _RootCardState();
+  State<_RootCard> createState() => _RootCardState();
 }
 
-class _RootCardState extends ConsumerState<_RootCard> {
+class _RootCardState extends State<_RootCard> {
   bool _testing = false;
   StorageTestResult? _result;
 
@@ -195,18 +198,18 @@ class _RootCardState extends ConsumerState<_RootCard> {
       _testing = true;
       _result = null;
     });
-    final StorageTestResult result = await ref.read(testStorageAccessProvider).call(widget.root);
+    final StorageTestResult result = await context.read<TestStorageAccess>().call(widget.root);
     if (!mounted) return;
     setState(() {
       _testing = false;
       _result = result;
     });
-    ref.invalidate(rootStatsProvider);
+    context.read<RootStatsCubit>().refresh();
   }
 
   Future<void> _makeDefault() async {
     try {
-      await ref.read(storageRootRepositoryProvider).setDefault(widget.root.id);
+      await context.read<StorageRootRepository>().setDefault(widget.root.id);
     } on AppFailure catch (failure) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));
@@ -230,9 +233,9 @@ class _RootCardState extends ConsumerState<_RootCard> {
     );
     if (yes != true) return;
     try {
-      await ref.read(storageRootRepositoryProvider).removeRoot(widget.root.id);
-      ref.read(backendRegistryProvider).evict(widget.root.id);
-      ref.invalidate(rootStatsProvider);
+      await context.read<StorageRootRepository>().removeRoot(widget.root.id);
+      context.read<BackendRegistry>().evict(widget.root.id);
+      context.read<RootStatsCubit>().refresh();
     } on AppFailure catch (failure) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));

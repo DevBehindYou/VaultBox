@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:go_router/go_router.dart";
-import "package:vaultbox/app/providers.dart";
+import "package:vaultbox/app/app_state.dart";
 import "package:vaultbox/core/design/aurora_theme.dart";
 import "package:vaultbox/core/design/aurora_widgets.dart";
 import "package:vaultbox/data/repositories/in_memory_account_repository.dart";
@@ -12,6 +12,9 @@ import "package:vaultbox/domain/entities/account.dart";
 import "package:vaultbox/domain/entities/ftp_settings.dart";
 import "package:vaultbox/domain/entities/server_config.dart";
 import "package:vaultbox/domain/entities/server_state.dart";
+import "package:vaultbox/domain/repositories/account_repository.dart";
+import "package:vaultbox/domain/repositories/server_host.dart";
+import "package:vaultbox/domain/repositories/settings_repository.dart";
 import "package:vaultbox/features/settings/presentation/protocols_screen.dart";
 
 import "../helpers/fake_server_host.dart";
@@ -39,19 +42,26 @@ void main() {
         GoRoute(path: "/settings/security", builder: (BuildContext c, GoRouterState s) => const Scaffold(body: Text("route:/settings/security"))),
       ],
     );
-    return ProviderScope(
-      overrides: [
-        serverHostProvider.overrideWithValue(host),
-        settingsRepositoryProvider.overrideWithValue(store),
-        accountRepositoryProvider.overrideWithValue(
-          InMemoryAccountRepository(
-            withAdmin
-                ? <Account>[Account(id: "1", username: "admin", passwordHash: "x", createdAt: DateTime.utc(2026))]
-                : <Account>[],
-          ),
-        ),
+    final AccountRepository accounts = InMemoryAccountRepository(
+      withAdmin
+          ? <Account>[Account(id: "1", username: "admin", passwordHash: "x", createdAt: DateTime.utc(2026))]
+          : <Account>[],
+    );
+    return MultiRepositoryProvider(
+      providers: <RepositoryProvider<dynamic>>[
+        RepositoryProvider<ServerHost>.value(value: host),
+        RepositoryProvider<SettingsRepository>.value(value: store),
+        RepositoryProvider<AccountRepository>.value(value: accounts),
       ],
-      child: MaterialApp.router(theme: AuroraTheme.light(), routerConfig: router),
+      child: MultiBlocProvider(
+        providers: <BlocProvider<dynamic>>[
+          BlocProvider<ServerStateCubit>(create: (BuildContext context) => ServerStateCubit(context.read<ServerHost>())),
+          BlocProvider<ServerConfigCubit>(create: (BuildContext context) => ServerConfigCubit(context.read<ServerHost>())),
+          BlocProvider<AdminExistsCubit>(create: (BuildContext context) => AdminExistsCubit(context.read<AccountRepository>())),
+          BlocProvider<FtpSettingsCubit>(create: (BuildContext context) => FtpSettingsCubit(context.read<SettingsRepository>())),
+        ],
+        child: MaterialApp.router(theme: AuroraTheme.light(), routerConfig: router),
+      ),
     );
   }
 

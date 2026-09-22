@@ -1,9 +1,9 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 
-import "../../../app/preferences.dart";
+import "../../../app/app_state.dart";
 import "../../../core/design/aurora_colors.dart";
 import "../../../core/design/aurora_components.dart";
 import "../../../core/design/aurora_context.dart";
@@ -14,13 +14,13 @@ import "../../../domain/entities/app_preferences.dart";
 /// Appearance & Display: light, dark or follow the phone; how headings look;
 /// how much room things get. Every switch here changes something you can see
 /// straight away.
-class AppearanceScreen extends ConsumerWidget {
+class AppearanceScreen extends StatelessWidget {
   const AppearanceScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final AppPreferences prefs = ref.watch(preferencesProvider).value ?? const AppPreferences();
-    final PreferencesNotifier notifier = ref.read(preferencesProvider.notifier);
+  Widget build(BuildContext context) {
+    final AppPreferences prefs = context.watch<PreferencesCubit>().state;
+    final PreferencesCubit notifier = context.read<PreferencesCubit>();
 
     return Scaffold(
       backgroundColor: Colors.transparent,

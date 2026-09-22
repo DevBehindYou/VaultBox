@@ -1,30 +1,42 @@
 import "dart:convert";
 
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:vaultbox/app/providers.dart";
 import "package:vaultbox/core/design/aurora_theme.dart";
+import "package:vaultbox/data/repositories/file_repository_impl.dart";
 import "package:vaultbox/data/repositories/in_memory_recycle_bin_repository.dart";
 import "package:vaultbox/data/repositories/in_memory_storage_root_repository.dart";
 import "package:vaultbox/data/services/memory_storage_backend.dart";
+import "package:vaultbox/data/services/system_clock.dart";
 import "package:vaultbox/domain/entities/storage_root.dart";
+import "package:vaultbox/domain/repositories/file_repository.dart";
 import "package:vaultbox/domain/repositories/recycle_bin_repository.dart";
 import "package:vaultbox/domain/repositories/storage_root_repository.dart";
+import "package:vaultbox/domain/usecases/copy_items.dart";
+import "package:vaultbox/domain/usecases/delete_items_to_recycle_bin.dart";
+import "package:vaultbox/domain/usecases/import_files.dart";
+import "package:vaultbox/domain/usecases/move_items.dart";
+import "package:vaultbox/domain/usecases/permanently_delete_recycled.dart";
+import "package:vaultbox/domain/usecases/restore_items.dart";
 import "package:vaultbox/domain/value_objects/storage_capabilities.dart";
 import "package:vaultbox/features/files/presentation/files_screen.dart";
 import "package:vaultbox/features/files/viewmodel/files_view_model.dart";
+import "package:vaultbox/platform/adapters/android_storage_host.dart";
+
+import "../helpers/fake_android_storage_host.dart";
 
 /// Widget tests run entirely against in-memory fakes — doc §59's whole
 /// point: UI development must never depend on device or network state.
 ///
-/// All three of [backendRegistryProvider], [storageRootRepositoryProvider]
-/// and [recycleBinRepositoryProvider] are overridden here, not just the
-/// backend registry. The app's real providers for the latter two now open a
+/// [BackendRegistry], [StorageRootRepository] and [RecycleBinRepository] are
+/// all fakes/in-memory doubles here, not just the backend registry. The
+/// app's real, production-wired versions of the latter two now open a
 /// Drift/sqlite database (see `app/providers.dart`), which needs
 /// `path_provider`'s platform channel — unavailable in a plain widget test.
 /// Any screen this harness renders that reaches for storage roots (the
-/// destination picker's root switcher) or the Recycle Bin must find the
+/// destination picker's root switcher) or the Recycle Bin must find these
 /// in-memory fakes instead, or the test would fail on a `MissingPluginException`
 /// having nothing to do with the behaviour under test.
 void main() {
@@ -43,14 +55,34 @@ void main() {
     RecycleBinRepository? recycleBin,
   }) {
     final BackendRegistry registry = BackendRegistry()..register(backend);
-    return ProviderScope(
-      overrides: [
-        backendRegistryProvider.overrideWithValue(registry),
-        storageRootRepositoryProvider.overrideWithValue(
-          storageRoots ?? InMemoryStorageRootRepository(initial: <StorageRoot>[root]),
+    final FileRepository fileRepository = FileRepositoryImpl(resolveBackend: registry.forRoot);
+    final RecycleBinRepository recycleBinRepository = recycleBin ?? InMemoryRecycleBinRepository();
+    final StorageRootRepository storageRootRepository =
+        storageRoots ?? InMemoryStorageRootRepository(initial: <StorageRoot>[root]);
+
+    return MultiRepositoryProvider(
+      providers: <RepositoryProvider<dynamic>>[
+        RepositoryProvider<BackendRegistry>.value(value: registry),
+        RepositoryProvider<FileRepository>.value(value: fileRepository),
+        RepositoryProvider<StorageRootRepository>.value(value: storageRootRepository),
+        RepositoryProvider<RecycleBinRepository>.value(value: recycleBinRepository),
+        RepositoryProvider<AndroidStorageHost>.value(value: FakeAndroidStorageHost()),
+        RepositoryProvider<DeleteItemsToRecycleBin>.value(
+          value: DeleteItemsToRecycleBin(
+            fileRepository,
+            recycleBinRepository,
+            const SystemClock(),
+            UuidIdGenerator(),
+          ),
         ),
-        recycleBinRepositoryProvider.overrideWithValue(
-          recycleBin ?? InMemoryRecycleBinRepository(),
+        RepositoryProvider<CopyItems>.value(value: CopyItems(fileRepository)),
+        RepositoryProvider<MoveItems>.value(value: MoveItems(fileRepository)),
+        RepositoryProvider<ImportFiles>.value(value: ImportFiles(fileRepository)),
+        RepositoryProvider<RestoreItems>.value(
+          value: RestoreItems(fileRepository, recycleBinRepository, storageRootRepository),
+        ),
+        RepositoryProvider<PermanentlyDeleteRecycled>.value(
+          value: PermanentlyDeleteRecycled(fileRepository, recycleBinRepository, storageRootRepository),
         ),
       ],
       child: MaterialApp(

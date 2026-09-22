@@ -1,9 +1,9 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 
-import "../../../app/providers.dart";
+import "../../../app/app_state.dart";
 import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
@@ -11,6 +11,7 @@ import "../../../core/design/aurora_widgets.dart";
 import "../../../core/errors/app_failure.dart";
 import "../../../domain/security/password_policy.dart";
 import "../../../domain/security/username_policy.dart";
+import "../../../domain/usecases/create_admin_account.dart";
 
 /// Creates the admin account (the one login the server accepts for now).
 ///
@@ -20,7 +21,7 @@ import "../../../domain/security/username_policy.dart";
 ///
 /// The controllers are owned by this State and disposed with it — never in a
 /// caller's `finally` (that crashed the New-folder dialog once).
-class AdminSetupScreen extends ConsumerStatefulWidget {
+class AdminSetupScreen extends StatefulWidget {
   const AdminSetupScreen({
     required this.onDone,
     this.stepLabel,
@@ -35,10 +36,10 @@ class AdminSetupScreen extends ConsumerStatefulWidget {
   final void Function(BuildContext context)? onSkip;
 
   @override
-  ConsumerState<AdminSetupScreen> createState() => _AdminSetupScreenState();
+  State<AdminSetupScreen> createState() => _AdminSetupScreenState();
 }
 
-class _AdminSetupScreenState extends ConsumerState<AdminSetupScreen> {
+class _AdminSetupScreenState extends State<AdminSetupScreen> {
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final TextEditingController _confirm = TextEditingController();
@@ -74,16 +75,20 @@ class _AdminSetupScreenState extends ConsumerState<AdminSetupScreen> {
       _confirm.text == _password.text;
 
   Future<void> _submit() async {
+    // Captured before the `await` below: reading from `context` after an async
+    // gap is unsafe once this State may have unmounted (KB vol2 §9.1).
+    final CreateAdminAccount createAdminAccount = context.read<CreateAdminAccount>();
+    final AdminExistsCubit adminExists = context.read<AdminExistsCubit>();
     setState(() {
       _working = true;
       _failure = null;
     });
     try {
-      await ref.read(createAdminAccountProvider).call(
+      await createAdminAccount.call(
         username: _username.text,
         password: _password.text,
       );
-      ref.invalidate(adminExistsProvider);
+      adminExists.refresh();
       if (!mounted) return;
       widget.onDone(context);
     } on AppFailure catch (failure) {

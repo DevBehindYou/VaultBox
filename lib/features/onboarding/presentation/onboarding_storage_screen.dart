@@ -1,7 +1,6 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:go_router/go_router.dart";
 
 import "../../../core/design/aurora_colors.dart";
@@ -17,14 +16,14 @@ import "../onboarding_actions.dart";
 /// card / custom-folder option below is shown but disabled rather than
 /// hidden — kickoff §77 prefers a labelled "coming later" over silently
 /// removing something the design calls for.
-class OnboardingStorageScreen extends ConsumerStatefulWidget {
+class OnboardingStorageScreen extends StatefulWidget {
   const OnboardingStorageScreen({super.key});
 
   @override
-  ConsumerState<OnboardingStorageScreen> createState() => _OnboardingStorageScreenState();
+  State<OnboardingStorageScreen> createState() => _OnboardingStorageScreenState();
 }
 
-class _OnboardingStorageScreenState extends ConsumerState<OnboardingStorageScreen> {
+class _OnboardingStorageScreenState extends State<OnboardingStorageScreen> {
   bool _isWorking = false;
   AppFailure? _failure;
 
@@ -34,7 +33,7 @@ class _OnboardingStorageScreenState extends ConsumerState<OnboardingStorageScree
       _failure = null;
     });
     try {
-      await addAppStorageRoot(ref);
+      await addAppStorageRoot(context);
       if (!mounted) return;
       unawaited(context.push("/onboarding/admin"));
     } on AppFailure catch (failure) {
@@ -51,7 +50,7 @@ class _OnboardingStorageScreenState extends ConsumerState<OnboardingStorageScree
       _failure = null;
     });
     try {
-      final String? rootId = await addSafStorageRoot(ref);
+      final String? rootId = await addSafStorageRoot(context);
       if (!mounted) return;
       // null = the person cancelled the system picker: stay on this screen.
       if (rootId != null) unawaited(context.push("/onboarding/admin"));

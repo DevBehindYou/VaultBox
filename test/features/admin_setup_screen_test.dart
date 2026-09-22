@@ -1,11 +1,14 @@
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_test/flutter_test.dart";
-import "package:vaultbox/app/providers.dart";
+import "package:vaultbox/app/app_state.dart";
 import "package:vaultbox/core/design/aurora_theme.dart";
 import "package:vaultbox/core/design/aurora_widgets.dart";
 import "package:vaultbox/data/repositories/in_memory_account_repository.dart";
+import "package:vaultbox/data/services/system_clock.dart";
 import "package:vaultbox/domain/entities/account.dart";
+import "package:vaultbox/domain/repositories/account_repository.dart";
+import "package:vaultbox/domain/usecases/create_admin_account.dart";
 import "package:vaultbox/features/onboarding/presentation/admin_setup_screen.dart";
 
 import "../helpers/fake_password_hasher.dart";
@@ -16,18 +19,27 @@ void main() {
   int skipped = 0;
 
   Widget harness({bool withSkip = false}) {
-    return ProviderScope(
-      overrides: [
-        accountRepositoryProvider.overrideWithValue(accounts),
-        passwordHasherProvider.overrideWithValue(FakePasswordHasher()),
+    return MultiRepositoryProvider(
+      providers: <RepositoryProvider<dynamic>>[
+        RepositoryProvider<AccountRepository>.value(value: accounts),
+        RepositoryProvider<CreateAdminAccount>.value(
+          value: CreateAdminAccount(accounts, FakePasswordHasher(), UuidIdGenerator(), const SystemClock()),
+        ),
       ],
-      child: MaterialApp(
-        theme: AuroraTheme.light(),
-        home: AdminSetupScreen(
-          stepLabel: "Step 3 of 3",
-          skipLabel: withSkip ? "Skip for now" : null,
-          onSkip: withSkip ? (BuildContext context) => skipped++ : null,
-          onDone: (BuildContext context) => done++,
+      child: MultiBlocProvider(
+        providers: <BlocProvider<dynamic>>[
+          BlocProvider<AdminExistsCubit>(
+            create: (BuildContext context) => AdminExistsCubit(context.read<AccountRepository>()),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AuroraTheme.light(),
+          home: AdminSetupScreen(
+            stepLabel: "Step 3 of 3",
+            skipLabel: withSkip ? "Skip for now" : null,
+            onSkip: withSkip ? (BuildContext context) => skipped++ : null,
+            onDone: (BuildContext context) => done++,
+          ),
         ),
       ),
     );

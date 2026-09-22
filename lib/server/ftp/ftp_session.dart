@@ -91,9 +91,9 @@ final class FtpSession {
   final String _peer;
 
   final Completer<void> _done = Completer<void>();
-  // Uint8List (not the wider List<int>) so this can be handed straight to
-  // SecureSocket.secureServer's `subscription:` parameter during the TLS
-  // upgrade in _auth() below.
+  // Uint8List matches Socket's actual stream element type (Socket
+  // implements Stream<Uint8List>). Paused, not cancelled, before the TLS
+  // upgrade in _auth() below — see the comment there.
   StreamSubscription<Uint8List>? _subscription;
   Timer? _idle;
   bool _closed = false;
@@ -495,32 +495,28 @@ final class FtpSession {
     // _onData. Pausing after the reply (as this used to) leaves a window —
     // the `await _control.flush()` below yields to the event loop — where an
     // already-arrived ClientHello could be delivered to _onData first.
-    final StreamSubscription<Uint8List>? old = _subscription;
-    old?.pause();
+    //
+    // secureServer has no public `subscription:` parameter. Internally it
+    // detaches `_control`'s raw socket (and this paused subscription) via
+    // `Socket._detachRaw()` and re-delivers any bytes already read once the
+    // new SecureSocket starts listening — pausing here is all that's needed.
+    _subscription?.pause();
 
     _reply(234, "Starting TLS.");
     await _control.flush();
 
     SecureSocket secure;
     try {
-      // `subscription: old` hands the still-open (paused) subscription to the
-      // handshake: `_control` already has a listener attached (it is a
-      // single-subscription stream), so secureServer must reuse it rather
-      // than trying to listen() again, which would throw.
-      //
       // Known gap (acceptable per docs/TASKS.md): if the handshake itself
       // hangs, `.timeout()` only makes THIS call give up — it can't cancel
       // the handshake running underneath, so the socket lives until the
       // client goes away or the idle timer elsewhere closes it.
-      secure = await SecureSocket.secureServer(_control, tls, subscription: old).timeout(_limits.tlsHandshakeTimeout);
+      secure = await SecureSocket.secureServer(_control, tls).timeout(_limits.tlsHandshakeTimeout);
     } on Object {
       _close();
       return;
     }
     _control = secure;
-    // secureServer took ownership of `old` to read the handshake bytes; it
-    // must not be cancelled separately (that would tear down the new
-    // SecureSocket's own input).
     _subscription = null;
     _tlsActive = true;
     _account = null;

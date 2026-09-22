@@ -140,8 +140,10 @@ int _codeOf(List<String> reply) => int.parse(reply.first.substring(0, 3));
 /// directly (rather than through a `StreamIterator` glued straight to the
 /// socket, as `FtpTestClient` does), so it can be swapped out mid-session for
 /// the AUTH TLS upgrade — mirroring exactly what `FtpSession._auth` does on
-/// the server side: pause the existing subscription, then hand it to
-/// `SecureSocket.secure(..., subscription: ...)` rather than losing it.
+/// the server side: pause the existing subscription before starting the
+/// handshake. `SecureSocket.secure` has no public `subscription:` parameter;
+/// it detaches the raw socket internally, so pausing is what actually
+/// matters, not passing the subscription anywhere.
 final class _RawFtpClient {
   _RawFtpClient(this._socket) {
     _sub = _socket.listen(
@@ -203,15 +205,14 @@ final class _RawFtpClient {
   }
 
   /// Upgrades the (plain) connection to TLS in place: pause the existing
-  /// subscription first and hand it to `SecureSocket.secure`, exactly the
-  /// same shape as the fix in `FtpSession._auth`, so bytes already in flight
-  /// when the server replies `234` are not lost.
+  /// subscription first, exactly the same shape as the fix in
+  /// `FtpSession._auth`, so bytes already in flight when the server replies
+  /// `234` are not lost to the plain-text reader.
   Future<void> upgradeToTls({required String host}) async {
     _sub?.pause();
     final SecureSocket secure = await SecureSocket.secure(
       _socket,
       host: host,
-      subscription: _sub,
       onBadCertificate: (X509Certificate certificate) => true,
     );
     _socket = secure;

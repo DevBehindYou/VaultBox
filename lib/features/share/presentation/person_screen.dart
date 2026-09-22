@@ -44,7 +44,7 @@ class _PersonScreenState extends State<PersonScreen> {
     } on AppFailure catch (failure) {
       if (mounted) setState(() => _failure = failure);
     }
-    context.read<AccountsCubit>().refresh();
+    unawaited(context.read<AccountsCubit>().refresh());
   }
 
   Future<void> _toggle(Account account, bool enabled) =>
@@ -78,7 +78,7 @@ class _PersonScreenState extends State<PersonScreen> {
     if (yes != true) return;
     await _guard(() => context.read<DeleteAccount>().call(accountId: account.id));
     if (!mounted || _failure != null) return;
-    context.read<SharesCubit>().refresh();
+    unawaited(context.read<SharesCubit>().refresh());
     widget.onRemoved(context);
   }
 

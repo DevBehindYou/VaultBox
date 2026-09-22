@@ -120,7 +120,7 @@ class _CreateShareDialogState extends State<_CreateShareDialog> {
         maxFileBytes: _isUpload ? _fileSizes[_fileSizeIndex].$2 : null,
         label: widget.itemName,
       );
-      context.read<SharesCubit>().refresh();
+      unawaited(context.read<SharesCubit>().refresh());
       if (!mounted) return;
       Navigator.of(context).pop(created);
     } on AppFailure catch (failure) {

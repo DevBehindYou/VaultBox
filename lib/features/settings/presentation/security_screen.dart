@@ -164,7 +164,7 @@ class _SessionsCard extends StatelessWidget {
       final Account? account = await accountRepository.findByUsername(username);
       if (account != null) await accountRepository.revokeSessions(account.id);
       if (!context.mounted) return;
-      context.read<AccountsCubit>().refresh();
+      unawaited(context.read<AccountsCubit>().refresh());
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("$username was signed out everywhere.")));
     } on AppFailure catch (failure) {
       if (!context.mounted) return;
@@ -194,7 +194,7 @@ class _SessionsCard extends StatelessWidget {
       await accountRepository.revokeSessions(account.id);
     }
     if (!context.mounted) return;
-    context.read<AccountsCubit>().refresh();
+    unawaited(context.read<AccountsCubit>().refresh());
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Everyone was signed out.")));
   }
 

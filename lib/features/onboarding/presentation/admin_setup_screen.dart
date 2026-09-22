@@ -88,7 +88,7 @@ class _AdminSetupScreenState extends State<AdminSetupScreen> {
         username: _username.text,
         password: _password.text,
       );
-      adminExists.refresh();
+      unawaited(adminExists.refresh());
       if (!mounted) return;
       widget.onDone(context);
     } on AppFailure catch (failure) {

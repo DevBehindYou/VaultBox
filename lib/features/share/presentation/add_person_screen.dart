@@ -71,7 +71,7 @@ class _AddPersonScreenState extends State<AddPersonScreen> {
         username: _username.text,
         password: _password.text,
       );
-      context.read<AccountsCubit>().refresh();
+      unawaited(context.read<AccountsCubit>().refresh());
       if (!mounted) return;
       widget.onDone(context, created);
     } on AppFailure catch (failure) {

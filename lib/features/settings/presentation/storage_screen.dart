@@ -204,7 +204,7 @@ class _RootCardState extends State<_RootCard> {
       _testing = false;
       _result = result;
     });
-    context.read<RootStatsCubit>().refresh();
+    unawaited(context.read<RootStatsCubit>().refresh());
   }
 
   Future<void> _makeDefault() async {
@@ -235,7 +235,7 @@ class _RootCardState extends State<_RootCard> {
     try {
       await context.read<StorageRootRepository>().removeRoot(widget.root.id);
       context.read<BackendRegistry>().evict(widget.root.id);
-      context.read<RootStatsCubit>().refresh();
+      unawaited(context.read<RootStatsCubit>().refresh());
     } on AppFailure catch (failure) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));

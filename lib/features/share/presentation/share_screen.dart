@@ -110,7 +110,7 @@ class _ShareCard extends StatelessWidget {
     );
     if (yes != true) return;
     await context.read<ShareRepository>().delete(share.id);
-    context.read<SharesCubit>().refresh();
+    unawaited(context.read<SharesCubit>().refresh());
   }
 
   @override
@@ -160,7 +160,7 @@ class _ShareCard extends StatelessWidget {
           IconButton(
             tooltip: "Turn this link off",
             icon: const Icon(Icons.link_off),
-            onPressed: () => unawaited(_revoke(context, ref)),
+            onPressed: () => unawaited(_revoke(context)),
           ),
         ],
       ),

@@ -386,7 +386,7 @@ class _FtpCard extends StatelessWidget {
   Future<void> _save(BuildContext context, FtpSettings next) async {
     try {
       await context.read<SettingsRepository>().writeAll(next.toMap());
-      context.read<FtpSettingsCubit>().refresh();
+      unawaited(context.read<FtpSettingsCubit>().refresh());
     } on AppFailure catch (failure) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));
@@ -739,7 +739,7 @@ Future<void> _save(BuildContext context, ServerConfig next) async {
   }
   try {
     await context.read<ServerHost>().saveConfig(next);
-    context.read<ServerConfigCubit>().refresh();
+    unawaited(context.read<ServerConfigCubit>().refresh());
   } on AppFailure catch (failure) {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));

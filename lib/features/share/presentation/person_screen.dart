@@ -1,14 +1,15 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 
-import "../../../app/providers.dart";
+import "../../../app/app_state.dart";
 import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
 import "../../../core/errors/app_failure.dart";
+import "../../../core/state/resource.dart";
 import "../../../domain/entities/access_rule.dart";
 import "../../../domain/entities/account.dart";
 import "../../../domain/entities/storage_root.dart";
@@ -21,7 +22,7 @@ import "../../files/viewmodel/files_view_model.dart";
 
 /// One person: turn their access on/off, reset their password, choose which
 /// folders they may reach, or remove them.
-class PersonScreen extends ConsumerStatefulWidget {
+class PersonScreen extends StatefulWidget {
   const PersonScreen({required this.accountId, required this.onRemoved, super.key});
 
   final String accountId;
@@ -30,10 +31,10 @@ class PersonScreen extends ConsumerStatefulWidget {
   final void Function(BuildContext context) onRemoved;
 
   @override
-  ConsumerState<PersonScreen> createState() => _PersonScreenState();
+  State<PersonScreen> createState() => _PersonScreenState();
 }
 
-class _PersonScreenState extends ConsumerState<PersonScreen> {
+class _PersonScreenState extends State<PersonScreen> {
   AppFailure? _failure;
 
   Future<void> _guard(Future<void> Function() action) async {
@@ -43,11 +44,11 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
     } on AppFailure catch (failure) {
       if (mounted) setState(() => _failure = failure);
     }
-    ref.invalidate(accountsProvider);
+    context.read<AccountsCubit>().refresh();
   }
 
   Future<void> _toggle(Account account, bool enabled) =>
-      _guard(() => ref.read(setAccountEnabledProvider).call(accountId: account.id, enabled: enabled));
+      _guard(() => context.read<SetAccountEnabled>().call(accountId: account.id, enabled: enabled));
 
   Future<void> _resetPassword(Account account) async {
     final String? password = await showDialog<String>(
@@ -55,7 +56,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
       builder: (BuildContext dialogContext) => _NewPasswordDialog(username: account.username),
     );
     if (password == null) return;
-    await _guard(() => ref.read(changePasswordProvider).call(accountId: account.id, newPassword: password));
+    await _guard(() => context.read<ChangePassword>().call(accountId: account.id, newPassword: password));
     if (!mounted || _failure != null) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Password changed. They'll need to sign in again.")),
@@ -75,14 +76,14 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
       ),
     );
     if (yes != true) return;
-    await _guard(() => ref.read(deleteAccountProvider).call(accountId: account.id));
+    await _guard(() => context.read<DeleteAccount>().call(accountId: account.id));
     if (!mounted || _failure != null) return;
-    ref.invalidate(sharesProvider);
+    context.read<SharesCubit>().refresh();
     widget.onRemoved(context);
   }
 
   Future<void> _saveRules(Account account, List<AccessGrantInput> grants) =>
-      _guard(() => ref.read(setAccessRulesProvider).call(accountId: account.id, grants: grants));
+      _guard(() => context.read<SetAccessRules>().call(accountId: account.id, grants: grants));
 
   List<AccessGrantInput> _grantsOf(Account account) => <AccessGrantInput>[
     for (final AccessRule rule in account.rules)
@@ -133,8 +134,8 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<List<Account>> accounts = ref.watch(accountsProvider);
-    final List<StorageRoot> roots = ref.watch(storageRootsProvider).value ?? const <StorageRoot>[];
+    final Resource<List<Account>> accounts = context.watch<AccountsCubit>().state;
+    final List<StorageRoot> roots = context.watch<StorageRootsCubit>().state.value ?? const <StorageRoot>[];
 
     return Scaffold(
       appBar: AppBar(title: const Text("Person")),

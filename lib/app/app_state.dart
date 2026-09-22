@@ -6,23 +6,43 @@ import "package:flutter_bloc/flutter_bloc.dart";
 import "../core/state/resource.dart";
 import "../core/state/resource_cubit.dart";
 import "../domain/entities/account.dart";
+import "../domain/entities/activity.dart";
 import "../domain/entities/app_preferences.dart";
+import "../domain/entities/ftp_settings.dart";
 import "../domain/entities/server_config.dart";
 import "../domain/entities/server_state.dart";
 import "../domain/entities/share.dart";
 import "../domain/entities/storage_root.dart";
 import "../domain/repositories/account_repository.dart";
+import "../domain/repositories/activity_repository.dart";
+import "../domain/repositories/clock.dart";
 import "../domain/repositories/server_host.dart";
 import "../domain/repositories/settings_repository.dart";
 import "../domain/repositories/share_repository.dart";
 import "../domain/repositories/storage_root_repository.dart";
+import "../platform/adapters/volume_stats_source.dart";
 
 /// App-scoped Cubits: one instance each, created once at the app root and
-/// alive for the app's lifetime — the Cubit equivalent of every
-/// non-`autoDispose` provider that used to live in `providers.dart`. A
-/// screen-local, `autoDispose`-equivalent Cubit (recycle-bin items, activity
-/// feeds, root stats, FTP settings) is created by the screen that needs it
-/// instead; see that screen's own file.
+/// alive for the app's lifetime.
+///
+/// Every one of these was a non-`autoDispose` provider before this rewrite
+/// EXCEPT the activity feeds, root stats and FTP settings, which WERE
+/// `autoDispose` — but `home_screen.dart` watches all five of those too, and
+/// Home is one of the five permanent `StatefulShellRoute.indexedStack`
+/// branches (`lib/app/router.dart`), which go_router keeps mounted forever
+/// to preserve each tab's own navigation state. An `autoDispose` provider is
+/// only disposed once its LAST watcher unmounts — since Home never unmounts,
+/// these were already effectively app-level in the running app, shared
+/// between Home and whichever dedicated screen (Activity, Storage,
+/// Protocols) also watches them. Making them screen-scoped Cubits instead
+/// would silently give Home and that screen two independent instances (two
+/// polling timers, inconsistent state) instead of the one they actually
+/// shared — so they belong here, not in the screen that seems to "own" them.
+///
+/// The one genuine screen-scoped Cubit is `RecycleItemsCubit`
+/// (`recycle_bin_screen.dart`): Home never watches recycle-bin items, so it
+/// really is created and disposed per visit, family-keyed by root id, same
+/// as `recycleItemsProvider` was.
 
 /// Reactive root list — was `storageRootsProvider`.
 class StorageRootsCubit extends ResourceStreamCubit<List<StorageRoot>> {
@@ -141,9 +161,82 @@ class PreferencesCubit extends Cubit<AppPreferences> {
   }
 }
 
+/// Recent activity events (sign-ins, refusals, link use) — was
+/// `activityEventsProvider`. `refreshNow()` replaces `ref.invalidate(...)`.
+class ActivityEventsCubit extends PolledCubit<List<ActivityEvent>> {
+  ActivityEventsCubit(ActivityRepository repository) : super(repository.recentEvents);
+}
+
+/// Recent file transfers — was `activityTransfersProvider`. `refreshNow()`
+/// replaces `ref.invalidate(...)`.
+class ActivityTransfersCubit extends PolledCubit<List<TransferRecord>> {
+  ActivityTransfersCubit(ActivityRepository repository) : super(repository.recentTransfers);
+}
+
+/// Clients seen in the last day — was `activityClientsProvider`.
+/// `refreshNow()` replaces `ref.invalidate(...)`. Recomputes "since" fresh on
+/// every poll via [clock], exactly like the original did.
+class ActivityClientsCubit extends PolledCubit<List<ClientRecord>> {
+  ActivityClientsCubit(ActivityRepository repository, Clock clock)
+    : super(
+        () => repository.recentClients(
+          since: clock.now().subtract(const Duration(days: 1)),
+        ),
+      );
+}
+
+/// How full the volume behind each enabled, available storage location is,
+/// by root id — was `rootStatsProvider`. That provider watched
+/// `storageRootsProvider.future`, so it recomputed whenever the root list
+/// changed, on top of `ref.invalidate(rootStatsProvider)` after a read/write
+/// test or a backend cache eviction; this Cubit does both: it re-measures
+/// whenever [roots] emits, and `refresh()` re-measures on demand.
+class RootStatsCubit extends Cubit<Resource<Map<String, VolumeStats>>>
+    with ResourceAwaiter<Map<String, VolumeStats>> {
+  RootStatsCubit(this._roots, this._source) : super(const ResourceLoading()) {
+    _subscription = _roots.stream.listen((Resource<List<StorageRoot>> _) => unawaited(refresh()));
+    unawaited(refresh());
+  }
+
+  final StorageRootsCubit _roots;
+  final VolumeStatsSource _source;
+  late final StreamSubscription<Resource<List<StorageRoot>>> _subscription;
+
+  Future<void> refresh() async {
+    final List<StorageRoot>? roots = _roots.state.value;
+    if (roots == null) return; // upstream still loading/errored; nothing to measure yet
+    try {
+      final Map<String, VolumeStats> stats = <String, VolumeStats>{};
+      for (final StorageRoot root in roots) {
+        if (!root.isEnabled || !root.isAvailable) continue;
+        final VolumeStats? measured = await _source.statsFor(root);
+        if (measured != null) stats[root.id] = measured;
+      }
+      if (!isClosed) emit(ResourceData<Map<String, VolumeStats>>(stats));
+    } on Object catch (error, stackTrace) {
+      if (!isClosed) emit(ResourceError<Map<String, VolumeStats>>(error, stackTrace));
+    }
+  }
+
+  @override
+  Future<void> close() {
+    unawaited(_subscription.cancel());
+    return super.close();
+  }
+}
+
+/// What the person chose for the FTP server (off unless they switched it
+/// on) — was `ftpSettingsProvider`. `refresh()` replaces
+/// `ref.invalidate(...)`.
+class FtpSettingsCubit extends ResourceFutureCubit<FtpSettings> {
+  FtpSettingsCubit(SettingsRepository settings)
+    : super(() async => FtpSettings.fromMap(await settings.readAll()));
+}
+
 /// The app-scoped Cubits above, wired in dependency order (`OwnerAccountCubit`
-/// must come after `AccountsCubit` — see its own doc comment). Placed once at
-/// the app root, below the `RepositoryProvider`s from `app_providers.dart`.
+/// must come after `AccountsCubit`, `RootStatsCubit` after `StorageRootsCubit`
+/// — see their own doc comments). Placed once at the app root, below the
+/// `RepositoryProvider`s from `app_providers.dart`.
 List<BlocProvider<dynamic>> buildAppBlocProviders() {
   return <BlocProvider<dynamic>>[
     BlocProvider<PreferencesCubit>(
@@ -172,6 +265,23 @@ List<BlocProvider<dynamic>> buildAppBlocProviders() {
     ),
     BlocProvider<OwnerAccountCubit>(
       create: (BuildContext context) => OwnerAccountCubit(context.read<AccountsCubit>()),
+    ),
+    BlocProvider<ActivityEventsCubit>(
+      create: (BuildContext context) => ActivityEventsCubit(context.read<ActivityRepository>()),
+    ),
+    BlocProvider<ActivityTransfersCubit>(
+      create: (BuildContext context) => ActivityTransfersCubit(context.read<ActivityRepository>()),
+    ),
+    BlocProvider<ActivityClientsCubit>(
+      create: (BuildContext context) =>
+          ActivityClientsCubit(context.read<ActivityRepository>(), context.read<Clock>()),
+    ),
+    BlocProvider<RootStatsCubit>(
+      create: (BuildContext context) =>
+          RootStatsCubit(context.read<StorageRootsCubit>(), context.read<VolumeStatsSource>()),
+    ),
+    BlocProvider<FtpSettingsCubit>(
+      create: (BuildContext context) => FtpSettingsCubit(context.read<SettingsRepository>()),
     ),
   ];
 }

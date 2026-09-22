@@ -2,15 +2,16 @@ import "dart:convert";
 
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:go_router/go_router.dart";
 import "package:qr_flutter/qr_flutter.dart";
+import "package:vaultbox/app/app_state.dart";
 import "package:vaultbox/app/providers.dart";
 import "package:vaultbox/core/design/aurora_theme.dart";
 import "package:vaultbox/core/design/aurora_widgets.dart";
+import "package:vaultbox/data/repositories/file_repository_impl.dart";
 import "package:vaultbox/data/repositories/in_memory_account_repository.dart";
-import "package:vaultbox/data/repositories/in_memory_recycle_bin_repository.dart";
 import "package:vaultbox/data/repositories/in_memory_share_repository.dart";
 import "package:vaultbox/data/repositories/in_memory_storage_root_repository.dart";
 import "package:vaultbox/data/services/memory_storage_backend.dart";
@@ -20,9 +21,18 @@ import "package:vaultbox/domain/entities/server_state.dart";
 import "package:vaultbox/domain/entities/share.dart";
 import "package:vaultbox/domain/entities/storage_root.dart";
 import "package:vaultbox/domain/models/file_ref.dart";
+import "package:vaultbox/domain/repositories/account_repository.dart";
+import "package:vaultbox/domain/repositories/clock.dart";
+import "package:vaultbox/domain/repositories/file_repository.dart";
 import "package:vaultbox/domain/repositories/id_generator.dart";
+import "package:vaultbox/domain/repositories/server_host.dart";
+import "package:vaultbox/domain/repositories/share_repository.dart";
+import "package:vaultbox/domain/repositories/storage_root_repository.dart";
+import "package:vaultbox/domain/security/authorizer.dart";
 import "package:vaultbox/domain/security/permission.dart";
 import "package:vaultbox/domain/security/share_tokens.dart";
+import "package:vaultbox/domain/usecases/create_share.dart";
+import "package:vaultbox/domain/usecases/manage_accounts.dart";
 import "package:vaultbox/domain/value_objects/storage_capabilities.dart";
 import "package:vaultbox/domain/value_objects/storage_path.dart";
 import "package:vaultbox/features/share/presentation/add_person_screen.dart";
@@ -86,19 +96,57 @@ void main() {
   });
 
   Widget scoped({required Widget child, InMemoryAccountRepository? accountRepo}) {
-    return ProviderScope(
-      overrides: [
-        accountRepositoryProvider.overrideWithValue(accountRepo ?? accounts),
-        shareRepositoryProvider.overrideWithValue(shares),
-        storageRootRepositoryProvider.overrideWithValue(InMemoryStorageRootRepository(initial: <StorageRoot>[root])),
-        backendRegistryProvider.overrideWithValue(BackendRegistry()..register(backend)),
-        recycleBinRepositoryProvider.overrideWithValue(InMemoryRecycleBinRepository()),
-        passwordHasherProvider.overrideWithValue(hasher),
-        clockProvider.overrideWithValue(clock),
-        idGeneratorProvider.overrideWithValue(_Ids()),
-        serverHostProvider.overrideWithValue(host),
+    final InMemoryAccountRepository accountRepository = accountRepo ?? accounts;
+    final StorageRootRepository roots = InMemoryStorageRootRepository(initial: <StorageRoot>[root]);
+    final BackendRegistry registry = BackendRegistry()..register(backend);
+    final FileRepository files = FileRepositoryImpl(resolveBackend: registry.forRoot);
+    const Authorizer authorizer = AclAuthorizer();
+    final IdGenerator ids = _Ids();
+
+    return MultiRepositoryProvider(
+      providers: <RepositoryProvider<dynamic>>[
+        RepositoryProvider<AccountRepository>.value(value: accountRepository),
+        RepositoryProvider<ShareRepository>.value(value: shares),
+        RepositoryProvider<StorageRootRepository>.value(value: roots),
+        RepositoryProvider<ServerHost>.value(value: host),
+        RepositoryProvider<Clock>.value(value: clock),
+        RepositoryProvider<CreateUserAccount>.value(
+          value: CreateUserAccount(accountRepository, hasher, ids, clock),
+        ),
+        RepositoryProvider<SetAccountEnabled>.value(value: SetAccountEnabled(accountRepository)),
+        RepositoryProvider<ChangePassword>.value(value: ChangePassword(accountRepository, hasher)),
+        RepositoryProvider<DeleteAccount>.value(value: DeleteAccount(accountRepository, shares)),
+        RepositoryProvider<SetAccessRules>.value(value: SetAccessRules(accountRepository, ids)),
+        RepositoryProvider<CreateShare>.value(
+          value: CreateShare(
+            roots: roots,
+            files: files,
+            shares: shares,
+            hasher: hasher,
+            ids: ids,
+            clock: clock,
+            authorizer: authorizer,
+          ),
+        ),
       ],
-      child: child,
+      child: MultiBlocProvider(
+        providers: <BlocProvider<dynamic>>[
+          BlocProvider<SharesCubit>(create: (BuildContext context) => SharesCubit(context.read<ShareRepository>())),
+          BlocProvider<AccountsCubit>(
+            create: (BuildContext context) => AccountsCubit(context.read<AccountRepository>()),
+          ),
+          BlocProvider<OwnerAccountCubit>(
+            create: (BuildContext context) => OwnerAccountCubit(context.read<AccountsCubit>()),
+          ),
+          BlocProvider<StorageRootsCubit>(
+            create: (BuildContext context) => StorageRootsCubit(context.read<StorageRootRepository>()),
+          ),
+          BlocProvider<ServerStateCubit>(
+            create: (BuildContext context) => ServerStateCubit(context.read<ServerHost>()),
+          ),
+        ],
+        child: child,
+      ),
     );
   }
 

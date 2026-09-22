@@ -2,10 +2,10 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:qr_flutter/qr_flutter.dart";
 
-import "../../../app/providers.dart";
+import "../../../app/app_state.dart";
 import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
@@ -39,7 +39,7 @@ Future<void> showCreateShareFlow(
   );
 }
 
-class _CreateShareDialog extends ConsumerStatefulWidget {
+class _CreateShareDialog extends StatefulWidget {
   const _CreateShareDialog({required this.target, required this.kind, required this.itemName});
 
   final FileRef target;
@@ -47,10 +47,10 @@ class _CreateShareDialog extends ConsumerStatefulWidget {
   final String itemName;
 
   @override
-  ConsumerState<_CreateShareDialog> createState() => _CreateShareDialogState();
+  State<_CreateShareDialog> createState() => _CreateShareDialogState();
 }
 
-class _CreateShareDialogState extends ConsumerState<_CreateShareDialog> {
+class _CreateShareDialogState extends State<_CreateShareDialog> {
   static const List<(String, Duration?)> _lifetimes = <(String, Duration?)>[
     ("1 hour", Duration(hours: 1)),
     ("1 day", Duration(days: 1)),
@@ -105,11 +105,11 @@ class _CreateShareDialogState extends ConsumerState<_CreateShareDialog> {
       _error = null;
     });
     try {
-      final Account? owner = await ref.read(ownerAccountProvider.future);
+      final Account? owner = await context.read<OwnerAccountCubit>().current();
       if (owner == null) {
         throw const ValidationFailure(message: "Create an admin account first (Home tab).");
       }
-      final CreatedShare created = await ref.read(createShareProvider).call(
+      final CreatedShare created = await context.read<CreateShare>().call(
         creator: owner,
         kind: widget.kind,
         rootId: widget.target.root.id,
@@ -120,7 +120,7 @@ class _CreateShareDialogState extends ConsumerState<_CreateShareDialog> {
         maxFileBytes: _isUpload ? _fileSizes[_fileSizeIndex].$2 : null,
         label: widget.itemName,
       );
-      ref.invalidate(sharesProvider);
+      context.read<SharesCubit>().refresh();
       if (!mounted) return;
       Navigator.of(context).pop(created);
     } on AppFailure catch (failure) {
@@ -221,14 +221,14 @@ class _CreateShareDialogState extends ConsumerState<_CreateShareDialog> {
 }
 
 /// Shows a new link once: the address, a QR code and a Copy button.
-class ShareCreatedDialog extends ConsumerWidget {
+class ShareCreatedDialog extends StatelessWidget {
   const ShareCreatedDialog({required this.created, super.key});
 
   final CreatedShare created;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final ServerState server = ref.watch(serverStateProvider).value ?? const ServerState.stopped();
+  Widget build(BuildContext context) {
+    final ServerState server = context.watch<ServerStateCubit>().state.value ?? const ServerState.stopped();
     final String? base = shareLinkBase(server);
     final String path = "${created.share.kind == ShareKind.download ? "s" : "u"}/${created.token}";
     final String text = base == null ? "…/$path" : shareUrl(base, created.share.kind, created.token);

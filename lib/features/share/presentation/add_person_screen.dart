@@ -1,9 +1,9 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 
-import "../../../app/providers.dart";
+import "../../../app/app_state.dart";
 import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
@@ -12,23 +12,24 @@ import "../../../core/errors/app_failure.dart";
 import "../../../domain/entities/account.dart";
 import "../../../domain/security/password_policy.dart";
 import "../../../domain/security/username_policy.dart";
+import "../../../domain/usecases/manage_accounts.dart";
 
 /// Adds a member: someone who can sign in but only reaches the folders they are
 /// given afterwards (see the person's page).
 ///
 /// Live feedback comes from the same policies the use case enforces. The
 /// controllers belong to this State and die with it.
-class AddPersonScreen extends ConsumerStatefulWidget {
+class AddPersonScreen extends StatefulWidget {
   const AddPersonScreen({required this.onDone, super.key});
 
   /// Called with the new account once it exists.
   final void Function(BuildContext context, Account account) onDone;
 
   @override
-  ConsumerState<AddPersonScreen> createState() => _AddPersonScreenState();
+  State<AddPersonScreen> createState() => _AddPersonScreenState();
 }
 
-class _AddPersonScreenState extends ConsumerState<AddPersonScreen> {
+class _AddPersonScreenState extends State<AddPersonScreen> {
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final TextEditingController _confirm = TextEditingController();
@@ -66,11 +67,11 @@ class _AddPersonScreenState extends ConsumerState<AddPersonScreen> {
       _failure = null;
     });
     try {
-      final Account created = await ref.read(createUserAccountProvider).call(
+      final Account created = await context.read<CreateUserAccount>().call(
         username: _username.text,
         password: _password.text,
       );
-      ref.invalidate(accountsProvider);
+      context.read<AccountsCubit>().refresh();
       if (!mounted) return;
       widget.onDone(context, created);
     } on AppFailure catch (failure) {

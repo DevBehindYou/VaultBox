@@ -1,31 +1,34 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:go_router/go_router.dart";
 
-import "../../../app/providers.dart";
+import "../../../app/app_state.dart";
 import "../../../core/design/aurora_components.dart";
 import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
+import "../../../core/state/resource.dart";
 import "../../../domain/entities/account.dart";
 import "../../../domain/entities/share.dart";
+import "../../../domain/repositories/clock.dart";
+import "../../../domain/repositories/share_repository.dart";
 import "../share_links.dart";
 
 /// The Share tab: links made for people without an account, and the people who
 /// have one. Making a link starts from Files (select an item, tap Share).
-class ShareScreen extends ConsumerStatefulWidget {
+class ShareScreen extends StatefulWidget {
   const ShareScreen({super.key});
 
   @override
-  ConsumerState<ShareScreen> createState() => _ShareScreenState();
+  State<ShareScreen> createState() => _ShareScreenState();
 }
 
 enum _Section { links, people }
 
-class _ShareScreenState extends ConsumerState<ShareScreen> {
+class _ShareScreenState extends State<ShareScreen> {
   _Section _section = _Section.links;
 
   @override
@@ -56,13 +59,13 @@ class _ShareScreenState extends ConsumerState<ShareScreen> {
 
 // ------------------------------------------------------------------ links
 
-class _LinksView extends ConsumerWidget {
+class _LinksView extends StatelessWidget {
   const _LinksView();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<List<Share>> shares = ref.watch(sharesProvider);
-    final DateTime now = ref.watch(clockProvider).now();
+  Widget build(BuildContext context) {
+    final Resource<List<Share>> shares = context.watch<SharesCubit>().state;
+    final DateTime now = context.read<Clock>().now();
 
     return shares.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -87,13 +90,13 @@ class _LinksView extends ConsumerWidget {
   }
 }
 
-class _ShareCard extends ConsumerWidget {
+class _ShareCard extends StatelessWidget {
   const _ShareCard({required this.share, required this.now});
 
   final Share share;
   final DateTime now;
 
-  Future<void> _revoke(BuildContext context, WidgetRef ref) async {
+  Future<void> _revoke(BuildContext context) async {
     final bool? yes = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) => AlertDialog(
@@ -106,12 +109,12 @@ class _ShareCard extends ConsumerWidget {
       ),
     );
     if (yes != true) return;
-    await ref.read(shareRepositoryProvider).delete(share.id);
-    ref.invalidate(sharesProvider);
+    await context.read<ShareRepository>().delete(share.id);
+    context.read<SharesCubit>().refresh();
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final bool active = share.isActive(now);
     final String uses = share.maxUses == null
         ? "${share.useCount} ${share.kind == ShareKind.upload ? "received" : "downloads"}"
@@ -167,12 +170,12 @@ class _ShareCard extends ConsumerWidget {
 
 // ----------------------------------------------------------------- people
 
-class _PeopleView extends ConsumerWidget {
+class _PeopleView extends StatelessWidget {
   const _PeopleView();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<List<Account>> accounts = ref.watch(accountsProvider);
+  Widget build(BuildContext context) {
+    final Resource<List<Account>> accounts = context.watch<AccountsCubit>().state;
 
     return accounts.when(
       loading: () => const Center(child: CircularProgressIndicator()),

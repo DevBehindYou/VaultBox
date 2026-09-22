@@ -1,23 +1,23 @@
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:go_router/go_router.dart";
 
 import "../core/design/aurora_context.dart";
 import "../core/design/aurora_spacing.dart";
 import "../domain/entities/server_state.dart";
-import "providers.dart";
+import "app_state.dart";
 
 /// The bar across the top of every tab: the mark and name, which tab this is,
 /// whether the server is up, and shortcuts to the connection settings and to
 /// security (the round button).
-class AppHeader extends ConsumerWidget {
+class AppHeader extends StatelessWidget {
   const AppHeader({required this.subtitle, super.key});
 
   final String subtitle;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final ServerState server = ref.watch(serverStateProvider).value ?? const ServerState.stopped();
+  Widget build(BuildContext context) {
+    final ServerState server = context.watch<ServerStateCubit>().state.value ?? const ServerState.stopped();
 
     return Container(
       height: 60,

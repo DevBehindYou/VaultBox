@@ -1,7 +1,3 @@
-import "dart:async";
-
-import "package:flutter_riverpod/flutter_riverpod.dart";
-
 import "../data/db/app_database.dart";
 import "../data/repositories/drift_account_repository.dart";
 import "../data/repositories/drift_activity_repository.dart";
@@ -15,13 +11,6 @@ import "../data/services/direct_path_storage_backend.dart";
 import "../data/services/memory_storage_backend.dart";
 import "../data/services/saf_storage_backend.dart";
 import "../data/services/system_clock.dart";
-import "../domain/entities/account.dart";
-import "../domain/entities/activity.dart";
-import "../domain/entities/ftp_settings.dart";
-import "../domain/entities/recycle_item.dart";
-import "../domain/entities/server_config.dart";
-import "../domain/entities/server_state.dart";
-import "../domain/entities/share.dart";
 import "../domain/entities/storage_root.dart";
 import "../domain/repositories/account_repository.dart";
 import "../domain/repositories/activity_repository.dart";
@@ -53,22 +42,171 @@ import "../platform/adapters/pigeon_server_host.dart";
 import "../platform/adapters/url_opener.dart";
 import "../platform/adapters/volume_stats_source.dart";
 
-/// Composition root for the storage/file layer.
+/// Composition root for the storage/file layer and every other plain
+/// service, repository and use case the app wires once.
 ///
-/// Manual (non-codegen) providers on purpose — see
-/// docs/IMPLEMENTATION_PLAN.md §E. Every one of these is overridable in tests
-/// via `ProviderScope(overrides: [...])` / `ProviderContainer(overrides:)`,
-/// which is how the Files UI gets a [MemoryStorageBackend] without touching
-/// device storage (doc §59).
+/// Deliberately plain Dart — no `flutter_bloc`/`package:provider` import
+/// here, and no `BuildContext` anywhere in this file. `lib/server/
+/// server_services.dart` builds one of these directly inside the server's
+/// headless engine, which never has a widget tree to read a
+/// `RepositoryProvider` from; the UI side is the only side that needs one,
+/// via `AppDependencies.build()` wrapped by `RepositoryProvider.value` for
+/// each field in `lib/app/app_providers.dart`. Every field here replaces a
+/// former Riverpod `Provider<T>`; the reactive ones (former `StreamProvider`/
+/// `FutureProvider`, watched by a screen) are NOT here — they're Cubits, in
+/// `lib/app/app_state.dart` (app-scoped) or the screen that owns them
+/// (screen-scoped autoDispose equivalents), each built from the repositories
+/// below.
+final class AppDependencies {
+  AppDependencies._({
+    required this.clock,
+    required this.idGenerator,
+    required this.androidStorageHost,
+    required this.backendRegistry,
+    required this.database,
+    required this.storageRootRepository,
+    required this.recycleBinRepository,
+    required this.fileRepository,
+    required this.copyItems,
+    required this.importFiles,
+    required this.moveItems,
+    required this.deleteItems,
+    required this.restoreItems,
+    required this.permanentlyDeleteRecycled,
+    required this.serverHost,
+    required this.accountRepository,
+    required this.passwordHasher,
+    required this.createAdminAccount,
+    required this.authorizer,
+    required this.shareRepository,
+    required this.createUserAccount,
+    required this.changePassword,
+    required this.setAccountEnabled,
+    required this.deleteAccount,
+    required this.setAccessRules,
+    required this.createShare,
+    required this.activityRepository,
+    required this.runDiagnostics,
+    required this.settingsRepository,
+    required this.volumeStatsSource,
+    required this.urlOpener,
+    required this.testStorageAccess,
+  });
 
-// --- Services ---
+  /// Builds the whole graph with its real, production implementations. Every
+  /// field is still a plain constructor-injected value below it in this
+  /// list, so a test that only needs a few fakes constructs its own
+  /// `AppDependencies._(...)` — or, on the UI side, overrides just the one
+  /// `RepositoryProvider<X>.value` it needs (see `app_providers.dart`)
+  /// rather than rebuilding this whole factory.
+  factory AppDependencies.build() {
+    final Clock clock = const SystemClock();
+    final IdGenerator idGenerator = UuidIdGenerator();
+    final AndroidStorageHost androidStorageHost = PigeonAndroidStorageHost();
+    final BackendRegistry backendRegistry = BackendRegistry(host: androidStorageHost);
+    final AppDatabase database = AppDatabase();
+    final StorageRootRepository storageRootRepository = DriftStorageRootRepository(database);
+    final RecycleBinRepository recycleBinRepository = DriftRecycleBinRepository(database);
+    final FileRepository fileRepository = FileRepositoryImpl(resolveBackend: backendRegistry.forRoot);
+    final AccountRepository accountRepository = DriftAccountRepository(database);
+    final PasswordHasher passwordHasher = Argon2idPasswordHasher();
+    final Authorizer authorizer = const AclAuthorizer();
+    final ShareRepository shareRepository = DriftShareRepository(database);
+    final ActivityRepository activityRepository = DriftActivityRepository(database);
+    final SettingsRepository settingsRepository = DriftSettingsRepository(database);
+    final ServerHost serverHost = PigeonServerHost();
 
-final Provider<Clock> clockProvider = Provider<Clock>((Ref ref) => const SystemClock());
+    return AppDependencies._(
+      clock: clock,
+      idGenerator: idGenerator,
+      androidStorageHost: androidStorageHost,
+      backendRegistry: backendRegistry,
+      database: database,
+      storageRootRepository: storageRootRepository,
+      recycleBinRepository: recycleBinRepository,
+      fileRepository: fileRepository,
+      copyItems: CopyItems(fileRepository),
+      importFiles: ImportFiles(fileRepository),
+      moveItems: MoveItems(fileRepository),
+      deleteItems: DeleteItemsToRecycleBin(fileRepository, recycleBinRepository, clock, idGenerator),
+      restoreItems: RestoreItems(fileRepository, recycleBinRepository, storageRootRepository),
+      permanentlyDeleteRecycled: PermanentlyDeleteRecycled(fileRepository, recycleBinRepository, storageRootRepository),
+      serverHost: serverHost,
+      accountRepository: accountRepository,
+      passwordHasher: passwordHasher,
+      createAdminAccount: CreateAdminAccount(accountRepository, passwordHasher, idGenerator, clock),
+      authorizer: authorizer,
+      shareRepository: shareRepository,
+      createUserAccount: CreateUserAccount(accountRepository, passwordHasher, idGenerator, clock),
+      changePassword: ChangePassword(accountRepository, passwordHasher),
+      setAccountEnabled: SetAccountEnabled(accountRepository),
+      deleteAccount: DeleteAccount(accountRepository, shareRepository),
+      setAccessRules: SetAccessRules(accountRepository, idGenerator),
+      createShare: CreateShare(
+        roots: storageRootRepository,
+        files: fileRepository,
+        shares: shareRepository,
+        hasher: passwordHasher,
+        ids: idGenerator,
+        clock: clock,
+        authorizer: authorizer,
+      ),
+      activityRepository: activityRepository,
+      runDiagnostics: RunDiagnostics(
+        roots: storageRootRepository,
+        files: fileRepository,
+        accounts: accountRepository,
+        shares: shareRepository,
+        server: serverHost,
+        clock: clock,
+      ),
+      settingsRepository: settingsRepository,
+      volumeStatsSource: const ChannelVolumeStatsSource(),
+      urlOpener: const LauncherUrlOpener(),
+      testStorageAccess: TestStorageAccess(fileRepository, clock),
+    );
+  }
 
-final Provider<IdGenerator> idGeneratorProvider =
-    Provider<IdGenerator>((Ref ref) => UuidIdGenerator());
+  final Clock clock;
+  final IdGenerator idGenerator;
+  final AndroidStorageHost androidStorageHost;
+  final BackendRegistry backendRegistry;
+  final AppDatabase database;
+  final StorageRootRepository storageRootRepository;
+  final RecycleBinRepository recycleBinRepository;
+  final FileRepository fileRepository;
+  final CopyItems copyItems;
+  final ImportFiles importFiles;
+  final MoveItems moveItems;
+  final DeleteItemsToRecycleBin deleteItems;
+  final RestoreItems restoreItems;
+  final PermanentlyDeleteRecycled permanentlyDeleteRecycled;
+  final ServerHost serverHost;
+  final AccountRepository accountRepository;
+  final PasswordHasher passwordHasher;
+  final CreateAdminAccount createAdminAccount;
+  final Authorizer authorizer;
+  final ShareRepository shareRepository;
+  final CreateUserAccount createUserAccount;
+  final ChangePassword changePassword;
+  final SetAccountEnabled setAccountEnabled;
+  final DeleteAccount deleteAccount;
+  final SetAccessRules setAccessRules;
+  final CreateShare createShare;
+  final ActivityRepository activityRepository;
+  final RunDiagnostics runDiagnostics;
+  final SettingsRepository settingsRepository;
+  final VolumeStatsSource volumeStatsSource;
+  final UrlOpener urlOpener;
+  final TestStorageAccess testStorageAccess;
 
-// --- Backend registry ---
+  Future<void> dispose() => database.close();
+}
+
+/// How often the Activity lists re-read. The server writes them from another
+/// engine, so there is nothing to subscribe to; polling stops with the
+/// screen that owns the `PolledCubit` using this.
+const Duration activityPollInterval = Duration(seconds: 3);
 
 /// Live [StorageBackend] instances, keyed by root id.
 ///
@@ -127,295 +265,3 @@ final class BackendRegistry {
     };
   }
 }
-
-/// The native SAF bridge (Pigeon). Overridable in tests with a fake.
-final Provider<AndroidStorageHost> androidStorageHostProvider =
-    Provider<AndroidStorageHost>((Ref ref) => PigeonAndroidStorageHost());
-
-final Provider<BackendRegistry> backendRegistryProvider = Provider<BackendRegistry>((Ref ref) {
-  return BackendRegistry(host: ref.watch(androidStorageHostProvider));
-});
-
-// --- Persistence ---
-
-/// One [AppDatabase] instance for the whole app — both repositories below
-/// share it rather than each opening their own connection.
-final Provider<AppDatabase> appDatabaseProvider = Provider<AppDatabase>((Ref ref) {
-  final AppDatabase database = AppDatabase();
-  ref.onDispose(() => unawaited(database.close()));
-  return database;
-});
-
-// --- Repositories ---
-
-final Provider<StorageRootRepository> storageRootRepositoryProvider =
-    Provider<StorageRootRepository>((Ref ref) {
-      return DriftStorageRootRepository(ref.watch(appDatabaseProvider));
-    });
-
-final Provider<RecycleBinRepository> recycleBinRepositoryProvider =
-    Provider<RecycleBinRepository>((Ref ref) {
-      return DriftRecycleBinRepository(ref.watch(appDatabaseProvider));
-    });
-
-final Provider<FileRepository> fileRepositoryProvider = Provider<FileRepository>((Ref ref) {
-  final BackendRegistry registry = ref.watch(backendRegistryProvider);
-  return FileRepositoryImpl(resolveBackend: registry.forRoot);
-});
-
-/// Reactive root list. ViewModels watch this rather than polling, so a
-/// removable root going offline propagates automatically (doc §11).
-final StreamProvider<List<StorageRoot>> storageRootsProvider =
-    StreamProvider<List<StorageRoot>>((Ref ref) {
-      return ref.watch(storageRootRepositoryProvider).watchRoots();
-    });
-
-// --- Use cases ---
-
-final Provider<CopyItems> copyItemsProvider =
-    Provider<CopyItems>((Ref ref) => CopyItems(ref.watch(fileRepositoryProvider)));
-
-final Provider<ImportFiles> importFilesProvider =
-    Provider<ImportFiles>((Ref ref) => ImportFiles(ref.watch(fileRepositoryProvider)));
-
-final Provider<MoveItems> moveItemsProvider =
-    Provider<MoveItems>((Ref ref) => MoveItems(ref.watch(fileRepositoryProvider)));
-
-final Provider<DeleteItemsToRecycleBin> deleteItemsProvider =
-    Provider<DeleteItemsToRecycleBin>((Ref ref) {
-      return DeleteItemsToRecycleBin(
-        ref.watch(fileRepositoryProvider),
-        ref.watch(recycleBinRepositoryProvider),
-        ref.watch(clockProvider),
-        ref.watch(idGeneratorProvider),
-      );
-    });
-
-final Provider<RestoreItems> restoreItemsProvider = Provider<RestoreItems>((Ref ref) {
-  return RestoreItems(
-    ref.watch(fileRepositoryProvider),
-    ref.watch(recycleBinRepositoryProvider),
-    ref.watch(storageRootRepositoryProvider),
-  );
-});
-
-final Provider<PermanentlyDeleteRecycled> permanentlyDeleteRecycledProvider =
-    Provider<PermanentlyDeleteRecycled>((Ref ref) {
-      return PermanentlyDeleteRecycled(
-        ref.watch(fileRepositoryProvider),
-        ref.watch(recycleBinRepositoryProvider),
-        ref.watch(storageRootRepositoryProvider),
-      );
-    });
-
-/// Reactive Recycle Bin contents for one root — deliberately a plain
-/// `StreamProvider.family` rather than a full ViewModel: the Recycle Bin
-/// screen only needs "list + restore", no paging/sort/multi-select state of
-/// its own, so a Notifier would be ceremony without payoff (kickoff §49: "do
-/// we actually need this?"). Call as `recycleItemsProvider(root.id)`.
-final recycleItemsProvider =
-    StreamProvider.autoDispose.family<List<RecycleItem>, String>((Ref ref, String rootId) {
-      return ref.watch(recycleBinRepositoryProvider).watchItems(rootId);
-    });
-
-// --- Server host (Phase 2) ---
-
-/// Controls the Foreground Service that hosts the server. Overridable in tests.
-final Provider<ServerHost> serverHostProvider =
-    Provider<ServerHost>((Ref ref) => PigeonServerHost());
-
-/// The server's live state (native owns it; this mirrors it).
-final StreamProvider<ServerState> serverStateProvider =
-    StreamProvider<ServerState>((Ref ref) => ref.watch(serverHostProvider).watch());
-
-/// Saved server settings (network access on/off, port).
-final FutureProvider<ServerConfig> serverConfigProvider =
-    FutureProvider<ServerConfig>((Ref ref) => ref.watch(serverHostProvider).config());
-
-/// SHA-256 fingerprint of the server's TLS certificate.
-final FutureProvider<String> tlsFingerprintProvider =
-    FutureProvider<String>((Ref ref) => ref.watch(serverHostProvider).tlsFingerprint());
-
-// --- Accounts (Phase 3) ---
-
-final Provider<AccountRepository> accountRepositoryProvider =
-    Provider<AccountRepository>((Ref ref) => DriftAccountRepository(ref.watch(appDatabaseProvider)));
-
-/// Argon2id at the OWASP minimum. Overridden with a fast fake in widget tests.
-final Provider<PasswordHasher> passwordHasherProvider =
-    Provider<PasswordHasher>((Ref ref) => Argon2idPasswordHasher());
-
-final Provider<CreateAdminAccount> createAdminAccountProvider = Provider<CreateAdminAccount>((Ref ref) {
-  return CreateAdminAccount(
-    ref.watch(accountRepositoryProvider),
-    ref.watch(passwordHasherProvider),
-    ref.watch(idGeneratorProvider),
-    ref.watch(clockProvider),
-  );
-});
-
-/// Whether an admin account exists yet (drives onboarding and the network switch).
-final FutureProvider<bool> adminExistsProvider = FutureProvider<bool>(
-  (Ref ref) async => (await ref.watch(accountRepositoryProvider).count()) > 0,
-);
-
-// --- People and sharing (Phase 5) ---
-
-/// Role + folder-grant access, used by every protocol the server speaks.
-final Provider<Authorizer> authorizerProvider = Provider<Authorizer>((Ref ref) => const AclAuthorizer());
-
-final Provider<ShareRepository> shareRepositoryProvider =
-    Provider<ShareRepository>((Ref ref) => DriftShareRepository(ref.watch(appDatabaseProvider)));
-
-final Provider<CreateUserAccount> createUserAccountProvider = Provider<CreateUserAccount>((Ref ref) {
-  return CreateUserAccount(
-    ref.watch(accountRepositoryProvider),
-    ref.watch(passwordHasherProvider),
-    ref.watch(idGeneratorProvider),
-    ref.watch(clockProvider),
-  );
-});
-
-final Provider<ChangePassword> changePasswordProvider = Provider<ChangePassword>(
-  (Ref ref) => ChangePassword(ref.watch(accountRepositoryProvider), ref.watch(passwordHasherProvider)),
-);
-
-final Provider<SetAccountEnabled> setAccountEnabledProvider =
-    Provider<SetAccountEnabled>((Ref ref) => SetAccountEnabled(ref.watch(accountRepositoryProvider)));
-
-final Provider<DeleteAccount> deleteAccountProvider = Provider<DeleteAccount>(
-  (Ref ref) => DeleteAccount(ref.watch(accountRepositoryProvider), ref.watch(shareRepositoryProvider)),
-);
-
-final Provider<SetAccessRules> setAccessRulesProvider = Provider<SetAccessRules>(
-  (Ref ref) => SetAccessRules(ref.watch(accountRepositoryProvider), ref.watch(idGeneratorProvider)),
-);
-
-final Provider<CreateShare> createShareProvider = Provider<CreateShare>((Ref ref) {
-  return CreateShare(
-    roots: ref.watch(storageRootRepositoryProvider),
-    files: ref.watch(fileRepositoryProvider),
-    shares: ref.watch(shareRepositoryProvider),
-    hasher: ref.watch(passwordHasherProvider),
-    ids: ref.watch(idGeneratorProvider),
-    clock: ref.watch(clockProvider),
-    authorizer: ref.watch(authorizerProvider),
-  );
-});
-
-/// Every account, oldest first. Invalidate after a change.
-final FutureProvider<List<Account>> accountsProvider =
-    FutureProvider<List<Account>>((Ref ref) => ref.watch(accountRepositoryProvider).listAll());
-
-/// Every share / upload link, newest first. Invalidate after a change.
-final FutureProvider<List<Share>> sharesProvider =
-    FutureProvider<List<Share>>((Ref ref) => ref.watch(shareRepositoryProvider).list());
-
-/// The person who owns the phone: the first enabled admin. Links made in the app
-/// are made as them.
-final FutureProvider<Account?> ownerAccountProvider = FutureProvider<Account?>((Ref ref) async {
-  final List<Account> all = await ref.watch(accountsProvider.future);
-  for (final Account account in all) {
-    if (account.isAdmin && account.isEnabled) return account;
-  }
-  return null;
-});
-
-// --- Activity and diagnostics (Phase 6) ---
-
-final Provider<ActivityRepository> activityRepositoryProvider =
-    Provider<ActivityRepository>((Ref ref) => DriftActivityRepository(ref.watch(appDatabaseProvider)));
-
-final Provider<RunDiagnostics> runDiagnosticsProvider = Provider<RunDiagnostics>((Ref ref) {
-  return RunDiagnostics(
-    roots: ref.watch(storageRootRepositoryProvider),
-    files: ref.watch(fileRepositoryProvider),
-    accounts: ref.watch(accountRepositoryProvider),
-    shares: ref.watch(shareRepositoryProvider),
-    server: ref.watch(serverHostProvider),
-    clock: ref.watch(clockProvider),
-  );
-});
-
-/// How often the Activity lists re-read. The server writes them from another
-/// engine, so there is nothing to subscribe to; polling stops with the screen.
-const Duration activityPollInterval = Duration(seconds: 3);
-
-/// Emits [read] now and then every [every], until the provider is dropped.
-Stream<T> _polled<T>(Ref ref, Future<T> Function() read, {Duration every = activityPollInterval}) {
-  final StreamController<T> controller = StreamController<T>();
-  Future<void> tick() async {
-    try {
-      final T value = await read();
-      if (!controller.isClosed) controller.add(value);
-    } on Object catch (error, trace) {
-      if (!controller.isClosed) controller.addError(error, trace);
-    }
-  }
-
-  unawaited(tick());
-  final Timer timer = Timer.periodic(every, (Timer _) => unawaited(tick()));
-  ref.onDispose(() {
-    timer.cancel();
-    unawaited(controller.close());
-  });
-  return controller.stream;
-}
-
-final StreamProvider<List<ActivityEvent>> activityEventsProvider = StreamProvider.autoDispose<List<ActivityEvent>>(
-  (Ref ref) => _polled(ref, () => ref.read(activityRepositoryProvider).recentEvents()),
-);
-
-final StreamProvider<List<TransferRecord>> activityTransfersProvider =
-    StreamProvider.autoDispose<List<TransferRecord>>(
-      (Ref ref) => _polled(ref, () => ref.read(activityRepositoryProvider).recentTransfers()),
-    );
-
-/// Clients seen in the last day.
-final StreamProvider<List<ClientRecord>> activityClientsProvider = StreamProvider.autoDispose<List<ClientRecord>>(
-  (Ref ref) => _polled(
-    ref,
-    () => ref.read(activityRepositoryProvider).recentClients(
-      since: ref.read(clockProvider).now().subtract(const Duration(days: 1)),
-    ),
-  ),
-);
-
-// --- Appearance and other small settings ---
-
-final Provider<SettingsRepository> settingsRepositoryProvider =
-    Provider<SettingsRepository>((Ref ref) => DriftSettingsRepository(ref.watch(appDatabaseProvider)));
-
-// --- Storage volumes and opening links ---
-
-final Provider<VolumeStatsSource> volumeStatsSourceProvider =
-    Provider<VolumeStatsSource>((Ref ref) => const ChannelVolumeStatsSource());
-
-/// How full the volume behind each storage location is, by root id. Locations
-/// that can't be measured (offline, unsupported) are left out. Read again each
-/// time a screen that shows it opens.
-final FutureProvider<Map<String, VolumeStats>> rootStatsProvider = FutureProvider.autoDispose<Map<String, VolumeStats>>((
-  Ref ref,
-) async {
-  final List<StorageRoot> roots = await ref.watch(storageRootsProvider.future);
-  final VolumeStatsSource source = ref.watch(volumeStatsSourceProvider);
-  final Map<String, VolumeStats> stats = <String, VolumeStats>{};
-  for (final StorageRoot root in roots) {
-    if (!root.isEnabled || !root.isAvailable) continue;
-    final VolumeStats? measured = await source.statsFor(root);
-    if (measured != null) stats[root.id] = measured;
-  }
-  return stats;
-});
-
-final Provider<UrlOpener> urlOpenerProvider = Provider<UrlOpener>((Ref ref) => const LauncherUrlOpener());
-
-final Provider<TestStorageAccess> testStorageAccessProvider = Provider<TestStorageAccess>(
-  (Ref ref) => TestStorageAccess(ref.watch(fileRepositoryProvider), ref.watch(clockProvider)),
-);
-
-/// What the person chose for the FTP server (off unless they switched it on).
-/// Read again after each change.
-final FutureProvider<FtpSettings> ftpSettingsProvider = FutureProvider.autoDispose<FtpSettings>((Ref ref) async {
-  return FtpSettings.fromMap(await ref.watch(settingsRepositoryProvider).readAll());
-});

@@ -1,8 +1,6 @@
 import "dart:async";
 import "dart:io";
 
-import "package:flutter_riverpod/flutter_riverpod.dart";
-
 import "../app/providers.dart";
 import "../data/security/in_memory_session_store.dart";
 import "../domain/entities/ftp_settings.dart";
@@ -23,24 +21,26 @@ import "webdav/dav_locks.dart";
 import "webdav/webdav_handler.dart";
 
 /// Everything the server's isolate needs, wired once. It reuses the app's own
-/// providers (same repositories, hasher and storage backends as the UI) in a
-/// private container: the service's engine is a separate isolate, so it opens
-/// its own database connection and SAF bridge rather than sharing the UI's.
+/// composition root ([AppDependencies] — same repositories, hasher and
+/// storage backends the UI would build) but its own instance of it: the
+/// service's engine is a separate isolate with no widget tree to read a
+/// `RepositoryProvider` from, so it opens its own database connection and SAF
+/// bridge rather than sharing the UI's.
 ///
 /// Sessions and login throttles live here, in memory, for the life of the
 /// server: stopping it (or an OS kill) logs everyone out, and no token
 /// material is written to disk.
 final class ServerServices {
-  ServerServices._(this.api, this.dav, this._ftpDeps, this._clock, this._container, this._purgeTimer);
+  ServerServices._(this.api, this.dav, this._ftpDeps, this._clock, this._deps, this._purgeTimer);
 
   factory ServerServices.create() {
-    final ProviderContainer container = ProviderContainer();
-    final Clock clock = container.read(clockProvider);
+    final AppDependencies deps = AppDependencies.build();
+    final Clock clock = deps.clock;
 
     final SessionManager sessions = SessionManager(store: InMemorySessionStore(), clock: clock);
     final LoginService login = LoginService(
-      accounts: container.read(accountRepositoryProvider),
-      hasher: container.read(passwordHasherProvider),
+      accounts: deps.accountRepository,
+      hasher: deps.passwordHasher,
       sessions: sessions,
       perAccountThrottle: LoginThrottle(clock: clock),
       // Looser than per-account: several people can share one address, but an
@@ -51,40 +51,40 @@ final class ServerServices {
 
     final DownloadTicketService tickets = DownloadTicketService(clock: clock);
     final StorageGate gate = StorageGate(
-      roots: container.read(storageRootRepositoryProvider),
-      authorizer: container.read(authorizerProvider),
+      roots: deps.storageRootRepository,
+      authorizer: deps.authorizer,
     );
     final ShareUnlocks unlocks = ShareUnlocks(clock: clock);
     // History for the Activity tab: written here, read by the app from the shared database.
     final ActivityLog activity = ActivityLog(
-      repository: container.read(activityRepositoryProvider),
+      repository: deps.activityRepository,
       clock: clock,
-      ids: container.read(idGeneratorProvider),
+      ids: deps.idGenerator,
     )..serverStarted();
     final VaultApi api = VaultApi(
       login: login,
       sessions: sessions,
-      accounts: container.read(accountRepositoryProvider),
+      accounts: deps.accountRepository,
       gate: gate,
       activity: activity,
       public: PublicEndpoints(
-        shares: container.read(shareRepositoryProvider),
-        accounts: container.read(accountRepositoryProvider),
+        shares: deps.shareRepository,
+        accounts: deps.accountRepository,
         gate: gate,
-        files: container.read(fileRepositoryProvider),
-        hasher: container.read(passwordHasherProvider),
+        files: deps.fileRepository,
+        hasher: deps.passwordHasher,
         clock: clock,
         unlocks: unlocks,
         activity: activity,
       ),
       files: FileEndpoints(
         gate: gate,
-        files: container.read(fileRepositoryProvider),
-        accounts: container.read(accountRepositoryProvider),
+        files: deps.fileRepository,
+        accounts: deps.accountRepository,
         tickets: tickets,
-        copy: container.read(copyItemsProvider),
-        move: container.read(moveItemsProvider),
-        delete: container.read(deleteItemsProvider),
+        copy: deps.copyItems,
+        move: deps.moveItems,
+        delete: deps.deleteItems,
         activity: activity,
       ),
     );
@@ -93,14 +93,14 @@ final class ServerServices {
     // (FTP clients open several connections, each of which signs in).
     final DavAuthenticator passwordAuth = DavAuthenticator(
       login: login,
-      accounts: container.read(accountRepositoryProvider),
+      accounts: deps.accountRepository,
       clock: clock,
     );
 
     final WebDavHandler dav = WebDavHandler(
       gate: gate,
-      files: container.read(fileRepositoryProvider),
-      delete: container.read(deleteItemsProvider),
+      files: deps.fileRepository,
+      delete: deps.deleteItems,
       auth: passwordAuth,
       locks: DavLockManager(clock: clock),
       activity: activity,
@@ -108,9 +108,9 @@ final class ServerServices {
 
     final FtpDeps ftpDeps = FtpDeps(
       gate: gate,
-      files: container.read(fileRepositoryProvider),
-      delete: container.read(deleteItemsProvider),
-      move: container.read(moveItemsProvider),
+      files: deps.fileRepository,
+      delete: deps.deleteItems,
+      move: deps.moveItems,
       auth: passwordAuth,
       activity: activity,
     );
@@ -123,19 +123,19 @@ final class ServerServices {
         unlocks.purgeExpired();
       },
     );
-    return ServerServices._(api, dav, ftpDeps, clock, container, purge);
+    return ServerServices._(api, dav, ftpDeps, clock, deps, purge);
   }
 
   final VaultApi api;
   final WebDavHandler dav;
   final FtpDeps _ftpDeps;
   final Clock _clock;
-  final ProviderContainer _container;
+  final AppDependencies _deps;
   final Timer _purgeTimer;
 
   /// The FTP settings the person chose in the app (off unless they switched it on).
   Future<FtpSettings> loadFtpSettings() async {
-    return FtpSettings.fromMap(await _container.read(settingsRepositoryProvider).readAll());
+    return FtpSettings.fromMap(await _deps.settingsRepository.readAll());
   }
 
   /// An FTP server for [settings]. [tls] is required for the two secure modes.
@@ -145,6 +145,6 @@ final class ServerServices {
 
   void dispose() {
     _purgeTimer.cancel();
-    _container.dispose();
+    unawaited(_deps.dispose());
   }
 }

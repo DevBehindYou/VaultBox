@@ -1,11 +1,12 @@
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:go_router/go_router.dart";
 
 import "../core/design/aurora_context.dart";
 import "../core/design/aurora_spacing.dart";
 import "../core/design/aurora_typography.dart";
 import "../core/design/aurora_widgets.dart";
+import "../core/state/resource.dart";
 import "../domain/entities/account.dart";
 import "../domain/entities/storage_root.dart";
 import "../features/activity/presentation/activity_screen.dart";
@@ -25,7 +26,7 @@ import "../features/settings/presentation/storage_screen.dart";
 import "../features/share/presentation/add_person_screen.dart";
 import "../features/share/presentation/person_screen.dart";
 import "../features/share/presentation/share_screen.dart";
-import "providers.dart";
+import "app_state.dart";
 import "shell_scaffold.dart";
 
 /// Route table. Exactly five permanent destinations (doc §8 / kickoff §6);
@@ -34,7 +35,7 @@ import "shell_scaffold.dart";
 ///
 /// `StatefulShellRoute.indexedStack` gives each tab its own Navigator, so a
 /// deep Files stack survives a trip to Settings and back (KB vol2 §7.1).
-GoRouter buildRouter(Ref ref) {
+GoRouter buildRouter() {
   return GoRouter(
     initialLocation: "/home",
     routes: <RouteBase>[
@@ -158,26 +159,24 @@ GoRouter buildRouter(Ref ref) {
   );
 }
 
-final Provider<GoRouter> routerProvider = Provider<GoRouter>(buildRouter);
-
 /// Resolves which root the Files tab shows: the person's last choice from the
 /// switcher, else the default root, else the first. With more than one root a
 /// chip row above the file list switches between them; with a single root it
 /// stays out of the way. Shows a clear empty state when no storage is
 /// configured yet, rather than crashing on a missing root.
-class _FilesEntryPoint extends ConsumerStatefulWidget {
+class _FilesEntryPoint extends StatefulWidget {
   const _FilesEntryPoint();
 
   @override
-  ConsumerState<_FilesEntryPoint> createState() => _FilesEntryPointState();
+  State<_FilesEntryPoint> createState() => _FilesEntryPointState();
 }
 
-class _FilesEntryPointState extends ConsumerState<_FilesEntryPoint> {
+class _FilesEntryPointState extends State<_FilesEntryPoint> {
   String? _selectedId;
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<List<StorageRoot>> roots = ref.watch(storageRootsProvider);
+    final Resource<List<StorageRoot>> roots = context.watch<StorageRootsCubit>().state;
 
     return roots.when(
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),

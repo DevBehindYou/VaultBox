@@ -20,15 +20,15 @@ dependencies:
   go_router: ^18.0.1
 
   # --- State management / DI ---
-  # Verified against pub.dev (latest stable: 3.4.3 at time of writing, not
-  # guessed). Used for ViewModel composition, Notifier-based ViewModels
-  # (constructor-injected family args per Riverpod 3.0's actual API — see
-  # lib/features/files/viewmodel/files_view_model.dart doc comment),
-  # repository/service DI, test overrides.
-  # NOTE: this Phase 0/1 slice uses *manual* (non-codegen) Riverpod providers
-  # deliberately — see docs/IMPLEMENTATION_PLAN.md §E. riverpod_generator can
-  # be adopted later without changing the public ViewModel shape.
-  flutter_riverpod: ^3.0.0
+  # Verified against pub.dev (latest stable: 9.1.1 at time of writing, not
+  # guessed; pulls in bloc ^9.0.0 transitively). Replaces flutter_riverpod
+  # (2026-09-23 rewrite, at the user's request): RepositoryProvider /
+  # MultiRepositoryProvider (re-exported from package:provider) for plain
+  # service/repository/use-case DI, Cubit for every screen's reactive state
+  # (see lib/features/files/viewmodel/files_cubit.dart), BlocProvider /
+  # MultiBlocProvider for wiring, test overrides via
+  # MultiRepositoryProvider/MultiBlocProvider with fakes.
+  flutter_bloc: ^9.1.1
 
   # --- Metadata database ---
   # Verified current versions (checked against pub.dev, not guessed): drift
@@ -74,6 +74,10 @@ dev_dependencies:
     sdk: flutter
   # Doc-mandated strict analyzer baseline (§00/§20/§25).
   flutter_lints: ^5.0.0
+
+  # --- BLoC test helpers (2026-09-23 rewrite) ---
+  # Verified current version (pub.dev, not guessed). blocTest() for Cubit tests.
+  bloc_test: ^10.0.0
 
   # --- Codegen (required to actually compile — run locally, see README.md) ---
   build_runner: ^2.4.13

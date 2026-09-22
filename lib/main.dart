@@ -1,8 +1,10 @@
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:go_router/go_router.dart";
 
-import "app/preferences.dart";
+import "app/app_providers.dart";
+import "app/app_state.dart";
+import "app/providers.dart";
 import "app/router.dart";
 import "core/design/aurora_context.dart";
 import "core/design/aurora_theme.dart";
@@ -19,17 +21,31 @@ const Future<void> Function() _serverEntrypoint = serverMain;
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   AppLogger.init();
-  runApp(const ProviderScope(child: VaultBoxApp()));
+  final AppDependencies deps = AppDependencies.build();
+  // Built once, outside the widget tree, like every other Riverpod-cached
+  // singleton this rewrite touched — a GoRouter must never be rebuilt on a
+  // theme change, or the whole navigation stack resets.
+  final GoRouter router = buildRouter();
+  runApp(
+    MultiRepositoryProvider(
+      providers: buildRepositoryProviders(deps),
+      child: MultiBlocProvider(
+        providers: buildAppBlocProviders(),
+        child: VaultBoxApp(router: router),
+      ),
+    ),
+  );
 }
 
-class VaultBoxApp extends ConsumerWidget {
-  const VaultBoxApp({super.key});
+class VaultBoxApp extends StatelessWidget {
+  const VaultBoxApp({required this.router, super.key});
+
+  final GoRouter router;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final GoRouter router = ref.watch(routerProvider);
+  Widget build(BuildContext context) {
     // Until the saved choices load (a blink), the defaults apply.
-    final AppPreferences prefs = ref.watch(preferencesProvider).value ?? const AppPreferences();
+    final AppPreferences prefs = context.watch<PreferencesCubit>().state;
     final AuroraStyle style = AuroraStyle(handwrittenHeadlines: prefs.handwrittenHeadlines, gradients: prefs.gradients);
     final VisualDensity density = switch (prefs.density) {
       UiDensity.compact => VisualDensity.compact,

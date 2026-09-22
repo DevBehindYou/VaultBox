@@ -1,10 +1,13 @@
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_test/flutter_test.dart";
+import "package:vaultbox/app/app_state.dart";
 import "package:vaultbox/app/providers.dart";
 import "package:vaultbox/core/design/aurora_theme.dart";
 import "package:vaultbox/data/repositories/in_memory_activity_repository.dart";
 import "package:vaultbox/domain/entities/activity.dart";
+import "package:vaultbox/domain/repositories/activity_repository.dart";
+import "package:vaultbox/domain/repositories/clock.dart";
 import "package:vaultbox/features/activity/presentation/activity_screen.dart";
 
 import "../helpers/fake_clock.dart";
@@ -18,12 +21,23 @@ void main() {
     repo = InMemoryActivityRepository();
   });
 
-  Widget app() => ProviderScope(
-    overrides: [
-      activityRepositoryProvider.overrideWithValue(repo),
-      clockProvider.overrideWithValue(clock),
+  Widget app() => MultiRepositoryProvider(
+    providers: <RepositoryProvider<dynamic>>[
+      RepositoryProvider<ActivityRepository>.value(value: repo),
+      RepositoryProvider<Clock>.value(value: clock),
     ],
-    child: MaterialApp(theme: AuroraTheme.light(), home: const ActivityScreen()),
+    child: MultiBlocProvider(
+      providers: <BlocProvider<dynamic>>[
+        BlocProvider<ActivityEventsCubit>(create: (BuildContext context) => ActivityEventsCubit(context.read<ActivityRepository>())),
+        BlocProvider<ActivityTransfersCubit>(
+          create: (BuildContext context) => ActivityTransfersCubit(context.read<ActivityRepository>()),
+        ),
+        BlocProvider<ActivityClientsCubit>(
+          create: (BuildContext context) => ActivityClientsCubit(context.read<ActivityRepository>(), context.read<Clock>()),
+        ),
+      ],
+      child: MaterialApp(theme: AuroraTheme.light(), home: const ActivityScreen()),
+    ),
   );
 
   Future<void> show(WidgetTester tester) async {

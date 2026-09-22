@@ -1,11 +1,12 @@
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:go_router/go_router.dart";
 import "package:vaultbox/app/app_header.dart";
-import "package:vaultbox/app/providers.dart";
+import "package:vaultbox/app/app_state.dart";
 import "package:vaultbox/core/design/aurora_theme.dart";
 import "package:vaultbox/domain/entities/server_state.dart";
+import "package:vaultbox/domain/repositories/server_host.dart";
 
 import "../helpers/fake_server_host.dart";
 
@@ -21,9 +22,14 @@ void main() {
       ],
     );
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [serverHostProvider.overrideWithValue(host)],
-        child: MaterialApp.router(theme: AuroraTheme.light(), routerConfig: router),
+      MultiRepositoryProvider(
+        providers: <RepositoryProvider<dynamic>>[RepositoryProvider<ServerHost>.value(value: host)],
+        child: MultiBlocProvider(
+          providers: <BlocProvider<dynamic>>[
+            BlocProvider<ServerStateCubit>(create: (BuildContext context) => ServerStateCubit(context.read<ServerHost>())),
+          ],
+          child: MaterialApp.router(theme: AuroraTheme.light(), routerConfig: router),
+        ),
       ),
     );
     await tester.pumpAndSettle();

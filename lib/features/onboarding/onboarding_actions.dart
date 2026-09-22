@@ -1,6 +1,7 @@
 import "dart:io";
 
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter/widgets.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:path/path.dart" as p;
 import "package:path_provider/path_provider.dart";
 
@@ -28,7 +29,7 @@ import "../../platform/adapters/android_storage_host.dart";
 /// Returns the created root's id, or throws an [AppFailure] the caller
 /// should show via [AuroraInlineBanner] rather than a raw exception (kickoff
 /// §71).
-Future<String> addAppStorageRoot(WidgetRef ref) async {
+Future<String> addAppStorageRoot(BuildContext context) async {
   // A dedicated subdirectory, NOT the documents directory itself: that
   // directory also holds vaultbox.sqlite (+ -wal/-shm), and using it as the
   // file root would show the database in the file manager, where a rename or
@@ -60,8 +61,8 @@ Future<String> addAppStorageRoot(WidgetRef ref) async {
     // Already set up from a previous run — fine.
   }
 
-  ref.read(backendRegistryProvider).register(backend);
-  await ref.read(storageRootRepositoryProvider).addRoot(
+  context.read<BackendRegistry>().register(backend);
+  await context.read<StorageRootRepository>().addRoot(
     StorageRoot(
       id: rootId,
       displayName: "This phone",
@@ -82,12 +83,12 @@ Future<String> addAppStorageRoot(WidgetRef ref) async {
 ///
 /// Thin wrapper so widgets stay simple; the logic lives in [registerSafRoot],
 /// which takes its dependencies explicitly and is unit-tested with fakes.
-Future<String?> addSafStorageRoot(WidgetRef ref) {
+Future<String?> addSafStorageRoot(BuildContext context) {
   return registerSafRoot(
-    host: ref.read(androidStorageHostProvider),
-    registry: ref.read(backendRegistryProvider),
-    roots: ref.read(storageRootRepositoryProvider),
-    ids: ref.read(idGeneratorProvider),
+    host: context.read<AndroidStorageHost>(),
+    registry: context.read<BackendRegistry>(),
+    roots: context.read<StorageRootRepository>(),
+    ids: context.read<IdGenerator>(),
   );
 }
 

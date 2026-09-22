@@ -1,7 +1,7 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 
 import "../../../core/design/aurora_colors.dart";
 import "../../../core/design/aurora_context.dart";
@@ -11,8 +11,14 @@ import "../../../core/design/aurora_widgets.dart";
 import "../../../domain/entities/share.dart";
 import "../../../domain/models/file_ref.dart";
 import "../../../domain/models/operation_batch.dart";
+import "../../../domain/repositories/file_repository.dart";
+import "../../../domain/usecases/copy_items.dart";
+import "../../../domain/usecases/delete_items_to_recycle_bin.dart";
+import "../../../domain/usecases/import_files.dart";
+import "../../../domain/usecases/move_items.dart";
 import "../../../domain/value_objects/storage_entry.dart";
 import "../../../domain/value_objects/write_mode.dart";
+import "../../../platform/adapters/android_storage_host.dart";
 import "../../share/presentation/create_share_dialog.dart";
 import "../viewmodel/files_view_model.dart";
 import "destination_picker_screen.dart";
@@ -24,16 +30,39 @@ import "widgets/file_row.dart";
 /// and per-item actions; everything else is a contextual sheet or dialog
 /// rather than a route (kickoff §5, §52 — the seven "files_*" mockups
 /// consolidate here).
-class FilesScreen extends ConsumerStatefulWidget {
+class FilesScreen extends StatelessWidget {
   const FilesScreen({required this.directory, super.key});
 
   final FileRef directory;
 
   @override
-  ConsumerState<FilesScreen> createState() => _FilesScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider<FilesCubit>(
+      key: ValueKey<FileRef>(directory),
+      create: (BuildContext context) => FilesCubit(
+        directory: directory,
+        files: context.read<FileRepository>(),
+        deleteItems: context.read<DeleteItemsToRecycleBin>(),
+        copyItems: context.read<CopyItems>(),
+        moveItems: context.read<MoveItems>(),
+        importFiles: context.read<ImportFiles>(),
+        androidStorageHost: context.read<AndroidStorageHost>(),
+      ),
+      child: _FilesScreenBody(directory: directory),
+    );
+  }
 }
 
-class _FilesScreenState extends ConsumerState<FilesScreen> {
+class _FilesScreenBody extends StatefulWidget {
+  const _FilesScreenBody({required this.directory});
+
+  final FileRef directory;
+
+  @override
+  State<_FilesScreenBody> createState() => _FilesScreenBodyState();
+}
+
+class _FilesScreenBodyState extends State<_FilesScreenBody> {
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -59,15 +88,14 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
     // Prefetch a page before hitting the bottom so scrolling never stalls
     // waiting on I/O.
     if (remaining < FileRow.rowHeight * 8) {
-      unawaited(ref.read(filesViewModelProvider(widget.directory).notifier).loadMore());
+      unawaited(context.read<FilesCubit>().loadMore());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final FilesState state = ref.watch(filesViewModelProvider(widget.directory));
-    final FilesViewModel viewModel =
-        ref.read(filesViewModelProvider(widget.directory).notifier);
+    final FilesState state = context.watch<FilesCubit>().state;
+    final FilesCubit viewModel = context.read<FilesCubit>();
 
     return Scaffold(
       body: SafeArea(
@@ -159,7 +187,7 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
     );
   }
 
-  Widget _buildList(FilesState state, FilesViewModel viewModel) {
+  Widget _buildList(FilesState state, FilesCubit viewModel) {
     if (state.isLoadingFirstPage) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -217,7 +245,7 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
   /// restore from the Recycle Bin can land an item right back in this exact
   /// directory. Refresh on return rather than leaving the list stale until
   /// some unrelated action happens to trigger a reload.
-  Future<void> _openRecycleBin(BuildContext context, FilesViewModel viewModel) async {
+  Future<void> _openRecycleBin(BuildContext context, FilesCubit viewModel) async {
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => RecycleBinScreen(root: widget.directory.root),
@@ -229,7 +257,7 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
 
   /// System file picker -> import into this folder. The conflict prompt is
   /// only shown if a picked name already exists here.
-  Future<void> _importFiles(BuildContext context, FilesViewModel viewModel) async {
+  Future<void> _importFiles(BuildContext context, FilesCubit viewModel) async {
     final OperationBatch? batch = await viewModel.importFiles(
       onConflicts: (List<String> names) async {
         // Called after the picker returned — the screen may be gone by now.
@@ -241,11 +269,11 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(batch.summary)));
   }
 
-  Future<void> _copySelected(BuildContext context, FilesViewModel viewModel) async {
+  Future<void> _copySelected(BuildContext context, FilesCubit viewModel) async {
     await _runTransfer(context, viewModel, isMove: false);
   }
 
-  Future<void> _moveSelected(BuildContext context, FilesViewModel viewModel) async {
+  Future<void> _moveSelected(BuildContext context, FilesCubit viewModel) async {
     await _runTransfer(context, viewModel, isMove: true);
   }
 
@@ -256,7 +284,7 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
   /// and any one of them can outlive the widget (KB vol2 §9.1).
   Future<void> _runTransfer(
     BuildContext context,
-    FilesViewModel viewModel, {
+    FilesCubit viewModel, {
     required bool isMove,
   }) async {
     final FileRef? destination =
@@ -291,7 +319,7 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
 
   Future<void> _showCreateFolderDialog(
     BuildContext context,
-    FilesViewModel viewModel,
+    FilesCubit viewModel,
   ) async {
     final String? name = await showDialog<String>(
       context: context,
@@ -305,7 +333,7 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
 
   Future<void> _showSortSheet(
     BuildContext context,
-    FilesViewModel viewModel,
+    FilesCubit viewModel,
     FilesState state,
   ) async {
     await showModalBottomSheet<void>(
@@ -344,8 +372,8 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
     );
   }
 
-  Future<void> _confirmDelete(BuildContext context, FilesViewModel viewModel) async {
-    final int count = ref.read(filesViewModelProvider(widget.directory)).selectedCount;
+  Future<void> _confirmDelete(BuildContext context, FilesCubit viewModel) async {
+    final int count = viewModel.state.selectedCount;
     final bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) => AlertDialog(

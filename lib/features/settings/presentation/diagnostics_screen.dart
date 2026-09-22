@@ -2,9 +2,8 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 
-import "../../../app/providers.dart";
 import "../../../core/app_info.dart";
 import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_components.dart";
@@ -14,20 +13,23 @@ import "../../../core/design/aurora_widgets.dart";
 import "../../../domain/entities/diagnostic.dart";
 import "../../../domain/entities/server_config.dart";
 import "../../../domain/entities/server_state.dart";
+import "../../../domain/repositories/activity_repository.dart";
+import "../../../domain/repositories/clock.dart";
 import "../../../domain/repositories/server_host.dart";
 import "../../../domain/usecases/build_support_bundle.dart";
+import "../../../domain/usecases/run_diagnostics.dart";
 
 /// Runs the health checks and shows each result in plain words, with what to do
 /// about anything that isn't fine. Also copies a support bundle (see
 /// [buildSupportBundle] for what it leaves out).
-class DiagnosticsScreen extends ConsumerStatefulWidget {
+class DiagnosticsScreen extends StatefulWidget {
   const DiagnosticsScreen({super.key});
 
   @override
-  ConsumerState<DiagnosticsScreen> createState() => _DiagnosticsScreenState();
+  State<DiagnosticsScreen> createState() => _DiagnosticsScreenState();
 }
 
-class _DiagnosticsScreenState extends ConsumerState<DiagnosticsScreen> {
+class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
   List<DiagnosticCheck>? _checks;
   bool _running = true; // the first run starts in initState
 
@@ -41,7 +43,7 @@ class _DiagnosticsScreenState extends ConsumerState<DiagnosticsScreen> {
     if (!_running) setState(() => _running = true);
     List<DiagnosticCheck> results;
     try {
-      results = await ref.read(runDiagnosticsProvider).call();
+      results = await context.read<RunDiagnostics>().call();
     } on Object {
       results = const <DiagnosticCheck>[
         DiagnosticCheck(
@@ -62,7 +64,7 @@ class _DiagnosticsScreenState extends ConsumerState<DiagnosticsScreen> {
   Future<void> _copyBundle() async {
     final List<DiagnosticCheck>? checks = _checks;
     if (checks == null) return;
-    final ServerHost host = ref.read(serverHostProvider);
+    final ServerHost host = context.read<ServerHost>();
     ServerState state;
     ServerConfig config;
     try {
@@ -72,14 +74,15 @@ class _DiagnosticsScreenState extends ConsumerState<DiagnosticsScreen> {
       state = const ServerState.stopped();
       config = const ServerConfig();
     }
+    final ActivityRepository activity = context.read<ActivityRepository>();
     final String bundle = buildSupportBundle(
-      now: ref.read(clockProvider).now(),
+      now: context.read<Clock>().now(),
       appVersion: appVersion,
       server: state,
       config: config,
       checks: checks,
-      events: await ref.read(activityRepositoryProvider).recentEvents(limit: 50),
-      transfers: await ref.read(activityRepositoryProvider).recentTransfers(limit: 100),
+      events: await activity.recentEvents(limit: 50),
+      transfers: await activity.recentTransfers(limit: 100),
     );
     await Clipboard.setData(ClipboardData(text: bundle));
     if (!mounted) return;

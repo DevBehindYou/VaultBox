@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:go_router/go_router.dart";
 
-import "../../../app/providers.dart";
+import "../../../app/app_state.dart";
 import "../../../core/app_info.dart";
 import "../../../core/design/aurora_components.dart";
 import "../../../core/design/aurora_context.dart";
@@ -13,13 +13,13 @@ import "../../../domain/entities/storage_root.dart";
 /// Settings: everything you can configure or check, in a few plain groups. Only
 /// what exists is listed — a setting that isn't built yet is not shown, rather
 /// than shown and broken.
-class SettingsScreen extends ConsumerWidget {
+class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final ServerConfig? config = ref.watch(serverConfigProvider).value;
-    final List<StorageRoot>? roots = ref.watch(storageRootsProvider).value;
+  Widget build(BuildContext context) {
+    final ServerConfig? config = context.watch<ServerConfigCubit>().state.value;
+    final List<StorageRoot>? roots = context.watch<StorageRootsCubit>().state.value;
 
     final String protocols = config == null
         ? "HTTPS, WebDAV, ports and network access"

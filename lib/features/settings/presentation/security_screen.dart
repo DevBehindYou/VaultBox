@@ -2,10 +2,10 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:go_router/go_router.dart";
 
-import "../../../app/providers.dart";
+import "../../../app/app_state.dart";
 import "../../../core/design/aurora_components.dart";
 import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
@@ -16,21 +16,23 @@ import "../../../domain/entities/account.dart";
 import "../../../domain/entities/activity.dart";
 import "../../../domain/entities/server_config.dart";
 import "../../../domain/entities/share.dart";
+import "../../../domain/repositories/account_repository.dart";
+import "../../../domain/repositories/clock.dart";
 import "../../activity/activity_format.dart";
 import "../security_checklist.dart";
 
 /// Security & Sessions: which protections are in place (judged from the real
 /// settings), who is signed in and how to end their sessions, how many sign-ins
 /// were refused lately, and the certificate to compare against a browser's warning.
-class SecurityScreen extends ConsumerWidget {
+class SecurityScreen extends StatelessWidget {
   const SecurityScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final DateTime now = ref.watch(clockProvider).now();
-    final ServerConfig config = ref.watch(serverConfigProvider).value ?? const ServerConfig();
-    final bool adminExists = ref.watch(adminExistsProvider).value ?? false;
-    final List<Share> shares = ref.watch(sharesProvider).value ?? const <Share>[];
+  Widget build(BuildContext context) {
+    final DateTime now = context.read<Clock>().now();
+    final ServerConfig config = context.watch<ServerConfigCubit>().state.value ?? const ServerConfig();
+    final bool adminExists = context.watch<AdminExistsCubit>().state.value ?? false;
+    final List<Share> shares = context.watch<SharesCubit>().state.value ?? const <Share>[];
     final List<SecurityItem> items = buildSecurityChecklist(
       config: config,
       adminExists: adminExists,
@@ -139,10 +141,10 @@ class _ChecklistRow extends StatelessWidget {
 
 // ---------------------------------------------------------------- sessions
 
-class _SessionsCard extends ConsumerWidget {
+class _SessionsCard extends StatelessWidget {
   const _SessionsCard();
 
-  Future<void> _signOut(BuildContext context, WidgetRef ref, String username) async {
+  Future<void> _signOut(BuildContext context, String username) async {
     final bool? yes = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) => AlertDialog(
@@ -157,11 +159,12 @@ class _SessionsCard extends ConsumerWidget {
       ),
     );
     if (yes != true || !context.mounted) return;
+    final AccountRepository accountRepository = context.read<AccountRepository>();
     try {
-      final Account? account = await ref.read(accountRepositoryProvider).findByUsername(username);
-      if (account != null) await ref.read(accountRepositoryProvider).revokeSessions(account.id);
-      ref.invalidate(accountsProvider);
+      final Account? account = await accountRepository.findByUsername(username);
+      if (account != null) await accountRepository.revokeSessions(account.id);
       if (!context.mounted) return;
+      context.read<AccountsCubit>().refresh();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("$username was signed out everywhere.")));
     } on AppFailure catch (failure) {
       if (!context.mounted) return;
@@ -169,7 +172,7 @@ class _SessionsCard extends ConsumerWidget {
     }
   }
 
-  Future<void> _signOutEveryone(BuildContext context, WidgetRef ref) async {
+  Future<void> _signOutEveryone(BuildContext context) async {
     final bool? yes = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) => AlertDialog(
@@ -185,19 +188,20 @@ class _SessionsCard extends ConsumerWidget {
       ),
     );
     if (yes != true || !context.mounted) return;
-    final List<Account> accounts = await ref.read(accountRepositoryProvider).listAll();
+    final AccountRepository accountRepository = context.read<AccountRepository>();
+    final List<Account> accounts = await accountRepository.listAll();
     for (final Account account in accounts) {
-      await ref.read(accountRepositoryProvider).revokeSessions(account.id);
+      await accountRepository.revokeSessions(account.id);
     }
-    ref.invalidate(accountsProvider);
     if (!context.mounted) return;
+    context.read<AccountsCubit>().refresh();
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Everyone was signed out.")));
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final DateTime now = ref.watch(clockProvider).now();
-    final List<ClientRecord> clients = ref.watch(activityClientsProvider).value ?? const <ClientRecord>[];
+  Widget build(BuildContext context) {
+    final DateTime now = context.read<Clock>().now();
+    final List<ClientRecord> clients = context.watch<ActivityClientsCubit>().state.value ?? const <ClientRecord>[];
 
     if (clients.isEmpty) {
       return const AuroraEmptyState(
@@ -239,7 +243,7 @@ class _SessionsCard extends ConsumerWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: () => unawaited(_signOut(context, ref, client.actor)),
+                  onPressed: () => unawaited(_signOut(context, client.actor)),
                   child: Text("Sign out", style: TextStyle(color: context.statusDanger)),
                 ),
               ],
@@ -250,7 +254,7 @@ class _SessionsCard extends ConsumerWidget {
         Align(
           alignment: Alignment.centerRight,
           child: TextButton.icon(
-            onPressed: () => unawaited(_signOutEveryone(context, ref)),
+            onPressed: () => unawaited(_signOutEveryone(context)),
             icon: Icon(Icons.logout, size: 18, color: context.statusDanger),
             label: Text("Sign everyone out", style: TextStyle(color: context.statusDanger)),
           ),
@@ -262,13 +266,13 @@ class _SessionsCard extends ConsumerWidget {
 
 // --------------------------------------------------------------- intrusion
 
-class _IntrusionCard extends ConsumerWidget {
+class _IntrusionCard extends StatelessWidget {
   const _IntrusionCard();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final DateTime now = ref.watch(clockProvider).now();
-    final List<ActivityEvent> events = ref.watch(activityEventsProvider).value ?? const <ActivityEvent>[];
+  Widget build(BuildContext context) {
+    final DateTime now = context.read<Clock>().now();
+    final List<ActivityEvent> events = context.watch<ActivityEventsCubit>().state.value ?? const <ActivityEvent>[];
     final int refused = events
         .where(
           (ActivityEvent e) =>
@@ -316,12 +320,12 @@ class _IntrusionCard extends ConsumerWidget {
 
 // ------------------------------------------------------------- certificate
 
-class _CertificateCard extends ConsumerWidget {
+class _CertificateCard extends StatelessWidget {
   const _CertificateCard();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final String? fingerprint = ref.watch(tlsFingerprintProvider).value;
+  Widget build(BuildContext context) {
+    final String? fingerprint = context.watch<TlsFingerprintCubit>().state.value;
     return AuroraCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

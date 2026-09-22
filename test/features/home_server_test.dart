@@ -1,10 +1,10 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:go_router/go_router.dart";
 import "package:qr_flutter/qr_flutter.dart";
-import "package:vaultbox/app/providers.dart";
+import "package:vaultbox/app/app_state.dart";
 import "package:vaultbox/core/design/aurora_theme.dart";
 import "package:vaultbox/core/errors/app_failure.dart";
 import "package:vaultbox/data/repositories/in_memory_account_repository.dart";
@@ -19,6 +19,13 @@ import "package:vaultbox/domain/entities/server_config.dart";
 import "package:vaultbox/domain/entities/server_state.dart";
 import "package:vaultbox/domain/entities/share.dart";
 import "package:vaultbox/domain/entities/storage_root.dart";
+import "package:vaultbox/domain/repositories/account_repository.dart";
+import "package:vaultbox/domain/repositories/activity_repository.dart";
+import "package:vaultbox/domain/repositories/clock.dart";
+import "package:vaultbox/domain/repositories/server_host.dart";
+import "package:vaultbox/domain/repositories/settings_repository.dart";
+import "package:vaultbox/domain/repositories/share_repository.dart";
+import "package:vaultbox/domain/repositories/storage_root_repository.dart";
 import "package:vaultbox/domain/value_objects/storage_capabilities.dart";
 import "package:vaultbox/features/home/presentation/home_screen.dart";
 import "package:vaultbox/platform/adapters/url_opener.dart";
@@ -94,25 +101,45 @@ void main() {
           GoRoute(path: path, builder: (BuildContext c, GoRouterState s) => Scaffold(body: Text("route:$path"))),
       ],
     );
-    return ProviderScope(
-      overrides: [
-        serverHostProvider.overrideWithValue(host),
-        accountRepositoryProvider.overrideWithValue(
-          InMemoryAccountRepository(
-            withAdmin
-                ? <Account>[Account(id: "1", username: "admin", passwordHash: "x", createdAt: DateTime.utc(2026))]
-                : <Account>[],
-          ),
-        ),
-        storageRootRepositoryProvider.overrideWithValue(InMemoryStorageRootRepository(initial: roots)),
-        activityRepositoryProvider.overrideWithValue(activity),
-        shareRepositoryProvider.overrideWithValue(shares),
-        settingsRepositoryProvider.overrideWithValue(settings),
-        clockProvider.overrideWithValue(clock),
-        volumeStatsSourceProvider.overrideWithValue(stats ?? _FakeStats()),
-        urlOpenerProvider.overrideWithValue(opener),
+    final AccountRepository accountRepository = InMemoryAccountRepository(
+      withAdmin
+          ? <Account>[Account(id: "1", username: "admin", passwordHash: "x", createdAt: DateTime.utc(2026))]
+          : <Account>[],
+    );
+    final StorageRootRepository storageRootRepository = InMemoryStorageRootRepository(initial: roots);
+
+    return MultiRepositoryProvider(
+      providers: <RepositoryProvider<dynamic>>[
+        RepositoryProvider<ServerHost>.value(value: host),
+        RepositoryProvider<AccountRepository>.value(value: accountRepository),
+        RepositoryProvider<StorageRootRepository>.value(value: storageRootRepository),
+        RepositoryProvider<ActivityRepository>.value(value: activity),
+        RepositoryProvider<ShareRepository>.value(value: shares),
+        RepositoryProvider<SettingsRepository>.value(value: settings),
+        RepositoryProvider<Clock>.value(value: clock),
+        RepositoryProvider<VolumeStatsSource>.value(value: stats ?? _FakeStats()),
+        RepositoryProvider<UrlOpener>.value(value: opener),
       ],
-      child: MaterialApp.router(theme: AuroraTheme.light(), routerConfig: router),
+      child: MultiBlocProvider(
+        providers: <BlocProvider<dynamic>>[
+          BlocProvider<ServerStateCubit>(create: (BuildContext context) => ServerStateCubit(context.read<ServerHost>())),
+          BlocProvider<ServerConfigCubit>(create: (BuildContext context) => ServerConfigCubit(context.read<ServerHost>())),
+          BlocProvider<AdminExistsCubit>(create: (BuildContext context) => AdminExistsCubit(context.read<AccountRepository>())),
+          BlocProvider<AccountsCubit>(create: (BuildContext context) => AccountsCubit(context.read<AccountRepository>())),
+          BlocProvider<SharesCubit>(create: (BuildContext context) => SharesCubit(context.read<ShareRepository>())),
+          BlocProvider<ActivityEventsCubit>(create: (BuildContext context) => ActivityEventsCubit(context.read<ActivityRepository>())),
+          BlocProvider<ActivityTransfersCubit>(create: (BuildContext context) => ActivityTransfersCubit(context.read<ActivityRepository>())),
+          BlocProvider<ActivityClientsCubit>(
+            create: (BuildContext context) => ActivityClientsCubit(context.read<ActivityRepository>(), context.read<Clock>()),
+          ),
+          BlocProvider<StorageRootsCubit>(create: (BuildContext context) => StorageRootsCubit(context.read<StorageRootRepository>())),
+          BlocProvider<RootStatsCubit>(
+            create: (BuildContext context) => RootStatsCubit(context.read<StorageRootsCubit>(), context.read<VolumeStatsSource>()),
+          ),
+          BlocProvider<FtpSettingsCubit>(create: (BuildContext context) => FtpSettingsCubit(context.read<SettingsRepository>())),
+        ],
+        child: MaterialApp.router(theme: AuroraTheme.light(), routerConfig: router),
+      ),
     );
   }
 

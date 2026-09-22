@@ -1,30 +1,33 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 
-import "../../../app/providers.dart";
+import "../../../app/app_state.dart";
 import "../../../core/design/aurora_components.dart";
 import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
+import "../../../core/state/resource.dart";
 import "../../../domain/entities/activity.dart";
+import "../../../domain/repositories/activity_repository.dart";
+import "../../../domain/repositories/clock.dart";
 import "../activity_format.dart";
 
 /// The Activity tab: files moving in and out, who is connected, and what has
 /// happened. The server writes all of it from its own engine; this screen reads
 /// it back every few seconds while it is open.
-class ActivityScreen extends ConsumerStatefulWidget {
+class ActivityScreen extends StatefulWidget {
   const ActivityScreen({super.key});
 
   @override
-  ConsumerState<ActivityScreen> createState() => _ActivityScreenState();
+  State<ActivityScreen> createState() => _ActivityScreenState();
 }
 
 enum _Section { transfers, clients, events }
 
-class _ActivityScreenState extends ConsumerState<ActivityScreen> {
+class _ActivityScreenState extends State<ActivityScreen> {
   _Section _section = _Section.transfers;
 
   Future<void> _clear() async {
@@ -43,11 +46,10 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
       ),
     );
     if (yes != true) return;
-    await ref.read(activityRepositoryProvider).clear();
-    ref
-      ..invalidate(activityTransfersProvider)
-      ..invalidate(activityClientsProvider)
-      ..invalidate(activityEventsProvider);
+    await context.read<ActivityRepository>().clear();
+    unawaited(context.read<ActivityTransfersCubit>().refreshNow());
+    unawaited(context.read<ActivityClientsCubit>().refreshNow());
+    unawaited(context.read<ActivityEventsCubit>().refreshNow());
   }
 
   @override
@@ -104,7 +106,7 @@ class _ActivityList<T> extends StatelessWidget {
     required this.itemBuilder,
   });
 
-  final AsyncValue<List<T>> value;
+  final Resource<List<T>> value;
   final IconData emptyIcon;
   final String emptyTitle;
   final String emptyMessage;
@@ -133,14 +135,14 @@ class _ActivityList<T> extends StatelessWidget {
 
 // -------------------------------------------------------------- transfers
 
-class _TransfersView extends ConsumerWidget {
+class _TransfersView extends StatelessWidget {
   const _TransfersView();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final DateTime now = ref.watch(clockProvider).now();
+  Widget build(BuildContext context) {
+    final DateTime now = context.read<Clock>().now();
     return _ActivityList<TransferRecord>(
-      value: ref.watch(activityTransfersProvider),
+      value: context.watch<ActivityTransfersCubit>().state,
       emptyIcon: Icons.swap_vert,
       emptyTitle: "Nothing has moved yet",
       emptyMessage: "Files sent or received through the web page, a WebDAV app or a link will show up here.",
@@ -208,14 +210,14 @@ class _TransferCard extends StatelessWidget {
 
 // ---------------------------------------------------------------- clients
 
-class _ClientsView extends ConsumerWidget {
+class _ClientsView extends StatelessWidget {
   const _ClientsView();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final DateTime now = ref.watch(clockProvider).now();
+  Widget build(BuildContext context) {
+    final DateTime now = context.read<Clock>().now();
     return _ActivityList<ClientRecord>(
-      value: ref.watch(activityClientsProvider),
+      value: context.watch<ActivityClientsCubit>().state,
       emptyIcon: Icons.devices_outlined,
       emptyTitle: "Nobody has connected in the last day.",
       emptyMessage: "People who sign in from a browser or a WebDAV app appear here while they are connected.",
@@ -273,14 +275,14 @@ class _ClientCard extends StatelessWidget {
 
 // ----------------------------------------------------------------- events
 
-class _EventsView extends ConsumerWidget {
+class _EventsView extends StatelessWidget {
   const _EventsView();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final DateTime now = ref.watch(clockProvider).now();
+  Widget build(BuildContext context) {
+    final DateTime now = context.read<Clock>().now();
     return _ActivityList<ActivityEvent>(
-      value: ref.watch(activityEventsProvider),
+      value: context.watch<ActivityEventsCubit>().state,
       emptyIcon: Icons.event_note_outlined,
       emptyTitle: "Nothing has happened yet",
       emptyMessage: "Sign-ins, refused attempts and link use are listed here.",

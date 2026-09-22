@@ -2,10 +2,10 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:go_router/go_router.dart";
 
-import "../../../app/providers.dart";
+import "../../../app/app_state.dart";
 import "../../../core/design/aurora_colors.dart";
 import "../../../core/design/aurora_components.dart";
 import "../../../core/design/aurora_context.dart";
@@ -13,6 +13,7 @@ import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
 import "../../../core/errors/app_failure.dart";
+import "../../../core/state/resource.dart";
 import "../../../core/utils/byte_format.dart";
 import "../../../domain/entities/account.dart";
 import "../../../domain/entities/activity.dart";
@@ -20,7 +21,9 @@ import "../../../domain/entities/server_config.dart";
 import "../../../domain/entities/server_state.dart";
 import "../../../domain/entities/share.dart";
 import "../../../domain/entities/storage_root.dart";
+import "../../../domain/repositories/clock.dart";
 import "../../../domain/repositories/server_host.dart";
+import "../../../platform/adapters/url_opener.dart";
 import "../../../platform/adapters/volume_stats_source.dart";
 import "../../activity/activity_format.dart";
 import "../home_summary.dart";
@@ -29,11 +32,11 @@ import "qr_sheet.dart";
 /// Home: is the server up, where do I connect, how full is the storage, who is
 /// here and what is moving. Everything on it is a real reading; nothing is
 /// there to fill space.
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: ListView(
@@ -62,7 +65,7 @@ class HomeScreen extends ConsumerWidget {
 
 // ---------------------------------------------------------------- hero card
 
-class _ServerHero extends ConsumerWidget {
+class _ServerHero extends StatelessWidget {
   const _ServerHero();
 
   Future<void> _run(BuildContext context, Future<void> Function() action) async {
@@ -75,11 +78,11 @@ class _ServerHero extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final ServerState server = ref.watch(serverStateProvider).value ?? const ServerState.stopped();
-    final ServerHost host = ref.read(serverHostProvider);
-    final List<ActivityEvent> events = ref.watch(activityEventsProvider).value ?? const <ActivityEvent>[];
-    final DateTime now = ref.watch(clockProvider).now();
+  Widget build(BuildContext context) {
+    final ServerState server = context.watch<ServerStateCubit>().state.value ?? const ServerState.stopped();
+    final ServerHost host = context.read<ServerHost>();
+    final List<ActivityEvent> events = context.watch<ActivityEventsCubit>().state.value ?? const <ActivityEvent>[];
+    final DateTime now = context.read<Clock>().now();
     final Duration? uptime = serverUptime(server, events, now);
     final String? address = primaryAddress(server);
     final String? lan = lanHostPort(server);
@@ -129,7 +132,7 @@ class _ServerHero extends ConsumerWidget {
                   child: AuroraPrimaryButton(
                     label: "Open Portal",
                     icon: Icons.open_in_browser,
-                    onPressed: address == null ? null : () => unawaited(ref.read(urlOpenerProvider).open("$address/")),
+                    onPressed: address == null ? null : () => unawaited(context.read<UrlOpener>().open("$address/")),
                   ),
                 ),
               ],
@@ -415,12 +418,12 @@ class _PillButton extends StatelessWidget {
 // ------------------------------------------------------------ admin account
 
 /// Shown until an admin account exists: without one nobody can sign in.
-class _AdminCard extends ConsumerWidget {
+class _AdminCard extends StatelessWidget {
   const _AdminCard();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final bool? exists = ref.watch(adminExistsProvider).value;
+  Widget build(BuildContext context) {
+    final bool? exists = context.watch<AdminExistsCubit>().state.value;
     if (exists != false) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(bottom: AuroraSpacing.md),
@@ -453,14 +456,14 @@ class _AdminCard extends ConsumerWidget {
 
 // ------------------------------------------------------------ protocol chips
 
-class _ProtocolRow extends ConsumerWidget {
+class _ProtocolRow extends StatelessWidget {
   const _ProtocolRow();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final ServerState server = ref.watch(serverStateProvider).value ?? const ServerState.stopped();
-    final ServerConfig? config = ref.watch(serverConfigProvider).value;
-    final List<ProtocolStatus> statuses = protocolStatuses(server, config, ftp: ref.watch(ftpSettingsProvider).value);
+  Widget build(BuildContext context) {
+    final ServerState server = context.watch<ServerStateCubit>().state.value ?? const ServerState.stopped();
+    final ServerConfig? config = context.watch<ServerConfigCubit>().state.value;
+    final List<ProtocolStatus> statuses = protocolStatuses(server, config, ftp: context.watch<FtpSettingsCubit>().state.value);
 
     return SizedBox(
       height: 34,
@@ -482,13 +485,13 @@ class _ProtocolRow extends ConsumerWidget {
 
 // ------------------------------------------------------------------ storage
 
-class _StorageCard extends ConsumerWidget {
+class _StorageCard extends StatelessWidget {
   const _StorageCard();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<List<StorageRoot>> roots = ref.watch(storageRootsProvider);
-    final Map<String, VolumeStats> stats = ref.watch(rootStatsProvider).value ?? const <String, VolumeStats>{};
+  Widget build(BuildContext context) {
+    final Resource<List<StorageRoot>> roots = context.watch<StorageRootsCubit>().state;
+    final Map<String, VolumeStats> stats = context.watch<RootStatsCubit>().state.value ?? const <String, VolumeStats>{};
 
     return roots.when(
       loading: () => const AuroraCard(child: Center(child: CircularProgressIndicator())),
@@ -603,16 +606,16 @@ class _RootLine extends StatelessWidget {
 
 // ------------------------------------------------------------------ metrics
 
-class _MetricGrid extends ConsumerWidget {
+class _MetricGrid extends StatelessWidget {
   const _MetricGrid();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final DateTime now = ref.watch(clockProvider).now();
-    final List<ClientRecord> clients = ref.watch(activityClientsProvider).value ?? const <ClientRecord>[];
-    final List<TransferRecord> transfers = ref.watch(activityTransfersProvider).value ?? const <TransferRecord>[];
-    final List<Share> shares = ref.watch(sharesProvider).value ?? const <Share>[];
-    final List<Account> accounts = ref.watch(accountsProvider).value ?? const <Account>[];
+  Widget build(BuildContext context) {
+    final DateTime now = context.read<Clock>().now();
+    final List<ClientRecord> clients = context.watch<ActivityClientsCubit>().state.value ?? const <ClientRecord>[];
+    final List<TransferRecord> transfers = context.watch<ActivityTransfersCubit>().state.value ?? const <TransferRecord>[];
+    final List<Share> shares = context.watch<SharesCubit>().state.value ?? const <Share>[];
+    final List<Account> accounts = context.watch<AccountsCubit>().state.value ?? const <Account>[];
 
     final List<ClientRecord> online = clients
         .where((ClientRecord c) => now.difference(c.lastSeenAt) < clientActiveWithin)
@@ -683,14 +686,14 @@ class _MetricGrid extends ConsumerWidget {
 
 // ------------------------------------------------------------ live activity
 
-class _LiveActivityCard extends ConsumerWidget {
+class _LiveActivityCard extends StatelessWidget {
   const _LiveActivityCard();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final DateTime now = ref.watch(clockProvider).now();
-    final List<TransferRecord> transfers = ref.watch(activityTransfersProvider).value ?? const <TransferRecord>[];
-    final List<ActivityEvent> events = ref.watch(activityEventsProvider).value ?? const <ActivityEvent>[];
+  Widget build(BuildContext context) {
+    final DateTime now = context.read<Clock>().now();
+    final List<TransferRecord> transfers = context.watch<ActivityTransfersCubit>().state.value ?? const <TransferRecord>[];
+    final List<ActivityEvent> events = context.watch<ActivityEventsCubit>().state.value ?? const <ActivityEvent>[];
     final List<TransferRecord> running = transfers.where((TransferRecord t) => t.isRunning && !isStalled(t, now)).take(3).toList();
     final List<ActivityEvent> recent = events.take(3).toList();
 

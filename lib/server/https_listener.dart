@@ -1,8 +1,8 @@
 import "dart:async";
-import "dart:convert";
 import "dart:io";
 
 import "request_router.dart";
+import "tls_context.dart";
 
 /// TLS listener for the server.
 ///
@@ -24,9 +24,7 @@ final class HttpsListener {
     required bool allowNetworkAccess,
     required int port,
   }) async {
-    final SecurityContext context = SecurityContext()
-      ..useCertificateChainBytes(utf8.encode(certificatePem))
-      ..usePrivateKeyBytes(utf8.encode(privateKeyPem));
+    final SecurityContext context = buildTlsContext(certificatePem: certificatePem, privateKeyPem: privateKeyPem);
 
     final HttpServer server = await HttpServer.bindSecure(
       allowNetworkAccess ? InternetAddress.anyIPv4 : InternetAddress.loopbackIPv4,

@@ -7,9 +7,13 @@ import "../../domain/entities/share.dart";
 /// The server reports its addresses with a trailing slash (`https://host:8443/`).
 String? shareLinkBase(ServerState server) {
   if (!server.isRunning) return null;
-  final List<String> urls = server.endpoints.isNotEmpty
-      ? server.endpoints
-      : <String>[if (server.endpoint != null) server.endpoint!];
+  // Only web addresses: the server may also list FTP ones (ftp://, ftps://).
+  final List<String> urls = <String>[
+    for (final String url in server.endpoints.isNotEmpty
+        ? server.endpoints
+        : <String>[if (server.endpoint != null) server.endpoint!])
+      if (url.startsWith("http://") || url.startsWith("https://")) url,
+  ];
   for (final String url in urls) {
     if (url.startsWith("https://")) return url;
   }

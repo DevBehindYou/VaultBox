@@ -9,10 +9,12 @@ import "package:vaultbox/core/design/aurora_theme.dart";
 import "package:vaultbox/core/errors/app_failure.dart";
 import "package:vaultbox/data/repositories/in_memory_account_repository.dart";
 import "package:vaultbox/data/repositories/in_memory_activity_repository.dart";
+import "package:vaultbox/data/repositories/in_memory_settings_repository.dart";
 import "package:vaultbox/data/repositories/in_memory_share_repository.dart";
 import "package:vaultbox/data/repositories/in_memory_storage_root_repository.dart";
 import "package:vaultbox/domain/entities/account.dart";
 import "package:vaultbox/domain/entities/activity.dart";
+import "package:vaultbox/domain/entities/ftp_settings.dart";
 import "package:vaultbox/domain/entities/server_config.dart";
 import "package:vaultbox/domain/entities/server_state.dart";
 import "package:vaultbox/domain/entities/share.dart";
@@ -50,6 +52,7 @@ void main() {
   late FakeClock clock;
   late InMemoryActivityRepository activity;
   late InMemoryShareRepository shares;
+  late InMemorySettingsRepository settings;
   late _RecordingOpener opener;
   String? copied;
 
@@ -66,6 +69,7 @@ void main() {
     clock = FakeClock(DateTime.utc(2026, 9, 20, 12));
     activity = InMemoryActivityRepository();
     shares = InMemoryShareRepository();
+    settings = InMemorySettingsRepository();
     opener = _RecordingOpener();
     copied = null;
   });
@@ -103,6 +107,7 @@ void main() {
         storageRootRepositoryProvider.overrideWithValue(InMemoryStorageRootRepository(initial: roots)),
         activityRepositoryProvider.overrideWithValue(activity),
         shareRepositoryProvider.overrideWithValue(shares),
+        settingsRepositoryProvider.overrideWithValue(settings),
         clockProvider.overrideWithValue(clock),
         volumeStatsSourceProvider.overrideWithValue(stats ?? _FakeStats()),
         urlOpenerProvider.overrideWithValue(opener),
@@ -282,6 +287,16 @@ void main() {
       await show(tester, withHttp);
       expect(find.text("HTTP"), findsOneWidget);
       expect(find.text("8080"), findsOneWidget);
+    });
+
+    testWidgets("FTP gets a chip once it is switched on", (WidgetTester tester) async {
+      await show(tester, FakeServerHost());
+      expect(find.text("FTPS"), findsNothing);
+
+      settings = InMemorySettingsRepository(const FtpSettings(enabled: true).toMap());
+      await show(tester, FakeServerHost());
+      expect(find.text("FTPS"), findsOneWidget);
+      expect(find.text("2121"), findsOneWidget);
     });
 
     testWidgets("each chip says whether it is listening, for screen readers too", (WidgetTester tester) async {

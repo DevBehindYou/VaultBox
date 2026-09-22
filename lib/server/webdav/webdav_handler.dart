@@ -17,6 +17,7 @@ import "../../domain/value_objects/write_mode.dart";
 import "../activity/activity_log.dart";
 import "../api/api_types.dart";
 import "../files/file_transfer.dart";
+import "../files/root_names.dart";
 import "../files/storage_gate.dart";
 import "dav_auth.dart";
 import "dav_locks.dart";
@@ -194,25 +195,8 @@ final class WebDavHandler {
   /// Roots by URL name. A root's URL name is its display name made URL-safe,
   /// with `-2`, `-3`… added when two roots would share one.
   Future<_Roots> _roots() async {
-    final List<StorageRoot> roots = await _gate.visibleRoots();
-    final Map<String, StorageRoot> bySlug = <String, StorageRoot>{};
-    final Map<String, String> slugById = <String, String>{};
-    for (final StorageRoot root in roots) {
-      final String base = _slugify(root.displayName);
-      String slug = base;
-      int n = 2;
-      while (bySlug.containsKey(slug.toLowerCase())) {
-        slug = "$base-${n++}";
-      }
-      bySlug[slug.toLowerCase()] = root;
-      slugById[root.id] = slug;
-    }
-    return _Roots(bySlug, slugById);
-  }
-
-  static String _slugify(String name) {
-    final String cleaned = name.replaceAll(RegExp(r"[^\p{L}\p{N}._-]+", unicode: true), "-").replaceAll(RegExp(r"^-+|-+$"), "");
-    return cleaned.isEmpty ? "storage" : cleaned;
+    final RootNames names = RootNames.of(await _gate.visibleRoots());
+    return _Roots(names.bySlug, names.slugById);
   }
 
   /// Resolves URL segments (after `dav`) to a root + path, or the virtual top

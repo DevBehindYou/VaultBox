@@ -23,6 +23,7 @@ String describeVia(AccessVia via) => switch (via) {
   AccessVia.web => "Browser",
   AccessVia.webdav => "WebDAV",
   AccessVia.link => "Link",
+  AccessVia.ftp => "FTP",
 };
 
 bool isStalled(TransferRecord transfer, DateTime now) =>

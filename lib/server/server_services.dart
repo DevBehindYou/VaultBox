@@ -1,9 +1,11 @@
 import "dart:async";
+import "dart:io";
 
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../app/providers.dart";
 import "../data/security/in_memory_session_store.dart";
+import "../domain/entities/ftp_settings.dart";
 import "../domain/repositories/clock.dart";
 import "../domain/security/download_tickets.dart";
 import "../domain/security/login_service.dart";
@@ -14,6 +16,8 @@ import "api/file_endpoints.dart";
 import "api/public_endpoints.dart";
 import "api/vault_api.dart";
 import "files/storage_gate.dart";
+import "ftp/ftp_deps.dart";
+import "ftp/ftp_server.dart";
 import "webdav/dav_auth.dart";
 import "webdav/dav_locks.dart";
 import "webdav/webdav_handler.dart";
@@ -27,7 +31,7 @@ import "webdav/webdav_handler.dart";
 /// server: stopping it (or an OS kill) logs everyone out, and no token
 /// material is written to disk.
 final class ServerServices {
-  ServerServices._(this.api, this.dav, this._container, this._purgeTimer);
+  ServerServices._(this.api, this.dav, this._ftpDeps, this._clock, this._container, this._purgeTimer);
 
   factory ServerServices.create() {
     final ProviderContainer container = ProviderContainer();
@@ -85,16 +89,29 @@ final class ServerServices {
       ),
     );
 
+    // One password check for WebDAV and FTP: a right answer is remembered briefly
+    // (FTP clients open several connections, each of which signs in).
+    final DavAuthenticator passwordAuth = DavAuthenticator(
+      login: login,
+      accounts: container.read(accountRepositoryProvider),
+      clock: clock,
+    );
+
     final WebDavHandler dav = WebDavHandler(
       gate: gate,
       files: container.read(fileRepositoryProvider),
       delete: container.read(deleteItemsProvider),
-      auth: DavAuthenticator(
-        login: login,
-        accounts: container.read(accountRepositoryProvider),
-        clock: clock,
-      ),
+      auth: passwordAuth,
       locks: DavLockManager(clock: clock),
+      activity: activity,
+    );
+
+    final FtpDeps ftpDeps = FtpDeps(
+      gate: gate,
+      files: container.read(fileRepositoryProvider),
+      delete: container.read(deleteItemsProvider),
+      move: container.read(moveItemsProvider),
+      auth: passwordAuth,
       activity: activity,
     );
 
@@ -106,13 +123,25 @@ final class ServerServices {
         unlocks.purgeExpired();
       },
     );
-    return ServerServices._(api, dav, container, purge);
+    return ServerServices._(api, dav, ftpDeps, clock, container, purge);
   }
 
   final VaultApi api;
   final WebDavHandler dav;
+  final FtpDeps _ftpDeps;
+  final Clock _clock;
   final ProviderContainer _container;
   final Timer _purgeTimer;
+
+  /// The FTP settings the person chose in the app (off unless they switched it on).
+  Future<FtpSettings> loadFtpSettings() async {
+    return FtpSettings.fromMap(await _container.read(settingsRepositoryProvider).readAll());
+  }
+
+  /// An FTP server for [settings]. [tls] is required for the two secure modes.
+  FtpServer buildFtpServer(FtpSettings settings, {SecurityContext? tls}) {
+    return FtpServer(deps: _ftpDeps, settings: settings, tlsContext: tls, now: _clock.now);
+  }
 
   void dispose() {
     _purgeTimer.cancel();

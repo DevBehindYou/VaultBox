@@ -3,14 +3,17 @@ import "dart:ui";
 
 import "package:flutter/widgets.dart";
 
+import "../domain/entities/ftp_settings.dart";
 import "../platform/pigeon/storage_api.g.dart";
 import "api/vault_api.dart";
+import "ftp/ftp_server.dart";
 import "http_listener.dart";
 import "https_listener.dart";
 import "network_addresses.dart";
 import "portal/portal_assets.dart";
 import "request_router.dart";
 import "server_services.dart";
+import "tls_context.dart";
 
 /// Entrypoint of the service's HEADLESS Flutter engine
 /// (`ServerForegroundService` runs it by name: library
@@ -36,6 +39,7 @@ Future<void> serverMain() async {
   ServerServices? services;
   HttpsListener? https;
   HttpListener? http;
+  FtpServer? ftp;
   try {
     final ServerConfigMessage config = await runtime.getConfig();
     final bool network = config.allowNetworkAccess ?? false;
@@ -71,6 +75,23 @@ Future<void> serverMain() async {
       endpoints.add("http://$host:${http.port}/");
     }
 
+    // FTP / FTPS, if the person switched it on in the app. It rides on the same
+    // certificate as HTTPS, so there is one fingerprint to check.
+    final FtpSettings ftpSettings = await services.loadFtpSettings();
+    if (ftpSettings.enabled) {
+      SecurityContext? tls;
+      if (ftpSettings.usesTls) {
+        final TlsIdentityMessage identity = await runtime.getTlsIdentity();
+        tls = buildTlsContext(certificatePem: identity.certificatePem!, privateKeyPem: identity.privateKeyPem!);
+      }
+      ftp = services.buildFtpServer(ftpSettings, tls: tls);
+      await ftp.start(
+        address: network ? InternetAddress.anyIPv4 : InternetAddress.loopbackIPv4,
+        port: ftpSettings.port,
+      );
+      endpoints.add("${ftpSettings.mode == FtpMode.implicitTls ? "ftps" : "ftp"}://$host:${ftp.port}/");
+    }
+
     await runtime.reportState(
       ServerStateMessage(
         state: ServerRunStateMessage.running,
@@ -82,6 +103,7 @@ Future<void> serverMain() async {
     // A partial start is a failed start: don't leave one listener up.
     await https?.stop();
     await http?.stop();
+    await ftp?.stop();
     services?.dispose();
     await runtime.reportState(
       ServerStateMessage(

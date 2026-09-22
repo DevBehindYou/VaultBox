@@ -1,5 +1,6 @@
 import "package:flutter_test/flutter_test.dart";
 import "package:vaultbox/domain/entities/activity.dart";
+import "package:vaultbox/domain/entities/ftp_settings.dart";
 import "package:vaultbox/domain/entities/server_config.dart";
 import "package:vaultbox/domain/entities/server_state.dart";
 import "package:vaultbox/features/home/home_summary.dart";
@@ -92,6 +93,23 @@ void main() {
       expect(list.map((ProtocolStatus p) => p.label), <String>["HTTPS", "HTTP", "WebDAV"]);
       expect(list.map((ProtocolStatus p) => p.port), <String>["8443", "8080", "/dav"]);
       expect(list.every((ProtocolStatus p) => p.active), isTrue);
+    });
+
+    test("FTP shows only when it is on, as FTPS unless it is plain", () {
+      List<String> labels(FtpSettings? ftp) =>
+          protocolStatuses(running, const ServerConfig(), ftp: ftp).map((ProtocolStatus p) => "${p.label}:${p.port}").toList();
+
+      expect(labels(null), <String>["HTTPS:8443", "WebDAV:/dav"]);
+      expect(labels(const FtpSettings()), <String>["HTTPS:8443", "WebDAV:/dav"], reason: "off by default");
+      expect(labels(const FtpSettings(enabled: true)), <String>["HTTPS:8443", "WebDAV:/dav", "FTPS:2121"]);
+      expect(
+        labels(const FtpSettings(enabled: true, mode: FtpMode.implicitTls, port: 2990)),
+        <String>["HTTPS:8443", "WebDAV:/dav", "FTPS:2990"],
+      );
+      expect(
+        labels(const FtpSettings(enabled: true, mode: FtpMode.plain)),
+        <String>["HTTPS:8443", "WebDAV:/dav", "FTP:2121"],
+      );
     });
 
     test("HTTPS is left out when it is switched off, and unknown settings use the defaults", () {

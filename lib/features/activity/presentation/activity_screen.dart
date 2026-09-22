@@ -4,7 +4,6 @@ import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
 import "../../../app/providers.dart";
-import "../../../core/design/aurora_colors.dart";
 import "../../../core/design/aurora_components.dart";
 import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
@@ -241,6 +240,7 @@ class _ClientCard extends StatelessWidget {
             AccessVia.web => Icons.language,
             AccessVia.webdav => Icons.folder_shared_outlined,
             AccessVia.link => Icons.link,
+            AccessVia.ftp => Icons.dns_outlined,
           }),
           const SizedBox(width: AuroraSpacing.md),
           Expanded(

@@ -1,4 +1,5 @@
 import "../../domain/entities/activity.dart";
+import "../../domain/entities/ftp_settings.dart";
 import "../../domain/entities/server_config.dart";
 import "../../domain/entities/server_state.dart";
 import "../share/share_links.dart";
@@ -55,7 +56,7 @@ final class ProtocolStatus {
 
 /// What the server speaks and whether it is listening right now. WebDAV rides
 /// on the same listeners as the web portal, under `/dav`.
-List<ProtocolStatus> protocolStatuses(ServerState server, ServerConfig? config) {
+List<ProtocolStatus> protocolStatuses(ServerState server, ServerConfig? config, {FtpSettings? ftp}) {
   final ServerConfig settings = config ?? const ServerConfig();
   final bool running = server.isRunning;
   return <ProtocolStatus>[
@@ -64,5 +65,7 @@ List<ProtocolStatus> protocolStatuses(ServerState server, ServerConfig? config) 
     if (settings.httpEnabled)
       ProtocolStatus(label: "HTTP", port: "${settings.httpPort}", active: running),
     ProtocolStatus(label: "WebDAV", port: "/dav", active: running),
+    if (ftp != null && ftp.enabled)
+      ProtocolStatus(label: ftp.mode == FtpMode.plain ? "FTP" : "FTPS", port: "${ftp.port}", active: running),
   ];
 }

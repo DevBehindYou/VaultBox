@@ -7,7 +7,9 @@ import "package:vaultbox/app/providers.dart";
 import "package:vaultbox/core/design/aurora_theme.dart";
 import "package:vaultbox/core/design/aurora_widgets.dart";
 import "package:vaultbox/data/repositories/in_memory_account_repository.dart";
+import "package:vaultbox/data/repositories/in_memory_settings_repository.dart";
 import "package:vaultbox/domain/entities/account.dart";
+import "package:vaultbox/domain/entities/ftp_settings.dart";
 import "package:vaultbox/domain/entities/server_config.dart";
 import "package:vaultbox/domain/entities/server_state.dart";
 import "package:vaultbox/features/settings/presentation/protocols_screen.dart";
@@ -19,8 +21,15 @@ import "../helpers/fake_server_host.dart";
 /// before: asking before exposing anything, locking while the server runs.
 void main() {
   String? copied;
+  late InMemorySettingsRepository store;
 
-  setUp(() => copied = null);
+  setUp(() {
+    copied = null;
+    store = InMemorySettingsRepository();
+  });
+
+  /// What is saved for FTP right now.
+  Future<FtpSettings> savedFtp() async => FtpSettings.fromMap(await store.readAll());
 
   Widget harness(FakeServerHost host, {bool withAdmin = true}) {
     final GoRouter router = GoRouter(
@@ -33,6 +42,7 @@ void main() {
     return ProviderScope(
       overrides: [
         serverHostProvider.overrideWithValue(host),
+        settingsRepositoryProvider.overrideWithValue(store),
         accountRepositoryProvider.overrideWithValue(
           InMemoryAccountRepository(
             withAdmin
@@ -71,7 +81,7 @@ void main() {
     testWidgets("its switch starts and stops the server, and the row says what state it is in", (WidgetTester tester) async {
       final FakeServerHost host = FakeServerHost();
       await show(tester, host);
-      expect(find.text("Off"), findsNWidgets(2), reason: "the service, and plain HTTP which is off too");
+      expect(find.text("Off"), findsNWidgets(3), reason: "the service, plain HTTP and FTP are off");
 
       await tester.tap(switchIn("Server service"));
       await tester.pumpAndSettle();
@@ -81,7 +91,7 @@ void main() {
       await tester.tap(switchIn("Server service"));
       await tester.pumpAndSettle();
       expect(host.stops, 1);
-      expect(find.text("Off"), findsNWidgets(2));
+      expect(find.text("Off"), findsNWidgets(3));
     });
 
     testWidgets("on the network it shows where", (WidgetTester tester) async {
@@ -232,7 +242,8 @@ void main() {
       expect(tester.widget<Switch>(switchIn("Web Portal")).onChanged, isNull);
       expect(tester.widget<Switch>(switchIn("Plain HTTP")).onChanged, isNull);
       expect(tester.widget<Switch>(switchIn("Allow other devices on my network")).onChanged, isNull);
-      expect(find.text("Stop the server to change this."), findsNWidgets(3));
+      expect(tester.widget<Switch>(switchIn("FTP / FTPS")).onChanged, isNull);
+      expect(find.text("Stop the server to change this."), findsNWidgets(4));
       expect(find.text("Change"), findsNothing, reason: "ports can't be edited while it listens");
       expect(find.text("Listening"), findsOneWidget);
     });
@@ -290,7 +301,7 @@ void main() {
       final FakeServerHost host = FakeServerHost();
       await show(tester, host);
 
-      await tester.tap(find.text("Change").last);
+      await tester.tap(find.text("Change").at(1)); // the HTTP port (HTTPS, HTTP, then FTP's two)
       await tester.pumpAndSettle();
       expect(find.text("HTTP port"), findsOneWidget);
       await tester.tap(find.text("Cancel"));
@@ -336,6 +347,174 @@ void main() {
       expect(find.textContaining("Another phone"), findsOneWidget);
       expect(find.textContaining("Mac (Finder)"), findsOneWidget);
       expect(find.textContaining("Host: 192.168.1.5   Port: 8443   Path: /dav"), findsOneWidget);
+    });
+  });
+
+  group("FTP", () {
+    testWidgets("is off by default, in the safest mode, with its ports shown", (WidgetTester tester) async {
+      await show(tester, FakeServerHost());
+
+      expect(isOn(tester, "FTP / FTPS"), isFalse);
+      expect(find.text("FTPES"), findsOneWidget);
+      expect(find.text("2121"), findsOneWidget);
+      expect(find.text("50000–50050"), findsOneWidget);
+      expect(find.textContaining("Anonymous access is never allowed"), findsOneWidget);
+    });
+
+    testWidgets("turning it on in an encrypted mode saves it without a warning", (WidgetTester tester) async {
+      await show(tester, FakeServerHost());
+
+      await tester.tap(switchIn("FTP / FTPS"));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Use plain FTP?"), findsNothing);
+      final FtpSettings saved = await savedFtp();
+      expect(saved.enabled, isTrue);
+      expect(saved.mode, FtpMode.explicitTls);
+      expect(isOn(tester, "FTP / FTPS"), isTrue);
+      expect(find.text("Ready"), findsNWidgets(2), reason: "HTTPS and FTP are set up but the server isn't running");
+    });
+
+    testWidgets("needs an admin account first", (WidgetTester tester) async {
+      await show(tester, FakeServerHost(), withAdmin: false);
+
+      await tester.tap(switchIn("FTP / FTPS"));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Create the admin account first: FTP needs a login."), findsOneWidget);
+      expect((await savedFtp()).enabled, isFalse);
+    });
+
+    testWidgets("plain FTP warns first and saves nothing until confirmed", (WidgetTester tester) async {
+      await show(tester, FakeServerHost());
+
+      await tester.tap(find.text("Plain FTP"));
+      await tester.pumpAndSettle();
+      expect(find.text("Use plain FTP?"), findsOneWidget);
+      await tester.tap(find.text("Cancel"));
+      await tester.pumpAndSettle();
+      expect((await savedFtp()).mode, FtpMode.explicitTls);
+
+      await tester.tap(find.text("Plain FTP"));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("Use plain FTP"));
+      await tester.pumpAndSettle();
+      expect((await savedFtp()).mode, FtpMode.plain);
+      expect(find.text("FTP"), findsOneWidget, reason: "the tag now says plain FTP");
+    });
+
+    testWidgets("implicit FTPS is one tap, and is tagged FTPS", (WidgetTester tester) async {
+      await show(tester, FakeServerHost());
+
+      await tester.tap(find.text("Implicit FTPS"));
+      await tester.pumpAndSettle();
+
+      expect((await savedFtp()).mode, FtpMode.implicitTls);
+      expect(find.text("FTPS"), findsOneWidget);
+    });
+
+    testWidgets("switching on while already plain still asks", (WidgetTester tester) async {
+      store = InMemorySettingsRepository(const FtpSettings(mode: FtpMode.plain).toMap());
+      await show(tester, FakeServerHost());
+
+      await tester.tap(switchIn("FTP / FTPS"));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Use plain FTP?"), findsOneWidget);
+      expect((await savedFtp()).enabled, isFalse);
+    });
+
+    testWidgets("a new port is saved; bad ones and ones already in use are refused", (WidgetTester tester) async {
+      await show(tester, FakeServerHost());
+
+      Future<void> tryPort(String text) async {
+        await tester.tap(find.text("Change").at(2));
+        await tester.pumpAndSettle();
+        expect(find.text("FTP port"), findsOneWidget);
+        await tester.enterText(find.byType(TextField), text);
+        await tester.tap(find.text("Save"));
+        await tester.pumpAndSettle();
+      }
+
+      await tryPort("80");
+      expect(find.text("Use a number from 1024 to 65535."), findsOneWidget);
+      await tester.tap(find.text("Cancel"));
+      await tester.pumpAndSettle();
+
+      await tryPort("8443"); // the HTTPS port
+      expect(find.text("That port is used by the web server."), findsOneWidget);
+      await tester.tap(find.text("Cancel"));
+      await tester.pumpAndSettle();
+
+      await tryPort("50010"); // inside the file-transfer range
+      expect(find.text("That port is inside the file-transfer range."), findsOneWidget);
+      await tester.tap(find.text("Cancel"));
+      await tester.pumpAndSettle();
+      expect((await savedFtp()).port, 2121);
+
+      await tryPort("2222");
+      expect((await savedFtp()).port, 2222);
+      expect(find.text("2222"), findsOneWidget);
+    });
+
+    testWidgets("the file-transfer range is saved when valid and refused when too small", (WidgetTester tester) async {
+      await show(tester, FakeServerHost());
+
+      Future<void> tryRange(String from, String to) async {
+        await tester.tap(find.text("Change").at(3));
+        await tester.pumpAndSettle();
+        expect(find.text("File-transfer ports"), findsOneWidget);
+        await tester.enterText(find.byType(TextField).first, from);
+        await tester.enterText(find.byType(TextField).last, to);
+        await tester.tap(find.text("Save"));
+        await tester.pumpAndSettle();
+      }
+
+      await tryRange("51000", "51003");
+      expect(find.text("Give it at least 10 ports."), findsOneWidget);
+      await tester.tap(find.text("Cancel"));
+      await tester.pumpAndSettle();
+      expect((await savedFtp()).passiveStart, 50000);
+
+      await tryRange("51000", "51100");
+      expect((await savedFtp()).passiveStart, 51000);
+      expect((await savedFtp()).passiveEnd, 51100);
+      expect(find.text("51000–51100"), findsOneWidget);
+    });
+
+    testWidgets("the web-port dialog refuses a port FTP is using", (WidgetTester tester) async {
+      store = InMemorySettingsRepository(const FtpSettings(enabled: true).toMap());
+      await show(tester, FakeServerHost());
+
+      await tester.tap(find.text("Change").first);
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), "2121");
+      await tester.tap(find.text("Save"));
+      await tester.pumpAndSettle();
+
+      expect(find.text("That port is used by FTP."), findsOneWidget);
+    });
+
+    testWidgets("without network access it says only this phone can reach it", (WidgetTester tester) async {
+      store = InMemorySettingsRepository(const FtpSettings(enabled: true).toMap());
+      await show(tester, FakeServerHost());
+
+      expect(find.textContaining("Only this phone can reach it"), findsOneWidget);
+    });
+
+    testWidgets("the guide fills in this phone's host and the chosen mode", (WidgetTester tester) async {
+      await show(
+        tester,
+        FakeServerHost(const ServerState(run: ServerRunState.running, endpoint: "https://192.168.1.5:8443/")),
+      );
+
+      await tester.tap(find.text("How to connect with FTP"));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Connect with FTP"), findsOneWidget);
+      expect(find.text("ftp://192.168.1.5:2121"), findsOneWidget);
+      expect(find.textContaining("Host: 192.168.1.5   Port: 2121"), findsOneWidget);
+      expect(find.textContaining("Require explicit FTP over TLS"), findsWidgets);
     });
   });
 

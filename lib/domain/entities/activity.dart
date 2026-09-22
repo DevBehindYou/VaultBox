@@ -60,6 +60,9 @@ enum AccessVia {
 
   /// A share or upload-request link (no account).
   link,
+
+  /// An FTP or FTPS client.
+  ftp,
 }
 
 enum TransferDirection {

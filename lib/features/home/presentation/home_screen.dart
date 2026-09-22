@@ -460,7 +460,7 @@ class _ProtocolRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ServerState server = ref.watch(serverStateProvider).value ?? const ServerState.stopped();
     final ServerConfig? config = ref.watch(serverConfigProvider).value;
-    final List<ProtocolStatus> statuses = protocolStatuses(server, config);
+    final List<ProtocolStatus> statuses = protocolStatuses(server, config, ftp: ref.watch(ftpSettingsProvider).value);
 
     return SizedBox(
       height: 34,

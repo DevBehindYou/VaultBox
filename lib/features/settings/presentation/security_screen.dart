@@ -218,6 +218,7 @@ class _SessionsCard extends ConsumerWidget {
                     AccessVia.web => Icons.language,
                     AccessVia.webdav => Icons.folder_shared_outlined,
                     AccessVia.link => Icons.link,
+                    AccessVia.ftp => Icons.dns_outlined,
                   },
                   color: context.scheme.primary,
                 ),

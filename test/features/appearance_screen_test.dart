@@ -156,6 +156,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
       await tester.pumpWidget(
         MaterialApp(
           theme: AuroraTheme.dark(),
@@ -167,6 +168,8 @@ void main() {
           ),
         ),
       );
+      // The theme change animates; wait for it to land before looking.
+      await tester.pumpAndSettle();
 
       expect(light, isNot(dark));
     });

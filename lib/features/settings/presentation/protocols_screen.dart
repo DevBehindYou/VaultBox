@@ -12,10 +12,12 @@ import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
 import "../../../core/errors/app_failure.dart";
+import "../../../domain/entities/ftp_settings.dart";
 import "../../../domain/entities/server_config.dart";
 import "../../../domain/entities/server_state.dart";
 import "../../../domain/repositories/server_host.dart";
 import "../../home/home_summary.dart";
+import "ftp_guide_sheet.dart";
 import "webdav_guide_sheet.dart";
 
 /// Protocols & Network: which ways in are switched on, on which ports, and who
@@ -28,6 +30,7 @@ class ProtocolsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ServerState server = ref.watch(serverStateProvider).value ?? const ServerState.stopped();
     final ServerConfig? config = ref.watch(serverConfigProvider).value;
+    final FtpSettings? ftp = ref.watch(ftpSettingsProvider).value;
     final bool canChange = server.run == ServerRunState.stopped || server.run == ServerRunState.failed;
 
     return Scaffold(
@@ -54,6 +57,10 @@ class ProtocolsScreen extends ConsumerWidget {
             _HttpCard(config: config, canChange: canChange),
             const SizedBox(height: AuroraSpacing.md),
             _WebDavCard(config: config, server: server),
+            if (ftp != null) ...<Widget>[
+              const SizedBox(height: AuroraSpacing.md),
+              _FtpCard(ftp: ftp, config: config, server: server, canChange: canChange),
+            ],
             const AuroraSectionHeader(title: "Network"),
             _NetworkCard(config: config, canChange: canChange),
           ],
@@ -359,6 +366,367 @@ class _NetworkCard extends ConsumerWidget {
   }
 }
 
+// --------------------------------------------------------------------- FTP
+
+class _FtpCard extends ConsumerWidget {
+  const _FtpCard({required this.ftp, required this.config, required this.server, required this.canChange});
+
+  final FtpSettings ftp;
+  final ServerConfig config;
+  final ServerState server;
+  final bool canChange;
+
+  static String tagFor(FtpMode mode) => switch (mode) {
+    FtpMode.explicitTls => "FTPES",
+    FtpMode.implicitTls => "FTPS",
+    FtpMode.plain => "FTP",
+  };
+
+  Future<void> _save(BuildContext context, WidgetRef ref, FtpSettings next) async {
+    try {
+      await ref.read(settingsRepositoryProvider).writeAll(next.toMap());
+      ref.invalidate(ftpSettingsProvider);
+    } on AppFailure catch (failure) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));
+    }
+  }
+
+  Future<bool> _confirmPlain(BuildContext context) async {
+    final bool? yes = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogContext) => AlertDialog(
+        title: const Text("Use plain FTP?"),
+        content: const Text(
+          "Plain FTP sends your password and your files across the network in clear text. Anyone on the "
+          "same Wi-Fi who is listening can read them. Only use it on a network you fully trust, for a "
+          "device that can't do anything safer. It only accepts devices on private networks.",
+        ),
+        actions: <Widget>[
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text("Cancel")),
+          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text("Use plain FTP")),
+        ],
+      ),
+    );
+    return yes ?? false;
+  }
+
+  Future<void> _toggle(BuildContext context, WidgetRef ref, bool on) async {
+    if (on) {
+      final bool adminExists = await ref.read(adminExistsProvider.future);
+      if (!context.mounted) return;
+      if (!adminExists) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Create the admin account first: FTP needs a login.")),
+        );
+        return;
+      }
+      if (ftp.mode == FtpMode.plain && !await _confirmPlain(context)) return;
+      if (!context.mounted) return;
+    }
+    await _save(context, ref, ftp.copyWith(enabled: on));
+  }
+
+  Future<void> _chooseMode(BuildContext context, WidgetRef ref, FtpMode mode) async {
+    if (mode == ftp.mode) return;
+    if (mode == FtpMode.plain && !await _confirmPlain(context)) return;
+    if (!context.mounted) return;
+    await _save(context, ref, ftp.copyWith(mode: mode));
+  }
+
+  Future<void> _changePort(BuildContext context, WidgetRef ref) async {
+    final TextEditingController controller = TextEditingController(text: "${ftp.port}");
+    final int? chosen = await showDialog<int>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        String? problem;
+        return StatefulBuilder(
+          builder: (BuildContext context, void Function(void Function()) setState) => AlertDialog(
+            title: const Text("FTP port"),
+            content: TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              autofocus: true,
+              decoration: InputDecoration(labelText: "Port (1024–65535)", errorText: problem),
+            ),
+            actions: <Widget>[
+              TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text("Cancel")),
+              FilledButton(
+                onPressed: () {
+                  final int? value = int.tryParse(controller.text.trim());
+                  final String? error = FtpSettings.validatePort(value);
+                  if (error != null) {
+                    setState(() => problem = error);
+                  } else if (value == config.port || value == config.httpPort) {
+                    setState(() => problem = "That port is used by the web server.");
+                  } else if (value! >= ftp.passiveStart && value <= ftp.passiveEnd) {
+                    setState(() => problem = "That port is inside the file-transfer range.");
+                  } else {
+                    Navigator.of(dialogContext).pop(value);
+                  }
+                },
+                child: const Text("Save"),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    if (chosen == null || !context.mounted) return;
+    await _save(context, ref, ftp.copyWith(port: chosen));
+  }
+
+  Future<void> _changeRange(BuildContext context, WidgetRef ref) async {
+    final TextEditingController start = TextEditingController(text: "${ftp.passiveStart}");
+    final TextEditingController end = TextEditingController(text: "${ftp.passiveEnd}");
+    final ({int start, int end})? chosen = await showDialog<({int start, int end})>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        String? problem;
+        return StatefulBuilder(
+          builder: (BuildContext context, void Function(void Function()) setState) => AlertDialog(
+            title: const Text("File-transfer ports"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                TextField(
+                  controller: start,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: "From"),
+                ),
+                const SizedBox(height: AuroraSpacing.sm),
+                TextField(
+                  controller: end,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: "To", errorText: problem),
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text("Cancel")),
+              FilledButton(
+                onPressed: () {
+                  final int? from = int.tryParse(start.text.trim());
+                  final int? to = int.tryParse(end.text.trim());
+                  final String? error = FtpSettings.validatePassiveRange(from, to);
+                  if (error != null) {
+                    setState(() => problem = error);
+                  } else if (ftp.port >= from! && ftp.port <= to!) {
+                    setState(() => problem = "Keep the FTP port (${ftp.port}) outside this range.");
+                  } else {
+                    Navigator.of(dialogContext).pop((start: from, end: to!));
+                  }
+                },
+                child: const Text("Save"),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    if (chosen == null || !context.mounted) return;
+    await _save(context, ref, ftp.copyWith(passiveStart: chosen.start, passiveEnd: chosen.end));
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bool running = server.isRunning;
+    final Color statusColor = ftp.enabled ? (ftp.mode == FtpMode.plain ? context.statusWarning : context.statusSuccess) : context.inkTertiary;
+    final String status = !ftp.enabled
+        ? "Off"
+        : (ftp.mode == FtpMode.plain ? "Insecure · unencrypted" : (running ? "Listening" : "Ready"));
+    final String? lan = lanHostPort(server);
+    final String host = lan == null ? "<phone address>" : lan.split(":").first;
+
+    return AuroraCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(color: context.panelColor, borderRadius: AuroraRadii.mdAll),
+                child: Icon(Icons.swap_horiz, color: ftp.mode == FtpMode.plain && ftp.enabled ? context.statusWarning : context.scheme.primary),
+              ),
+              const SizedBox(width: AuroraSpacing.sm + 4),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Flexible(child: Text("FTP / FTPS", style: context.brand(20), overflow: TextOverflow.ellipsis)),
+                        const SizedBox(width: 6),
+                        _Tag(tagFor(ftp.mode), ftp.mode == FtpMode.plain ? context.statusWarning : context.scheme.primary),
+                      ],
+                    ),
+                    Text("For file apps, cameras and scanners.", style: context.caption),
+                  ],
+                ),
+              ),
+              Switch(
+                value: ftp.enabled,
+                onChanged: canChange ? (bool on) => unawaited(_toggle(context, ref, on)) : null,
+              ),
+            ],
+          ),
+          const SizedBox(height: AuroraSpacing.sm),
+          Text("SECURITY", style: context.mono(size: 10, color: context.inkTertiary).copyWith(letterSpacing: 0.6)),
+          const SizedBox(height: 4),
+          _ModeOption(
+            title: "Explicit FTPS",
+            subtitle: "FTP upgraded to TLS. Best compatibility. Recommended.",
+            selected: ftp.mode == FtpMode.explicitTls,
+            onTap: canChange ? () => unawaited(_chooseMode(context, ref, FtpMode.explicitTls)) : null,
+          ),
+          _ModeOption(
+            title: "Implicit FTPS",
+            subtitle: "Encrypted from the first byte. For older devices that need it.",
+            selected: ftp.mode == FtpMode.implicitTls,
+            onTap: canChange ? () => unawaited(_chooseMode(context, ref, FtpMode.implicitTls)) : null,
+          ),
+          _ModeOption(
+            title: "Plain FTP",
+            subtitle: "No encryption: passwords and files can be read on the network.",
+            selected: ftp.mode == FtpMode.plain,
+            warn: true,
+            onTap: canChange ? () => unawaited(_chooseMode(context, ref, FtpMode.plain)) : null,
+          ),
+          const SizedBox(height: AuroraSpacing.sm),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(color: context.panelColor, borderRadius: AuroraRadii.standardAll),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Text("PORT", style: context.mono(size: 10, color: context.inkTertiary).copyWith(letterSpacing: 0.6)),
+                    const SizedBox(width: AuroraSpacing.sm),
+                    Text("${ftp.port}", style: context.mono(size: 14, color: context.inkPrimary, weight: FontWeight.w700)),
+                    const Spacer(),
+                    if (canChange)
+                      InkWell(
+                        onTap: () => unawaited(_changePort(context, ref)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: Text("Change", style: AuroraTypography.labelLg.copyWith(color: context.scheme.secondary)),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: <Widget>[
+                    Text("FILES", style: context.mono(size: 10, color: context.inkTertiary).copyWith(letterSpacing: 0.6)),
+                    const SizedBox(width: AuroraSpacing.sm),
+                    Text("${ftp.passiveStart}–${ftp.passiveEnd}", style: context.mono(size: 14, color: context.inkPrimary, weight: FontWeight.w700)),
+                    const Spacer(),
+                    if (canChange)
+                      InkWell(
+                        onTap: () => unawaited(_changeRange(context, ref)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: Text("Change", style: AuroraTypography.labelLg.copyWith(color: context.scheme.secondary)),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 6),
+          Row(
+            children: <Widget>[
+              Container(width: 8, height: 8, decoration: BoxDecoration(shape: BoxShape.circle, color: statusColor)),
+              const SizedBox(width: 6),
+              Text(status, style: context.mono(size: 11, color: statusColor)),
+              if (!canChange) ...<Widget>[
+                const SizedBox(width: AuroraSpacing.sm),
+                Expanded(child: Text("Stop the server to change this.", style: context.caption, textAlign: TextAlign.end)),
+              ],
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            "Anonymous access is never allowed. Each person signs in with their own account and sees only the "
+            "folders they were given.",
+            style: context.caption,
+          ),
+          if (ftp.enabled && !config.allowNetworkAccess) ...<Widget>[
+            const SizedBox(height: 4),
+            Text(
+              "Only this phone can reach it until you allow other devices on your network.",
+              style: context.caption.copyWith(color: context.statusWarning),
+            ),
+          ],
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: () => unawaited(showFtpGuide(context, host: host, settings: ftp)),
+              icon: const Icon(Icons.menu_book_outlined, size: 16),
+              label: const Text("How to connect with FTP"),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ModeOption extends StatelessWidget {
+  const _ModeOption({
+    required this.title,
+    required this.subtitle,
+    required this.selected,
+    required this.onTap,
+    this.warn = false,
+  });
+
+  final String title;
+  final String subtitle;
+  final bool selected;
+  final VoidCallback? onTap;
+  final bool warn;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color accent = warn ? context.statusWarning : context.scheme.primary;
+    return Semantics(
+      inMutuallyExclusiveGroup: true,
+      selected: selected,
+      button: true,
+      label: title,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: AuroraRadii.mdAll,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Icon(selected ? Icons.radio_button_checked : Icons.radio_button_unchecked, size: 20, color: selected ? accent : context.inkTertiary),
+              const SizedBox(width: AuroraSpacing.sm),
+              Expanded(
+                child: ExcludeSemantics(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(title, style: context.body.copyWith(fontWeight: FontWeight.w600, color: onTap == null ? context.inkSecondary : context.inkPrimary)),
+                      Text(subtitle, style: context.caption.copyWith(color: warn ? context.statusWarning : context.inkSecondary)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 // -------------------------------------------------------------- shared bits
 
 Future<void> _save(BuildContext context, WidgetRef ref, ServerConfig next) async {
@@ -381,6 +749,7 @@ Future<void> _save(BuildContext context, WidgetRef ref, ServerConfig next) async
 /// and the two listeners can't share one.
 Future<void> _changePort(BuildContext context, WidgetRef ref, ServerConfig config, {required bool https}) async {
   final TextEditingController controller = TextEditingController(text: "${https ? config.port : config.httpPort}");
+  final FtpSettings? ftp = ref.read(ftpSettingsProvider).value;
   final int? chosen = await showDialog<int>(
     context: context,
     builder: (BuildContext dialogContext) {
@@ -404,6 +773,10 @@ Future<void> _changePort(BuildContext context, WidgetRef ref, ServerConfig confi
                   setState(() => problem = "Use a number from 1024 to 65535.");
                 } else if (value == other) {
                   setState(() => problem = "That port is used by the other connection.");
+                } else if (ftp != null &&
+                    ftp.enabled &&
+                    (value == ftp.port || (value >= ftp.passiveStart && value <= ftp.passiveEnd))) {
+                  setState(() => problem = "That port is used by FTP.");
                 } else {
                   Navigator.of(dialogContext).pop(value);
                 }

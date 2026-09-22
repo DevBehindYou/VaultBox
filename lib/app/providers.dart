@@ -17,6 +17,7 @@ import "../data/services/saf_storage_backend.dart";
 import "../data/services/system_clock.dart";
 import "../domain/entities/account.dart";
 import "../domain/entities/activity.dart";
+import "../domain/entities/ftp_settings.dart";
 import "../domain/entities/recycle_item.dart";
 import "../domain/entities/server_config.dart";
 import "../domain/entities/server_state.dart";
@@ -412,3 +413,9 @@ final Provider<UrlOpener> urlOpenerProvider = Provider<UrlOpener>((Ref ref) => c
 final Provider<TestStorageAccess> testStorageAccessProvider = Provider<TestStorageAccess>(
   (Ref ref) => TestStorageAccess(ref.watch(fileRepositoryProvider), ref.watch(clockProvider)),
 );
+
+/// What the person chose for the FTP server (off unless they switched it on).
+/// Read again after each change.
+final FutureProvider<FtpSettings> ftpSettingsProvider = FutureProvider.autoDispose<FtpSettings>((Ref ref) async {
+  return FtpSettings.fromMap(await ref.watch(settingsRepositoryProvider).readAll());
+});

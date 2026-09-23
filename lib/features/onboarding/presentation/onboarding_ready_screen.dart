@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
 
-import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
@@ -19,14 +19,14 @@ class OnboardingReadyScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               const Spacer(),
-              const Icon(Icons.check_circle, size: 48, color: AuroraColors.statusSuccess),
+              Icon(Icons.check_circle, size: 48, color: context.statusSuccess),
               const SizedBox(height: AuroraSpacing.md),
               Text("You're set up.", style: AuroraTypography.displayXlMobile),
               const SizedBox(height: AuroraSpacing.sm),
               Text(
                 "Your storage is ready. Browse, add and organize files from the "
                 "Files tab any time.",
-                style: AuroraTypography.bodyLg.copyWith(color: AuroraColors.inkSecondary),
+                style: AuroraTypography.bodyLg.copyWith(color: context.inkSecondary),
               ),
               const Spacer(),
               AuroraPrimaryButton(

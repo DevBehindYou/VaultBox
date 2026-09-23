@@ -1,16 +1,25 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 
 import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
+import "../../../domain/entities/share.dart";
 import "../../../domain/models/file_ref.dart";
 import "../../../domain/models/operation_batch.dart";
+import "../../../domain/repositories/file_repository.dart";
+import "../../../domain/usecases/copy_items.dart";
+import "../../../domain/usecases/delete_items_to_recycle_bin.dart";
+import "../../../domain/usecases/import_files.dart";
+import "../../../domain/usecases/move_items.dart";
 import "../../../domain/value_objects/storage_entry.dart";
 import "../../../domain/value_objects/write_mode.dart";
+import "../../../platform/adapters/android_storage_host.dart";
+import "../../share/presentation/create_share_dialog.dart";
 import "../viewmodel/files_view_model.dart";
 import "destination_picker_screen.dart";
 import "recycle_bin_screen.dart";
@@ -21,16 +30,39 @@ import "widgets/file_row.dart";
 /// and per-item actions; everything else is a contextual sheet or dialog
 /// rather than a route (kickoff §5, §52 — the seven "files_*" mockups
 /// consolidate here).
-class FilesScreen extends ConsumerStatefulWidget {
+class FilesScreen extends StatelessWidget {
   const FilesScreen({required this.directory, super.key});
 
   final FileRef directory;
 
   @override
-  ConsumerState<FilesScreen> createState() => _FilesScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider<FilesCubit>(
+      key: ValueKey<FileRef>(directory),
+      create: (BuildContext context) => FilesCubit(
+        directory: directory,
+        files: context.read<FileRepository>(),
+        deleteItems: context.read<DeleteItemsToRecycleBin>(),
+        copyItems: context.read<CopyItems>(),
+        moveItems: context.read<MoveItems>(),
+        importFiles: context.read<ImportFiles>(),
+        androidStorageHost: context.read<AndroidStorageHost>(),
+      ),
+      child: _FilesScreenBody(directory: directory),
+    );
+  }
 }
 
-class _FilesScreenState extends ConsumerState<FilesScreen> {
+class _FilesScreenBody extends StatefulWidget {
+  const _FilesScreenBody({required this.directory});
+
+  final FileRef directory;
+
+  @override
+  State<_FilesScreenBody> createState() => _FilesScreenBodyState();
+}
+
+class _FilesScreenBodyState extends State<_FilesScreenBody> {
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -56,15 +88,14 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
     // Prefetch a page before hitting the bottom so scrolling never stalls
     // waiting on I/O.
     if (remaining < FileRow.rowHeight * 8) {
-      unawaited(ref.read(filesViewModelProvider(widget.directory).notifier).loadMore());
+      unawaited(context.read<FilesCubit>().loadMore());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final FilesState state = ref.watch(filesViewModelProvider(widget.directory));
-    final FilesViewModel viewModel =
-        ref.read(filesViewModelProvider(widget.directory).notifier);
+    final FilesState state = context.watch<FilesCubit>().state;
+    final FilesCubit viewModel = context.read<FilesCubit>();
 
     return Scaffold(
       body: SafeArea(
@@ -101,12 +132,28 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
       ),
       floatingActionButton: state.isSelectionMode
           ? null
-          : FloatingActionButton.extended(
-              onPressed: () => _showCreateFolderDialog(context, viewModel),
-              backgroundColor: AuroraColors.auroraMid,
-              foregroundColor: AuroraColors.inkPrimary,
-              icon: const Icon(Icons.create_new_folder_outlined),
-              label: const Text("New folder"),
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                FloatingActionButton.small(
+                  heroTag: "files-add-files",
+                  tooltip: "Add files",
+                  onPressed: () => _importFiles(context, viewModel),
+                  backgroundColor: AuroraColors.auroraMid,
+                  foregroundColor: AuroraColors.inkPrimary,
+                  child: const Icon(Icons.upload_file_outlined),
+                ),
+                const SizedBox(height: AuroraSpacing.sm),
+                FloatingActionButton.extended(
+                  heroTag: "files-new-folder",
+                  onPressed: () => _showCreateFolderDialog(context, viewModel),
+                  backgroundColor: AuroraColors.auroraMid,
+                  foregroundColor: AuroraColors.inkPrimary,
+                  icon: const Icon(Icons.create_new_folder_outlined),
+                  label: const Text("New folder"),
+                ),
+              ],
             ),
       bottomNavigationBar: state.isSelectionMode
           ? _SelectionActionBar(
@@ -114,12 +161,33 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
               onCopy: () => _copySelected(context, viewModel),
               onMove: () => _moveSelected(context, viewModel),
               onDelete: () => _confirmDelete(context, viewModel),
+              onShare: _onlySelected(state) == null
+                  ? null
+                  : () => _shareSelected(context, _onlySelected(state)!, ShareKind.download),
+              onAskForFiles: _onlySelected(state)?.isDirectory ?? false
+                  ? () => _shareSelected(context, _onlySelected(state)!, ShareKind.upload)
+                  : null,
             )
           : null,
     );
   }
 
-  Widget _buildList(FilesState state, FilesViewModel viewModel) {
+  /// The one selected item, or `null` if none or several are selected.
+  StorageEntry? _onlySelected(FilesState state) {
+    final List<StorageEntry> chosen = state.entries.where(state.isSelected).toList();
+    return chosen.length == 1 ? chosen.first : null;
+  }
+
+  Future<void> _shareSelected(BuildContext context, StorageEntry entry, ShareKind kind) {
+    return showCreateShareFlow(
+      context,
+      target: FileRef(root: widget.directory.root, path: entry.path),
+      kind: kind,
+      itemName: entry.name,
+    );
+  }
+
+  Widget _buildList(FilesState state, FilesCubit viewModel) {
     if (state.isLoadingFirstPage) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -177,7 +245,7 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
   /// restore from the Recycle Bin can land an item right back in this exact
   /// directory. Refresh on return rather than leaving the list stale until
   /// some unrelated action happens to trigger a reload.
-  Future<void> _openRecycleBin(BuildContext context, FilesViewModel viewModel) async {
+  Future<void> _openRecycleBin(BuildContext context, FilesCubit viewModel) async {
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => RecycleBinScreen(root: widget.directory.root),
@@ -187,11 +255,25 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
     await viewModel.loadFirstPage();
   }
 
-  Future<void> _copySelected(BuildContext context, FilesViewModel viewModel) async {
+  /// System file picker -> import into this folder. The conflict prompt is
+  /// only shown if a picked name already exists here.
+  Future<void> _importFiles(BuildContext context, FilesCubit viewModel) async {
+    final OperationBatch? batch = await viewModel.importFiles(
+      onConflicts: (List<String> names) async {
+        // Called after the picker returned — the screen may be gone by now.
+        if (!context.mounted) return null;
+        return showConflictResolutionDialog(context, conflictingNames: names);
+      },
+    );
+    if (batch == null || !context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(batch.summary)));
+  }
+
+  Future<void> _copySelected(BuildContext context, FilesCubit viewModel) async {
     await _runTransfer(context, viewModel, isMove: false);
   }
 
-  Future<void> _moveSelected(BuildContext context, FilesViewModel viewModel) async {
+  Future<void> _moveSelected(BuildContext context, FilesCubit viewModel) async {
     await _runTransfer(context, viewModel, isMove: true);
   }
 
@@ -202,7 +284,7 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
   /// and any one of them can outlive the widget (KB vol2 §9.1).
   Future<void> _runTransfer(
     BuildContext context,
-    FilesViewModel viewModel, {
+    FilesCubit viewModel, {
     required bool isMove,
   }) async {
     final FileRef? destination =
@@ -237,44 +319,21 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
 
   Future<void> _showCreateFolderDialog(
     BuildContext context,
-    FilesViewModel viewModel,
+    FilesCubit viewModel,
   ) async {
-    final TextEditingController controller = TextEditingController();
-    try {
-      final String? name = await showDialog<String>(
-        context: context,
-        builder: (BuildContext dialogContext) => AlertDialog(
-          title: const Text("New folder"),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: const InputDecoration(hintText: "Folder name"),
-            onSubmitted: (String value) => Navigator.of(dialogContext).pop(value),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(controller.text),
-              child: const Text("Create"),
-            ),
-          ],
-        ),
-      );
-      final String trimmed = (name ?? "").trim();
-      if (trimmed.isNotEmpty) {
-        await viewModel.createFolder(trimmed);
-      }
-    } finally {
-      controller.dispose();
+    final String? name = await showDialog<String>(
+      context: context,
+      builder: (BuildContext dialogContext) => const _CreateFolderDialog(),
+    );
+    final String trimmed = (name ?? "").trim();
+    if (trimmed.isNotEmpty) {
+      await viewModel.createFolder(trimmed);
     }
   }
 
   Future<void> _showSortSheet(
     BuildContext context,
-    FilesViewModel viewModel,
+    FilesCubit viewModel,
     FilesState state,
   ) async {
     await showModalBottomSheet<void>(
@@ -313,8 +372,8 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
     );
   }
 
-  Future<void> _confirmDelete(BuildContext context, FilesViewModel viewModel) async {
-    final int count = ref.read(filesViewModelProvider(widget.directory)).selectedCount;
+  Future<void> _confirmDelete(BuildContext context, FilesCubit viewModel) async {
+    final int count = viewModel.state.selectedCount;
     final bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) => AlertDialog(
@@ -342,6 +401,54 @@ class _FilesScreenState extends ConsumerState<FilesScreen> {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(batch.summary)),
+    );
+  }
+}
+
+/// Owns its [TextEditingController] so it is disposed only when the dialog
+/// route has fully left the tree.
+///
+/// The previous version created the controller in the caller and disposed it
+/// in a `finally` right after `showDialog` returned — but `showDialog`'s
+/// future completes as soon as `pop` is called, while the dialog is still
+/// animating out and its TextField is still using the controller. That threw
+/// "A TextEditingController was used after being disposed" and corrupted the
+/// widget tree (found by CI run #4's widget tests).
+class _CreateFolderDialog extends StatefulWidget {
+  const _CreateFolderDialog();
+
+  @override
+  State<_CreateFolderDialog> createState() => _CreateFolderDialogState();
+}
+
+class _CreateFolderDialogState extends State<_CreateFolderDialog> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() => Navigator.of(context).pop(_controller.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text("New folder"),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: const InputDecoration(hintText: "Folder name"),
+        onSubmitted: (String value) => _submit(),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text("Cancel"),
+        ),
+        TextButton(onPressed: _submit, child: const Text("Create")),
+      ],
     );
   }
 }
@@ -417,7 +524,7 @@ class _FilesHeader extends StatelessWidget {
               "${state.entries.length} item${state.entries.length == 1 ? '' : 's'}"
               "${state.hasMore ? '+' : ''}",
               style: AuroraTypography.labelMonoMd.copyWith(
-                color: AuroraColors.inkSecondary,
+                color: context.inkSecondary,
               ),
             ),
           ],
@@ -433,12 +540,20 @@ class _SelectionActionBar extends StatelessWidget {
     required this.onCopy,
     required this.onMove,
     required this.onDelete,
+    this.onShare,
+    this.onAskForFiles,
   });
 
   final int count;
   final VoidCallback onCopy;
   final VoidCallback onMove;
   final VoidCallback onDelete;
+
+  /// Only when exactly one item is selected.
+  final VoidCallback? onShare;
+
+  /// Only when exactly one folder is selected.
+  final VoidCallback? onAskForFiles;
 
   @override
   Widget build(BuildContext context) {
@@ -459,6 +574,10 @@ class _SelectionActionBar extends StatelessWidget {
                 label: "Move",
                 onPressed: onMove,
               ),
+              if (onShare != null)
+                _SelectionAction(icon: Icons.share_outlined, label: "Share", onPressed: onShare),
+              if (onAskForFiles != null)
+                _SelectionAction(icon: Icons.move_to_inbox_outlined, label: "Ask for files", onPressed: onAskForFiles),
               _SelectionAction(
                 icon: Icons.delete_outline,
                 label: "Delete",
@@ -518,13 +637,13 @@ class _EmptyFolder extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const Icon(Icons.folder_open_outlined, size: 40, color: AuroraColors.inkTertiary),
+          Icon(Icons.folder_open_outlined, size: 40, color: context.inkTertiary),
           const SizedBox(height: AuroraSpacing.md),
           Text("This folder is empty", style: AuroraTypography.bodyLg),
           const SizedBox(height: AuroraSpacing.xs),
           Text(
             "Create a folder or add files to get started.",
-            style: AuroraTypography.bodySm.copyWith(color: AuroraColors.inkSecondary),
+            style: AuroraTypography.bodySm.copyWith(color: context.inkSecondary),
           ),
         ],
       ),

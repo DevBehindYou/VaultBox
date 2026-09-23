@@ -67,7 +67,8 @@ final class MemoryStorageBackend implements StorageBackend {
 
       final _MemoryNode child = _nodes[childPath]!;
       yield StorageEntry(
-        path: StoragePath.parse(id, childPath),
+        // Literal name, not a wire path — see StoragePath.child.
+        path: directory.child(childName),
         type: child.isDirectory ? StorageEntryType.directory : StorageEntryType.file,
         sizeBytes: child.isDirectory ? null : child.bytes!.length,
         modifiedAt: child.modifiedAt,
@@ -272,8 +273,15 @@ final class _MemoryWriteHandle implements StorageWriteHandle {
 
   final void Function(Uint8List) _onCommit;
   final BytesBuilder _buffer = BytesBuilder(copy: false);
-  late final StreamController<List<int>> _controller =
-      StreamController<List<int>>()..stream.listen(_buffer.add);
+  Object? _error;
+
+  /// A real sink (dart:io's IOSink) fails the write when its source stream
+  /// errors. The controller used here would otherwise report the error as an
+  /// UNCAUGHT async error and still let commit() publish a truncated file, which
+  /// made this fake more forgiving than the backends it stands in for
+  /// (found by ImportFiles' "unreadable file" test). Record it; commit() throws.
+  late final StreamController<List<int>> _controller = StreamController<List<int>>()
+    ..stream.listen(_buffer.add, onError: (Object error) => _error ??= error);
 
   bool _finished = false;
 
@@ -285,6 +293,11 @@ final class _MemoryWriteHandle implements StorageWriteHandle {
     if (_finished) return _buffer.length;
     _finished = true;
     await _controller.close();
+    final Object? error = _error;
+    if (error != null) {
+      _buffer.clear(); // never publish a truncated file
+      throw error;
+    }
     final Uint8List bytes = _buffer.takeBytes();
     // Commit is the "temp -> verified -> visible" step: nothing is written
     // into the node map until here, mirroring the real backends' behaviour.

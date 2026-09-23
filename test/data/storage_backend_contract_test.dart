@@ -41,6 +41,17 @@ void main() {
         throwsA(isA<PathTraversalRejectedFailure>()),
       );
     });
+
+    test("one unrepresentable on-disk name is skipped, not fatal to the listing", () async {
+      // A backslash is a legal POSIX file name but can't be one StoragePath
+      // segment. It used to throw out of list() and blank the whole folder.
+      File("${tempDir.path}/ok.txt").writeAsStringSync("ok");
+      File("${tempDir.path}/bad\\name.txt").writeAsStringSync("odd");
+
+      final List<StorageEntry> entries =
+          await backend.list(StoragePath.root("disk")).toList();
+      expect(entries.map((StorageEntry e) => e.name), <String>["ok.txt"]);
+    }, skip: Platform.isWindows ? "backslash is not a legal Windows file name" : false);
   });
 }
 
@@ -60,6 +71,30 @@ void runContractTests(StorageBackend Function() backendOf, String rootId) {
     }
     return utf8.decode(bytes);
   }
+
+  test("names are literal: percent sequences and edge spaces survive a round-trip", () async {
+    final StorageBackend backend = backendOf();
+    // These previously came back from list() as a DIFFERENT path (decoded /
+    // trimmed), so the row pointed at a file other than the one shown.
+    const List<String> names = <String>["100%25 done.txt", "%41.txt", " lead.txt", "1:1 notes.txt"];
+    for (final String name in names) {
+      final StoragePath path = StoragePath.root(rootId).child(name);
+      final StorageWriteHandle handle = await backend.openWrite(path);
+      handle.sink.add(utf8.encode(name));
+      await handle.commit();
+    }
+
+    final List<StorageEntry> listed = await backend.list(StoragePath.root(rootId)).toList();
+    expect(listed.map((StorageEntry e) => e.name).toList()..sort(), <String>[...names]..sort());
+
+    for (final StorageEntry entry in listed) {
+      final List<int> bytes = <int>[];
+      await for (final List<int> chunk in backend.openRead(entry.path)) {
+        bytes.addAll(chunk);
+      }
+      expect(utf8.decode(bytes), entry.name, reason: "listed path must open the file it names");
+    }
+  });
 
   test("stat reports non-existence rather than throwing", () async {
     final StorageStat stat = await backendOf().stat(at("nope.txt"));

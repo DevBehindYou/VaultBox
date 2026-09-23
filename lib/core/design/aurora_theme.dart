@@ -1,6 +1,8 @@
+import "package:flutter/cupertino.dart" show CupertinoPageTransitionsBuilder;
 import "package:flutter/material.dart";
 
 import "aurora_colors.dart";
+import "aurora_context.dart";
 import "aurora_spacing.dart";
 import "aurora_typography.dart";
 
@@ -12,7 +14,7 @@ import "aurora_typography.dart";
 /// don't support gradient fills natively) — see `widgets/aurora_button.dart`
 /// (Phase 1 UI) for the gradient primary button built on top of this theme.
 abstract final class AuroraTheme {
-  static ThemeData light() {
+  static ThemeData light({AuroraStyle style = AuroraStyle.standard, VisualDensity density = VisualDensity.standard}) {
     final ColorScheme scheme = const ColorScheme.light().copyWith(
       surface: AuroraColors.surface,
       onSurface: AuroraColors.onSurface,
@@ -36,10 +38,10 @@ abstract final class AuroraTheme {
       errorContainer: AuroraColors.errorContainer,
       onErrorContainer: AuroraColors.onErrorContainer,
     );
-    return _base(scheme, brightness: Brightness.light);
+    return _base(scheme, brightness: Brightness.light, style: style, density: density);
   }
 
-  static ThemeData dark() {
+  static ThemeData dark({AuroraStyle style = AuroraStyle.standard, VisualDensity density = VisualDensity.standard}) {
     final ColorScheme scheme = const ColorScheme.dark().copyWith(
       surface: AuroraColorsDark.surface,
       onSurface: AuroraColorsDark.onSurface,
@@ -57,10 +59,15 @@ abstract final class AuroraTheme {
       error: AuroraColors.error,
       onError: AuroraColors.onError,
     );
-    return _base(scheme, brightness: Brightness.dark);
+    return _base(scheme, brightness: Brightness.dark, style: style, density: density);
   }
 
-  static ThemeData _base(ColorScheme scheme, {required Brightness brightness}) {
+  static ThemeData _base(
+    ColorScheme scheme, {
+    required Brightness brightness,
+    required AuroraStyle style,
+    required VisualDensity density,
+  }) {
     final bool isDark = brightness == Brightness.dark;
     final Color borderDefault =
         isDark ? AuroraColorsDark.borderDefault : AuroraColors.borderDefault;
@@ -71,7 +78,10 @@ abstract final class AuroraTheme {
       useMaterial3: true,
       brightness: brightness,
       colorScheme: scheme,
-      scaffoldBackgroundColor: scheme.surface,
+      visualDensity: density,
+      extensions: <ThemeExtension<dynamic>>[style],
+      // The mockups sit white cards on a warm grey page; dark keeps its own page.
+      scaffoldBackgroundColor: isDark ? scheme.surface : scheme.surfaceContainer,
       fontFamily: AuroraFonts.body,
       textTheme: TextTheme(
         displayLarge: AuroraTypography.displayXl.copyWith(color: scheme.onSurface),

@@ -1,15 +1,19 @@
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 
-import "../../../app/providers.dart";
-import "../../../core/design/aurora_colors.dart";
+import "../../../core/design/aurora_context.dart";
 import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
+import "../../../core/state/resource.dart";
+import "../../../core/state/resource_cubit.dart";
 import "../../../core/utils/byte_format.dart";
 import "../../../domain/entities/recycle_item.dart";
 import "../../../domain/entities/storage_root.dart";
 import "../../../domain/models/operation_batch.dart";
+import "../../../domain/repositories/recycle_bin_repository.dart";
+import "../../../domain/usecases/permanently_delete_recycled.dart";
+import "../../../domain/usecases/restore_items.dart";
 
 /// Recycle Bin — a `/files` sub-view per the consolidation decision in
 /// docs/IMPLEMENTATION_PLAN.md §D ("filtered view of the same screen, not a
@@ -20,14 +24,38 @@ import "../../../domain/models/operation_batch.dart";
 /// are both wired. What's still missing: a background purge sweep for items
 /// past their [RecycleItem.purgeAfter] deadline — everything currently
 /// waits for a person to act.
-class RecycleBinScreen extends ConsumerWidget {
+/// Screen-scoped — Home never watches recycle-bin items, so unlike almost
+/// every other Cubit in this app this really is created-per-visit and
+/// disposed-on-pop, mirroring the old `recycleItemsProvider`
+/// (`StreamProvider.autoDispose.family<List<RecycleItem>, String>`).
+class RecycleItemsCubit extends ResourceStreamCubit<List<RecycleItem>> {
+  RecycleItemsCubit(RecycleBinRepository repository, String rootId)
+    : super(repository.watchItems(rootId));
+}
+
+class RecycleBinScreen extends StatelessWidget {
   const RecycleBinScreen({required this.root, super.key});
 
   final StorageRoot root;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<List<RecycleItem>> items = ref.watch(recycleItemsProvider(root.id));
+  Widget build(BuildContext context) {
+    return BlocProvider<RecycleItemsCubit>(
+      create: (BuildContext context) =>
+          RecycleItemsCubit(context.read<RecycleBinRepository>(), root.id),
+      child: _RecycleBinScaffold(root: root),
+    );
+  }
+}
+
+class _RecycleBinScaffold extends StatelessWidget {
+  const _RecycleBinScaffold({required this.root});
+
+  final StorageRoot root;
+
+  @override
+  Widget build(BuildContext context) {
+    final Resource<List<RecycleItem>> items = context.watch<RecycleItemsCubit>().state;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Recycle Bin")),
@@ -49,10 +77,10 @@ class RecycleBinScreen extends ConsumerWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  const Icon(
+                  Icon(
                     Icons.delete_outline,
                     size: 40,
-                    color: AuroraColors.inkTertiary,
+                    color: context.inkTertiary,
                   ),
                   const SizedBox(height: AuroraSpacing.md),
                   Text("Recycle Bin is empty", style: AuroraTypography.bodyLg),
@@ -74,17 +102,17 @@ class RecycleBinScreen extends ConsumerWidget {
   }
 }
 
-class _RecycleItemCard extends ConsumerWidget {
+class _RecycleItemCard extends StatelessWidget {
   const _RecycleItemCard({required this.item});
 
   final RecycleItem item;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return AuroraCard(
       child: Row(
         children: <Widget>[
-          const Icon(Icons.insert_drive_file_outlined, color: AuroraColors.inkTertiary),
+          Icon(Icons.insert_drive_file_outlined, color: context.inkTertiary),
           const SizedBox(width: AuroraSpacing.md),
           Expanded(
             child: Column(
@@ -100,29 +128,29 @@ class _RecycleItemCard extends ConsumerWidget {
                 Text(
                   "Deleted ${_relative(item.deletedAt)}"
                   "${item.sizeBytes != null ? ' · ${ByteFormat.format(item.sizeBytes!)}' : ''}",
-                  style: AuroraTypography.bodySm.copyWith(color: AuroraColors.inkSecondary),
+                  style: AuroraTypography.bodySm.copyWith(color: context.inkSecondary),
                 ),
               ],
             ),
           ),
           TextButton(
-            onPressed: () => _restore(context, ref),
+            onPressed: () => _restore(context),
             child: const Text("Restore"),
           ),
           IconButton(
             icon: const Icon(Icons.delete_forever_outlined),
             tooltip: "Delete forever",
-            color: AuroraColors.statusDanger,
-            onPressed: () => _confirmPermanentDelete(context, ref),
+            color: context.statusDanger,
+            onPressed: () => _confirmPermanentDelete(context),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _restore(BuildContext context, WidgetRef ref) async {
-    final OperationBatch batch = await ref
-        .read(restoreItemsProvider)
+  Future<void> _restore(BuildContext context) async {
+    final OperationBatch batch = await context
+        .read<RestoreItems>()
         .call(recycleItemIds: <String>[item.id]);
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -139,7 +167,7 @@ class _RecycleItemCard extends ConsumerWidget {
   /// Doc §27: "Permanent delete requires explicit confirmation." This is
   /// that confirmation — a dialog naming exactly what's about to happen,
   /// not a generic "are you sure?".
-  Future<void> _confirmPermanentDelete(BuildContext context, WidgetRef ref) async {
+  Future<void> _confirmPermanentDelete(BuildContext context) async {
     final bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) => AlertDialog(
@@ -153,7 +181,7 @@ class _RecycleItemCard extends ConsumerWidget {
             child: const Text("Cancel"),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AuroraColors.statusDanger),
+            style: FilledButton.styleFrom(backgroundColor: context.statusDanger),
             onPressed: () => Navigator.of(dialogContext).pop(true),
             child: const Text("Delete forever"),
           ),
@@ -162,8 +190,8 @@ class _RecycleItemCard extends ConsumerWidget {
     );
     if (confirmed != true || !context.mounted) return;
 
-    final OperationBatch batch = await ref
-        .read(permanentlyDeleteRecycledProvider)
+    final OperationBatch batch = await context
+        .read<PermanentlyDeleteRecycled>()
         .call(recycleItemIds: <String>[item.id]);
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(batch.summary)));

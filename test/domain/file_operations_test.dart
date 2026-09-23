@@ -12,6 +12,7 @@ import "package:vaultbox/domain/models/file_ref.dart";
 import "package:vaultbox/domain/models/operation_batch.dart";
 import "package:vaultbox/domain/repositories/clock.dart";
 import "package:vaultbox/domain/repositories/id_generator.dart";
+import "package:vaultbox/domain/repositories/recycle_bin_repository.dart";
 import "package:vaultbox/domain/repositories/storage_backend.dart";
 import "package:vaultbox/domain/usecases/copy_items.dart";
 import "package:vaultbox/domain/usecases/delete_items_to_recycle_bin.dart";
@@ -86,6 +87,25 @@ final class FlakyBackend implements StorageBackend {
 
   @override
   Future<StorageStat> stat(StoragePath path) => _inner.stat(path);
+}
+
+/// A bin whose lookup itself fails — exercises the use cases' catch blocks,
+/// which used to dereference a still-null `item!` and crash the whole batch.
+final class LookupFailsBin implements RecycleBinRepository {
+  @override
+  Stream<List<RecycleItem>> watchItems(String storageRootId) => const Stream<List<RecycleItem>>.empty();
+
+  @override
+  Future<List<RecycleItem>> listItems(String storageRootId) async => const <RecycleItem>[];
+
+  @override
+  Future<void> add(RecycleItem item) async {}
+
+  @override
+  Future<RecycleItem?> get(String id) => throw const DatabaseFailure(debugDetail: "injected");
+
+  @override
+  Future<void> remove(String id) async {}
 }
 
 void main() {
@@ -385,6 +405,134 @@ void main() {
 
       expect(batch.outcomes, isEmpty);
       await bin.dispose();
+      await roots.dispose();
+    });
+  });
+
+  group("Data-loss guards (same-folder and containment)", () {
+    test("Replace-copying a file onto itself is skipped and the file survives", () async {
+      backend.seedFile("/a.txt", utf8.encode("only copy"));
+
+      final OperationBatch batch = await CopyItems(files).call(
+        sources: <FileRef>[ref("a.txt")],
+        destinationDirectory: ref(""), // its own folder (the root)
+        conflictPolicy: ConflictPolicy.replace,
+      );
+
+      expect(batch.skippedCount, 1);
+      expect(
+        await read("/a.txt"),
+        "only copy",
+        reason: "Replace deletes the target first — here target IS the source",
+      );
+    });
+
+    test("Replace-moving a file into the folder it is already in is a no-op", () async {
+      backend
+        ..seedDirectory("/d")
+        ..seedFile("/d/x.txt", utf8.encode("keep me"));
+
+      final OperationBatch batch = await MoveItems(files).call(
+        sources: <FileRef>[ref("d/x.txt")],
+        destinationDirectory: ref("d"),
+        conflictPolicy: ConflictPolicy.replace,
+      );
+
+      expect(batch.skippedCount, 1);
+      expect(await read("/d/x.txt"), "keep me");
+    });
+
+    test("Keep-both move into its own folder does not silently rename the file", () async {
+      backend.seedFile("/a.txt", utf8.encode("A"));
+
+      final OperationBatch batch = await MoveItems(files).call(
+        sources: <FileRef>[ref("a.txt")],
+        destinationDirectory: ref(""),
+        conflictPolicy: ConflictPolicy.keepBoth,
+      );
+
+      expect(batch.skippedCount, 1);
+      expect(await read("/a.txt"), "A");
+      expect(await read("/a (1).txt"), isNull);
+    });
+
+    test("Keep-both copy into its own folder still duplicates (Duplicate behaviour)", () async {
+      backend.seedFile("/a.txt", utf8.encode("A"));
+
+      final OperationBatch batch = await CopyItems(files).call(
+        sources: <FileRef>[ref("a.txt")],
+        destinationDirectory: ref(""),
+        conflictPolicy: ConflictPolicy.keepBoth,
+      );
+
+      expect(batch.completedCount, 1);
+      expect(await read("/a.txt"), "A");
+      expect(await read("/a (1).txt"), "A");
+    });
+
+    test("Replace cannot delete a folder that contains the source", () async {
+      // Moving /b/b to the root with Replace targets /b — an ancestor of the
+      // source. Deleting the target first would destroy the source with it.
+      backend
+        ..seedDirectory("/b")
+        ..seedFile("/b/b", utf8.encode("inside"));
+
+      final OperationBatch batch = await MoveItems(files).call(
+        sources: <FileRef>[ref("b/b")],
+        destinationDirectory: ref(""),
+        conflictPolicy: ConflictPolicy.replace,
+      );
+
+      expect(batch.failedCount, 1);
+      expect(batch.outcomes.single.userMessage, contains("can't replace a folder"));
+      expect(await read("/b/b"), "inside", reason: "source must be untouched");
+    });
+
+    test("a folder can't be copied into itself at the repository level either", () async {
+      backend
+        ..seedDirectory("/proj")
+        ..seedFile("/proj/f.txt", utf8.encode("f"));
+
+      // The UI pre-validates this; the repository must hold the line on its
+      // own so a future protocol handler can't reach an endless recursion.
+      final OperationBatch batch = await CopyItems(files).call(
+        sources: <FileRef>[ref("proj")],
+        destinationDirectory: ref("proj"),
+        conflictPolicy: ConflictPolicy.keepBoth,
+      );
+
+      expect(batch.failedCount, 1);
+      expect(batch.outcomes.single.userMessage, contains("copied into itself"));
+      expect(await read("/proj/f.txt"), "f");
+    });
+  });
+
+  group("Recycle use cases survive a failing lookup", () {
+    test("PermanentlyDeleteRecycled reports a failed outcome instead of throwing", () async {
+      final InMemoryStorageRootRepository roots =
+          InMemoryStorageRootRepository(initial: <StorageRoot>[root]);
+
+      final OperationBatch batch = await PermanentlyDeleteRecycled(
+        files,
+        LookupFailsBin(),
+        roots,
+      ).call(recycleItemIds: <String>["id-x", "id-y"]);
+
+      expect(batch.failedCount, 2, reason: "each id fails on its own; the batch continues");
+      await roots.dispose();
+    });
+
+    test("RestoreItems reports a failed outcome instead of throwing", () async {
+      final InMemoryStorageRootRepository roots =
+          InMemoryStorageRootRepository(initial: <StorageRoot>[root]);
+
+      final OperationBatch batch = await RestoreItems(
+        files,
+        LookupFailsBin(),
+        roots,
+      ).call(recycleItemIds: <String>["id-x"]);
+
+      expect(batch.failedCount, 1);
       await roots.dispose();
     });
   });

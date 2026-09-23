@@ -1,0 +1,40 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+*.iml
+.idea/
+.vscode/
+
+# Generated code — README: "*.g.dart files are generated, not committed".
+# Recreate with the codegen commands in README.md (CI does this on every run).
+*.g.dart
+*.freezed.dart
+*.drift.dart
+android/app/src/main/kotlin/com/vaultbox/app/pigeon/*.g.kt
+
+# Android build state / local config (never commit)
+android/.gradle/
+android/local.properties
+android/gradle/wrapper/gradle-wrapper.jar
+android/app/debug/
+android/app/profile/
+android/app/release/
+android/captures/
+android/**/GeneratedPluginRegistrant.*
+android/key.properties
+*.jks
+*.keystore
+
+# CI scratch (the workflow builds this in the runner and pushes it to the
+# `ci-reports` branch; it should never land on a working branch)
+ci-report/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -84,6 +84,7 @@ final class DriftStorageRootRepository implements StorageRootRepository {
       isAvailable: row.isAvailable,
       freeBytes: row.freeBytes,
       totalBytes: row.totalBytes,
+      rootDocumentId: row.rootDocumentId,
     );
   }
 
@@ -99,6 +100,7 @@ final class DriftStorageRootRepository implements StorageRootRepository {
       isAvailable: Value<bool>(root.isAvailable),
       freeBytes: Value<int?>(root.freeBytes),
       totalBytes: Value<int?>(root.totalBytes),
+      rootDocumentId: Value<String?>(root.rootDocumentId),
     );
   }
 
@@ -107,6 +109,8 @@ final class DriftStorageRootRepository implements StorageRootRepository {
   /// their own case here once the native bridge exists and actually reports
   /// them, rather than guessing ahead of that work.
   StorageCapabilities _capabilitiesFor(StorageBackendType type) {
-    return const StorageCapabilities.fullLocal();
+    return type == StorageBackendType.saf
+        ? const StorageCapabilities.saf()
+        : const StorageCapabilities.fullLocal();
   }
 }

@@ -2,8 +2,10 @@ import "package:flutter/material.dart";
 import "package:go_router/go_router.dart";
 
 import "../core/design/aurora_colors.dart";
+import "../core/design/aurora_context.dart";
 import "../core/design/aurora_spacing.dart";
 import "../core/design/aurora_typography.dart";
+import "app_header.dart";
 
 /// The five-destination shell with the Aurora floating nav dock.
 ///
@@ -30,7 +32,19 @@ class ShellScaffold extends StatelessWidget {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      body: shell,
+      // The header takes the status-bar inset itself, so what sits under it
+      // must not add the same inset again.
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: <Widget>[
+            AppHeader(subtitle: _destinations[shell.currentIndex].label),
+            Expanded(
+              child: MediaQuery.removePadding(context: context, removeTop: true, child: shell),
+            ),
+          ],
+        ),
+      ),
       bottomNavigationBar: SafeArea(
         child: Container(
           height: AuroraSpacing.dockHeight,
@@ -41,12 +55,12 @@ class ShellScaffold extends StatelessWidget {
             AuroraSpacing.dockBottomMargin,
           ),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerLowest,
+            color: context.cardColor,
             borderRadius: AuroraRadii.pillAll,
-            border: Border.all(
-              color: isDark ? AuroraColorsDark.borderDefault : AuroraColors.borderDefault,
-              width: 1.5,
-            ),
+            border: isDark ? Border.all(color: context.borderDefault) : null,
+            boxShadow: isDark
+                ? null
+                : const <BoxShadow>[BoxShadow(color: Color(0x14000000), blurRadius: 8, offset: Offset(0, 2))],
           ),
           child: Row(
             children: <Widget>[
@@ -107,7 +121,8 @@ class _DockItem extends StatelessWidget {
           curve: Curves.easeOutCubic,
           margin: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            gradient: selected ? AuroraColors.primaryAurora : null,
+            gradient: selected && AuroraStyle.of(context).gradients ? AuroraColors.primaryAurora : null,
+            color: selected && !AuroraStyle.of(context).gradients ? AuroraColors.auroraSoftLavender : null,
             borderRadius: AuroraRadii.pillAll,
           ),
           child: Column(
@@ -116,13 +131,13 @@ class _DockItem extends StatelessWidget {
               Icon(
                 destination.icon,
                 size: 20,
-                color: selected ? AuroraColors.inkPrimary : AuroraColors.inkSecondary,
+                color: selected ? AuroraColors.inkPrimary : context.inkSecondary,
               ),
               const SizedBox(height: 2),
               Text(
                 destination.label,
                 style: AuroraTypography.bodySm.copyWith(
-                  color: selected ? AuroraColors.inkPrimary : AuroraColors.inkSecondary,
+                  color: selected ? AuroraColors.inkPrimary : context.inkSecondary,
                   fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
                 ),
               ),

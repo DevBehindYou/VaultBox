@@ -20,12 +20,12 @@
 // either — see docs/IMPLEMENTATION_PLAN.md's risk register before treating
 // this contract as final.
 //
-// One thing this spec deliberately does NOT resolve, flagged rather than
-// guessed: whether the installed `pigeon` version generates a Kotlin
-// `suspend fun` automatically for a HostApi method with a Dart `Future<T>`
-// return type, or still expects some other async convention. Check the
-// installed `pigeon` package's own generated output before writing
-// `SafStorageHostApi.kt` against it, rather than assuming this guessed right.
+// VERIFIED by CI (Pigeon 29.0.2, run #4+): every method is `@async`, and the
+// generated Kotlin interface therefore declares `suspend fun` for all of them.
+// The generated `setUp` launches each call on `Dispatchers.Main`, so the Kotlin
+// implementation must hop to `Dispatchers.IO` for ContentResolver work.
+// `openDocumentTree` in particular could not have worked as a synchronous
+// method — it has to wait for an Activity result.
 
 import "package:pigeon/pigeon.dart";
 
@@ -49,6 +49,11 @@ import "package:pigeon/pigeon.dart";
 class SafTreeMessage {
   String? treeUri;
   String? displayName;
+
+  // `DocumentsContract.getTreeDocumentId(treeUri)` — the document id of the
+  // tree's top level. SafStorageBackend needs it to start walking paths; it
+  // was missing from the first draft of this contract.
+  String? rootDocumentId;
 }
 
 enum SafEntryTypeMessage {
@@ -72,6 +77,20 @@ class SafEntryMessage {
   String? mimeType;
 }
 
+// A document the user picked with the system file picker, ALREADY COPIED into
+// the app's cache directory by the native side. Handing Dart a plain cache
+// path (instead of a content:// URI) means importing needs no SAF fd tricks:
+// Dart just streams a normal file. The caller owns the copy and must delete it.
+class PickedFileMessage {
+  // Absolute path of the cached copy. The file name is an index, never the
+  // provider-supplied name (a hostile provider could otherwise inject path
+  // segments); the real name travels separately in [name].
+  String? cachePath;
+  String? name;
+  int? sizeBytes;
+  String? mimeType;
+}
+
 /// Native-side storage bridge. Implemented in Kotlin
 /// (`SafStorageHostApi.kt`), called from Dart via `SafStorageBackend`
 /// (`lib/data/services/saf_storage_backend.dart`) through the
@@ -82,28 +101,34 @@ abstract class AndroidStorageApi {
   /// permission grant on the result (`Intent.FLAG_GRANT_*_URI_PERMISSION` +
   /// `ContentResolver.takePersistableUriPermission`), and returns the chosen
   /// tree. Returns null if the user cancelled the picker.
+  @async
   SafTreeMessage? openDocumentTree();
 
   /// Every tree this app currently holds a persisted grant for — survives
   /// app restarts and reboots by design (that's what "persistable" means), so
   /// this is how the storage-root repository reconciles its own rows against
   /// what Android will actually still let the app touch.
+  @async
   List<SafTreeMessage> persistedTrees();
 
   /// Releases a grant. Does not delete any files — purely revokes VaultBox's
   /// own access, mirroring what "Remove storage location" should do in
   /// Settings.
+  @async
   void releasePersistedUri(String treeUri);
 
   /// Direct children of [parentDocumentId] within [treeUri]. Pass the tree's
   /// own root document id (obtainable via
   /// `DocumentFile.fromTreeUri(...).documentId` on the Kotlin side) to list
   /// the tree's top level.
+  @async
   List<SafEntryMessage> listChildren(String treeUri, String parentDocumentId);
 
+  @async
   SafEntryMessage? stat(String treeUri, String documentId);
 
   /// Returns the new directory's document id.
+  @async
   String createDirectory(String treeUri, String parentDocumentId, String name);
 
   /// Creates an empty document and returns its id — the caller then opens a
@@ -111,11 +136,14 @@ abstract class AndroidStorageApi {
   /// Splitting create-then-write (rather than one call that also takes bytes)
   /// is what makes streaming large files possible at all through this
   /// bridge.
+  @async
   String createFile(String treeUri, String parentDocumentId, String name, String mimeType);
 
+  @async
   void deleteDocument(String treeUri, String documentId);
 
   /// Returns the (possibly changed — SAF may rename-on-conflict) new name.
+  @async
   String renameDocument(String treeUri, String documentId, String newName);
 
   /// Opens a raw file descriptor via
@@ -134,5 +162,103 @@ abstract class AndroidStorageApi {
   /// cancellation mid-transfer, and behaviour across the Android versions
   /// VaultBox targets) before anything depends on it for real user data. See
   /// docs/IMPLEMENTATION_PLAN.md's risk register.
+  @async
   int openFileDescriptor(String treeUri, String documentId, String mode);
+
+  /// Launches `ACTION_OPEN_DOCUMENT` (multi-select), then copies every picked
+  /// document into a fresh directory under the app's cache and returns the
+  /// copies. An empty list means the person cancelled. Copying happens on a
+  /// background thread with plain ContentResolver streams (works for every
+  /// provider, needs no persistable grant).
+  ///
+  /// Costs temporary extra space (one full copy per picked file) — acceptable
+  /// for an import, and the reason the caller must delete each copy afterwards.
+  @async
+  List<PickedFileMessage> pickFilesToCache();
+}
+
+// ---------------------------------------------------------------------------
+// Server host (Phase 2). Two Flutter engines are involved and must not be
+// confused:
+//  - the UI engine (the Activity's) CONTROLS the service via ServerControlApi
+//    and RECEIVES state pushes via ServerStateListener;
+//  - the service's own headless engine RUNS the Dart server (`serverMain`) and
+//    REPORTS its state to native via ServerRuntimeApi.
+// The Android Foreground Service, not the Activity, owns the server lifecycle
+// (ADR-006), so state lives in native and is pushed to whichever UI is attached.
+// ---------------------------------------------------------------------------
+
+enum ServerRunStateMessage {
+  stopped,
+  starting,
+  running,
+  failed,
+}
+
+class ServerStateMessage {
+  ServerRunStateMessage? state;
+
+  /// Where the server can be reached, when running (e.g. http://127.0.0.1:41234/health/).
+  String? endpoint;
+
+  /// Human-readable failure reason, when failed.
+  String? detail;
+
+  /// Every URL the server answers on (HTTPS and/or HTTP), when running.
+  List<String?>? endpoints;
+}
+
+class ServerConfigMessage {
+  /// false (default) = loopback only; true = reachable from the local network.
+  bool? allowNetworkAccess;
+
+  /// HTTPS port.
+  int? port;
+
+  /// HTTPS (encrypted). On by default.
+  bool? httpsEnabled;
+
+  /// Plain HTTP (NOT encrypted). Off by default; an explicit, warned opt-in.
+  bool? httpEnabled;
+  int? httpPort;
+}
+
+/// The server's TLS identity. The private key is decrypted by native code only
+/// to hand it to the headless server engine at start; it is never persisted in
+/// plaintext.
+class TlsIdentityMessage {
+  String? certificatePem;
+  String? privateKeyPem;
+
+  /// SHA-256 of the certificate, upper-case colon-separated hex — what a person
+  /// compares against the browser's certificate warning.
+  String? sha256Fingerprint;
+}
+
+/// UI engine -> native. Synchronous on purpose: these only start/stop the
+/// service and read/write small settings.
+@HostApi()
+abstract class ServerControlApi {
+  void start();
+  void stop();
+  ServerStateMessage getState();
+  ServerConfigMessage getConfig();
+  void setConfig(ServerConfigMessage config);
+
+  /// Creates the TLS identity on first use.
+  String getTlsFingerprint();
+}
+
+/// Service (headless) engine -> native.
+@HostApi()
+abstract class ServerRuntimeApi {
+  void reportState(ServerStateMessage state);
+  ServerConfigMessage getConfig();
+  TlsIdentityMessage getTlsIdentity();
+}
+
+/// Native -> UI engine push whenever the server state changes.
+@FlutterApi()
+abstract class ServerStateListener {
+  void onStateChanged(ServerStateMessage state);
 }

@@ -68,11 +68,21 @@ final class DirectPathStorageBackend implements StorageBackend {
       }
       if (pageSize != null && emitted >= pageSize) return;
 
+      // A real on-disk name we can't represent as one path segment (e.g. it
+      // contains a backslash) is skipped rather than allowed to throw out of
+      // the generator — one odd file must not blank the whole folder.
+      final StoragePath childPath;
+      try {
+        childPath = directory.child(name);
+      } on PathTraversalRejectedFailure {
+        continue;
+      }
+
       try {
         final FileStat stat = await entity.stat();
         final bool isDirectory = stat.type == FileSystemEntityType.directory;
         yield StorageEntry(
-          path: directory.child(name),
+          path: childPath,
           type: isDirectory ? StorageEntryType.directory : StorageEntryType.file,
           // Directory "size" from stat() is the directory entry's own size on
           // disk, not the recursive content size — reporting it would be
@@ -118,7 +128,7 @@ final class DirectPathStorageBackend implements StorageBackend {
         .openRead(start ?? 0, end == null ? null : end + 1)
         .handleError(
           (Object error) => throw _mapFileSystemError(error),
-          test: (Object error) => error is FileSystemException,
+          test: (Object? error) => error is FileSystemException,
         );
   }
 

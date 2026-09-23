@@ -1,20 +1,32 @@
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:go_router/go_router.dart";
 
-import "../core/design/aurora_colors.dart";
+import "../core/design/aurora_context.dart";
 import "../core/design/aurora_spacing.dart";
 import "../core/design/aurora_typography.dart";
 import "../core/design/aurora_widgets.dart";
+import "../core/state/resource.dart";
+import "../domain/entities/account.dart";
 import "../domain/entities/storage_root.dart";
+import "../features/activity/presentation/activity_screen.dart";
 import "../features/files/presentation/files_screen.dart";
 import "../features/files/viewmodel/files_view_model.dart";
 import "../features/home/presentation/home_screen.dart";
+import "../features/onboarding/presentation/admin_setup_screen.dart";
 import "../features/onboarding/presentation/onboarding_ready_screen.dart";
 import "../features/onboarding/presentation/onboarding_storage_screen.dart";
 import "../features/onboarding/presentation/onboarding_welcome_screen.dart";
-import "../features/placeholder_screen.dart";
-import "providers.dart";
+import "../features/settings/presentation/appearance_screen.dart";
+import "../features/settings/presentation/diagnostics_screen.dart";
+import "../features/settings/presentation/protocols_screen.dart";
+import "../features/settings/presentation/security_screen.dart";
+import "../features/settings/presentation/settings_screen.dart";
+import "../features/settings/presentation/storage_screen.dart";
+import "../features/share/presentation/add_person_screen.dart";
+import "../features/share/presentation/person_screen.dart";
+import "../features/share/presentation/share_screen.dart";
+import "app_state.dart";
 import "shell_scaffold.dart";
 
 /// Route table. Exactly five permanent destinations (doc §8 / kickoff §6);
@@ -23,7 +35,7 @@ import "shell_scaffold.dart";
 ///
 /// `StatefulShellRoute.indexedStack` gives each tab its own Navigator, so a
 /// deep Files stack survives a trip to Settings and back (KB vol2 §7.1).
-GoRouter buildRouter(Ref ref) {
+GoRouter buildRouter() {
   return GoRouter(
     initialLocation: "/home",
     routes: <RouteBase>[
@@ -39,6 +51,35 @@ GoRouter buildRouter(Ref ref) {
         path: "/onboarding/storage",
         builder: (BuildContext context, GoRouterState state) =>
             const OnboardingStorageScreen(),
+      ),
+      GoRoute(
+        path: "/onboarding/admin",
+        builder: (BuildContext context, GoRouterState state) => AdminSetupScreen(
+          stepLabel: "Step 3 of 3",
+          skipLabel: "Skip for now",
+          onSkip: (BuildContext context) => context.go("/onboarding/ready"),
+          onDone: (BuildContext context) => context.go("/onboarding/ready"),
+        ),
+      ),
+      // Reached from Home when no admin exists yet (outside the shell: no dock).
+      GoRoute(
+        path: "/admin/new",
+        builder: (BuildContext context, GoRouterState state) =>
+            AdminSetupScreen(onDone: (BuildContext context) => context.go("/home")),
+      ),
+      // People (outside the shell: no dock while adding or editing someone).
+      GoRoute(
+        path: "/people/new",
+        builder: (BuildContext context, GoRouterState state) => AddPersonScreen(
+          onDone: (BuildContext context, Account account) => context.pushReplacement("/people/${account.id}"),
+        ),
+      ),
+      GoRoute(
+        path: "/people/:id",
+        builder: (BuildContext context, GoRouterState state) => PersonScreen(
+          accountId: state.pathParameters["id"]!,
+          onRemoved: (BuildContext context) => context.pop(),
+        ),
       ),
       GoRoute(
         path: "/onboarding/ready",
@@ -70,14 +111,7 @@ GoRouter buildRouter(Ref ref) {
             routes: <RouteBase>[
               GoRoute(
                 path: "/share",
-                builder: (BuildContext context, GoRouterState state) =>
-                    const PlaceholderScreen(
-                      title: "Share",
-                      phase: "Phase 5",
-                      description:
-                          "Shares, links, QR pairing and per-user access arrive once "
-                          "the server and auth layers are in place.",
-                    ),
+                builder: (BuildContext context, GoRouterState state) => const ShareScreen(),
               ),
             ],
           ),
@@ -85,14 +119,7 @@ GoRouter buildRouter(Ref ref) {
             routes: <RouteBase>[
               GoRoute(
                 path: "/activity",
-                builder: (BuildContext context, GoRouterState state) =>
-                    const PlaceholderScreen(
-                      title: "Activity",
-                      phase: "Phase 6",
-                      description:
-                          "Transfers, connected clients and the event log land "
-                          "alongside the transfer engine and server.",
-                    ),
+                builder: (BuildContext context, GoRouterState state) => const ActivityScreen(),
               ),
             ],
           ),
@@ -100,14 +127,29 @@ GoRouter buildRouter(Ref ref) {
             routes: <RouteBase>[
               GoRoute(
                 path: "/settings",
-                builder: (BuildContext context, GoRouterState state) =>
-                    const PlaceholderScreen(
-                      title: "Settings",
-                      phase: "Phase 2+",
-                      description:
-                          "Storage, Server, Network, Security, Sharing, API, "
-                          "Appearance and Diagnostics groups.",
-                    ),
+                builder: (BuildContext context, GoRouterState state) => const SettingsScreen(),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: "protocols",
+                    builder: (BuildContext context, GoRouterState state) => const ProtocolsScreen(),
+                  ),
+                  GoRoute(
+                    path: "security",
+                    builder: (BuildContext context, GoRouterState state) => const SecurityScreen(),
+                  ),
+                  GoRoute(
+                    path: "storage",
+                    builder: (BuildContext context, GoRouterState state) => const StorageScreen(),
+                  ),
+                  GoRoute(
+                    path: "appearance",
+                    builder: (BuildContext context, GoRouterState state) => const AppearanceScreen(),
+                  ),
+                  GoRoute(
+                    path: "diagnostics",
+                    builder: (BuildContext context, GoRouterState state) => const DiagnosticsScreen(),
+                  ),
+                ],
               ),
             ],
           ),
@@ -117,18 +159,24 @@ GoRouter buildRouter(Ref ref) {
   );
 }
 
-final Provider<GoRouter> routerProvider = Provider<GoRouter>(buildRouter);
-
-/// Resolves which root the Files tab opens at. Until onboarding exists
-/// (Phase 1 follow-up) this picks the default root, or the first available
-/// one, and shows a clear empty state when no storage is configured yet —
-/// rather than crashing on a missing root.
-class _FilesEntryPoint extends ConsumerWidget {
+/// Resolves which root the Files tab shows: the person's last choice from the
+/// switcher, else the default root, else the first. With more than one root a
+/// chip row above the file list switches between them; with a single root it
+/// stays out of the way. Shows a clear empty state when no storage is
+/// configured yet, rather than crashing on a missing root.
+class _FilesEntryPoint extends StatefulWidget {
   const _FilesEntryPoint();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<List<StorageRoot>> roots = ref.watch(storageRootsProvider);
+  State<_FilesEntryPoint> createState() => _FilesEntryPointState();
+}
+
+class _FilesEntryPointState extends State<_FilesEntryPoint> {
+  String? _selectedId;
+
+  @override
+  Widget build(BuildContext context) {
+    final Resource<List<StorageRoot>> roots = context.watch<StorageRootsCubit>().state;
 
     return roots.when(
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
@@ -140,10 +188,49 @@ class _FilesEntryPoint extends ConsumerWidget {
           return _NoStorageYet(onAddStorage: () => context.push("/onboarding/welcome"));
         }
         final StorageRoot root = list.firstWhere(
-          (StorageRoot r) => r.isDefault,
-          orElse: () => list.first,
+          (StorageRoot r) => r.id == _selectedId,
+          orElse: () => list.firstWhere(
+            (StorageRoot r) => r.isDefault,
+            orElse: () => list.first,
+          ),
         );
-        return FilesScreen(directory: rootRef(root));
+        // Keyed by root so switching roots gives a fresh screen (own paging,
+        // selection and sort state) instead of reusing the previous one.
+        final Widget files = FilesScreen(
+          key: ValueKey<String>(root.id),
+          directory: rootRef(root),
+        );
+        if (list.length < 2) return files;
+
+        return Column(
+          children: <Widget>[
+            SafeArea(
+              bottom: false,
+              child: SizedBox(
+                height: 56,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AuroraSpacing.marginCompact,
+                    vertical: AuroraSpacing.sm,
+                  ),
+                  itemCount: list.length,
+                  separatorBuilder: (BuildContext context, int index) =>
+                      const SizedBox(width: AuroraSpacing.sm),
+                  itemBuilder: (BuildContext context, int index) {
+                    final StorageRoot candidate = list[index];
+                    return ChoiceChip(
+                      label: Text(candidate.displayName),
+                      selected: candidate.id == root.id,
+                      onSelected: (_) => setState(() => _selectedId = candidate.id),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Expanded(child: files),
+          ],
+        );
       },
     );
   }
@@ -168,7 +255,7 @@ class _NoStorageYet extends StatelessWidget {
               const SizedBox(height: AuroraSpacing.sm),
               Text(
                 "Set up a storage location to start browsing and adding files.",
-                style: AuroraTypography.bodyMd.copyWith(color: AuroraColors.inkSecondary),
+                style: AuroraTypography.bodyMd.copyWith(color: context.inkSecondary),
               ),
               const SizedBox(height: AuroraSpacing.lg),
               AuroraPrimaryButton(

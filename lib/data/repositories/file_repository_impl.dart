@@ -79,6 +79,23 @@ final class FileRepositoryImpl implements FileRepository {
     final StorageBackend targetBackend = _resolveBackend(target.root);
 
     if (identical(sourceBackend, targetBackend) || sourceBackend.id == targetBackend.id) {
+      // Both guards run BEFORE anything is touched. Without them, "Replace"
+      // deletes the target first — and if the target is the source (copy or
+      // move into the same folder) or contains it, that delete destroys the
+      // only copy and the copy that follows then fails. A folder copied into
+      // itself would also recurse without end.
+      if (target.path.isDescendantOfOrEqualTo(source.path)) {
+        throw const InvalidOperationFailure(
+          message: "An item can't be copied into itself.",
+          debugDetail: "target is inside or equal to source",
+        );
+      }
+      if (mode == WriteMode.replace && source.path.isDescendantOfOrEqualTo(target.path)) {
+        throw const InvalidOperationFailure(
+          message: "An item can't replace a folder that contains it.",
+          debugDetail: "source is inside target",
+        );
+      }
       if (mode == WriteMode.replace) {
         // Backend copy() refuses an occupied target by contract, so an
         // explicit replace means removing the old entry first. This is the

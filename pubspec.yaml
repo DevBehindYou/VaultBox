@@ -20,15 +20,15 @@ dependencies:
   go_router: ^18.0.1
 
   # --- State management / DI ---
-  # Verified against pub.dev (latest stable: 3.4.3 at time of writing, not
-  # guessed). Used for ViewModel composition, Notifier-based ViewModels
-  # (constructor-injected family args per Riverpod 3.0's actual API — see
-  # lib/features/files/viewmodel/files_view_model.dart doc comment),
-  # repository/service DI, test overrides.
-  # NOTE: this Phase 0/1 slice uses *manual* (non-codegen) Riverpod providers
-  # deliberately — see docs/IMPLEMENTATION_PLAN.md §E. riverpod_generator can
-  # be adopted later without changing the public ViewModel shape.
-  flutter_riverpod: ^3.0.0
+  # Verified against pub.dev (latest stable: 9.1.1 at time of writing, not
+  # guessed; pulls in bloc ^9.0.0 transitively). Replaces flutter_riverpod
+  # (2026-09-23 rewrite, at the user's request): RepositoryProvider /
+  # MultiRepositoryProvider (re-exported from package:provider) for plain
+  # service/repository/use-case DI, Cubit for every screen's reactive state
+  # (see lib/features/files/viewmodel/files_cubit.dart), BlocProvider /
+  # MultiBlocProvider for wiring, test overrides via
+  # MultiRepositoryProvider/MultiBlocProvider with fakes.
+  flutter_bloc: ^9.1.1
 
   # --- Metadata database ---
   # Verified current versions (checked against pub.dev, not guessed): drift
@@ -36,7 +36,10 @@ dependencies:
   # transfer-state/audit — never large user files (ADR-005).
   drift: ^2.34.0
   drift_flutter: ^0.3.1
-  sqlite3_flutter_libs: ^0.5.24
+  # sqlite3_flutter_libs is intentionally NOT listed: drift_flutter 0.3.x depends
+  # on sqlite3_flutter_libs ^0.6.0+eol (an end-of-life no-op stub — SQLite is now
+  # bundled by package:sqlite3 3.x build hooks), so a direct ^0.5.x pin made
+  # `pub get` fail with a version-solving error (CI run #1, 2026-09-18).
   path_provider: ^2.1.4
 
   # --- Storage path handling ---
@@ -44,6 +47,24 @@ dependencies:
 
   # --- ID generation ---
   uuid: ^4.5.1
+
+  # --- Security (Phase 3) ---
+  # Argon2id password hashing (pure Dart; OWASP-recommended for passwords). Docs
+  # checked 2026-09-19: Argon2id(memory KiB, parallelism, iterations, hashLength)
+  # + deriveKeyFromPassword(password, nonce). cryptography_flutter (native) can
+  # be layered on later for speed without changing callers.
+  cryptography: ^2.9.0
+  # SHA-256 of session tokens (only the hash is ever stored).
+  crypto: ^3.0.7
+
+  # --- WebDAV (Phase 4) ---
+  # XML parsing for PROPFIND/LOCK/PROPPATCH bodies. Pure Dart, no external entities.
+  xml: ^7.0.1
+
+  # --- Sharing (Phase 5) ---
+  # QR codes for share links and the server address.
+  qr_flutter: ^4.1.0
+  url_launcher: ^6.3.0
 
   # --- Structured logging (doc §16/§20: no print() in production code) ---
   logging: ^1.3.0
@@ -54,6 +75,10 @@ dev_dependencies:
   # Doc-mandated strict analyzer baseline (§00/§20/§25).
   flutter_lints: ^5.0.0
 
+  # --- BLoC test helpers (2026-09-23 rewrite) ---
+  # Verified current version (pub.dev, not guessed). blocTest() for Cubit tests.
+  bloc_test: ^10.0.0
+
   # --- Codegen (required to actually compile — run locally, see README.md) ---
   build_runner: ^2.4.13
   # Verified current version (pub.dev, not guessed).
@@ -62,6 +87,35 @@ dev_dependencies:
   # --- Native bridge (Phase 2+, contract authored now — see pigeons/storage_api.dart) ---
   # Reference verified version: 29.0.1 (doc §00 / §25).
   pigeon: ^29.0.1
+
+  # --- Launcher icon + splash screen (2026-09-23, user reported the app still
+  # shipped the default Flutter icon and a blank splash) ---
+  # Versions checked against pub.dev, not guessed. Both are code-generators —
+  # `dart run flutter_launcher_icons` / `dart run flutter_native_splash:create`
+  # — that write into android/app/src/main/res/*; there is no local SDK to run
+  # them here, so CI runs them before the APK build (see .github/workflows/ci.yml).
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.8
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "#FBF9F4" # AuroraColors.background
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  min_sdk_android: 29 # matches android/app/build.gradle.kts
+
+flutter_native_splash:
+  color: "#FBF9F4" # AuroraColors.background
+  color_dark: "#15151A" # AuroraColorsDark.surface
+  image: "assets/icon/icon_foreground.png"
+  android_12:
+    image: "assets/icon/icon_foreground.png"
+    color: "#FBF9F4"
+    color_dark: "#15151A"
+  android: true
+  ios: false
+  web: false
 
   # --- Deliberately NOT pulled into Phase 0/1 (see docs/IMPLEMENTATION_PLAN.md §E) ---
   # freezed: ^2.5.7
@@ -73,3 +127,15 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  # Bundled so the app looks like the design (SIL Open Font Licence; the
+  # licence texts sit next to the files). Body text uses the system sans.
+  fonts:
+    - family: Patrick Hand
+      fonts:
+        - asset: assets/fonts/PatrickHand-Regular.ttf
+    - family: JetBrains Mono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono.ttf
+  assets:
+    - assets/images/

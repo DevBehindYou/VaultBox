@@ -32,6 +32,18 @@ final class CopyItems {
           path: destinationDirectory.path.child(source.name),
         );
 
+        // Copying an item onto itself: only "Keep both" (i.e. Duplicate) makes
+        // sense; Replace/Skip would be a no-op at best and destructive at worst.
+        if (target == source && conflictPolicy != ConflictPolicy.keepBoth) {
+          outcomes.add(
+            ItemOutcome.skipped(
+              source: source.path,
+              reason: "Source and destination are the same",
+            ),
+          );
+          continue;
+        }
+
         final WriteMode mode = switch (conflictPolicy) {
           ConflictPolicy.replace => WriteMode.replace,
           ConflictPolicy.keepBoth => WriteMode.keepBoth,

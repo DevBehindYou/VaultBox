@@ -30,6 +30,17 @@ final class MoveItems {
 
     for (final FileRef source in sources) {
       try {
+        // Moving into the folder it is already in is a no-op. Without this,
+        // Replace would delete the source (it IS the target) and Keep both
+        // would silently rename it to "name (1)".
+        if (source.root.id == destinationDirectory.root.id &&
+            source.path.parent == destinationDirectory.path) {
+          outcomes.add(
+            ItemOutcome.skipped(source: source.path, reason: "Already in this folder"),
+          );
+          continue;
+        }
+
         final WriteMode mode = switch (conflictPolicy) {
           ConflictPolicy.replace => WriteMode.replace,
           ConflictPolicy.keepBoth => WriteMode.keepBoth,

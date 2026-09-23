@@ -27,6 +27,9 @@ class StorageRoots extends Table {
   IntColumn get freeBytes => integer().nullable()();
   IntColumn get totalBytes => integer().nullable()();
 
+  /// Schema v2. SAF roots only (see StorageRoot.rootDocumentId).
+  TextColumn get rootDocumentId => text().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
@@ -59,7 +62,154 @@ class RecycleItems extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{id};
 }
 
-@DriftDatabase(tables: <Type>[StorageRoots, RecycleItems])
+/// Schema v3. Login accounts. Only the PHC-encoded Argon2id hash is stored.
+@DataClassName("AccountRow")
+class Accounts extends Table {
+  TextColumn get id => text()();
+
+  /// Lower-case (see UsernamePolicy); unique so a name can't be claimed twice.
+  TextColumn get username => text().unique()();
+  TextColumn get passwordHash => text()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  /// Schema v4. [AccountRole.name]. Rows that existed before v4 are the admin.
+  TextColumn get role => text().withDefault(const Constant<String>("admin"))();
+
+  /// Schema v4. A disabled account can't log in.
+  BoolColumn get isEnabled => boolean().withDefault(const Constant<bool>(true))();
+
+  /// Schema v4. Bumped on password change / disable; ends existing sessions.
+  IntColumn get credentialVersion => integer().withDefault(const Constant<int>(0))();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
+/// Schema v4. Folder grants for member accounts (see `AccessRule`).
+@DataClassName("AccessRuleRow")
+class AccessRules extends Table {
+  TextColumn get id => text()();
+  TextColumn get accountId => text()();
+  TextColumn get rootId => text()();
+
+  /// Normalized folder path; `/` = the whole root.
+  TextColumn get pathPrefix => text()();
+
+  /// Comma-separated `Permission.name`s.
+  TextColumn get permissions => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
+/// Schema v4. Share and upload-request links. Only the token's SHA-256 is kept.
+@DataClassName("ShareRow")
+class Shares extends Table {
+  TextColumn get id => text()();
+
+  /// [ShareKind.name].
+  TextColumn get kind => text()();
+  TextColumn get rootId => text()();
+  TextColumn get path => text()();
+  BoolColumn get isDirectory => boolean()();
+  TextColumn get createdBy => text()();
+  DateTimeColumn get createdAt => dateTime()();
+  TextColumn get tokenHash => text().unique()();
+  TextColumn get label => text().nullable()();
+  DateTimeColumn get expiresAt => dateTime().nullable()();
+  TextColumn get passwordHash => text().nullable()();
+  IntColumn get maxUses => integer().nullable()();
+  IntColumn get useCount => integer().withDefault(const Constant<int>(0))();
+  IntColumn get maxFileBytes => integer().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
+/// Schema v5. What happened on the server, one readable sentence each.
+@DataClassName("ActivityEventRow")
+class ActivityEvents extends Table {
+  TextColumn get id => text()();
+  DateTimeColumn get occurredAt => dateTime()();
+
+  /// [ActivityKind.name].
+  TextColumn get kind => text()();
+
+  /// [ActivitySeverity.name].
+  TextColumn get severity => text()();
+  TextColumn get message => text()();
+  TextColumn get actor => text().nullable()();
+  TextColumn get address => text().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
+/// Schema v5. Files moving in or out ([TransferRecord]).
+@DataClassName("TransferRow")
+class TransferLog extends Table {
+  TextColumn get id => text()();
+
+  /// [TransferDirection.name].
+  TextColumn get direction => text()();
+
+  /// [AccessVia.name].
+  TextColumn get via => text()();
+  TextColumn get actor => text()();
+  TextColumn get name => text()();
+  DateTimeColumn get startedAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  DateTimeColumn get finishedAt => dateTime().nullable()();
+  IntColumn get bytes => integer().withDefault(const Constant<int>(0))();
+  IntColumn get totalBytes => integer().nullable()();
+
+  /// [TransferState.name].
+  TextColumn get state => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
+/// Schema v5. Who has been talking to the server ([ClientRecord]).
+@DataClassName("ClientRow")
+class ClientSightings extends Table {
+  /// `"$actor|$address"`.
+  TextColumn get clientKey => text()();
+  TextColumn get actor => text()();
+  TextColumn get address => text()();
+
+  /// [AccessVia.name].
+  TextColumn get via => text()();
+  DateTimeColumn get firstSeenAt => dateTime()();
+  DateTimeColumn get lastSeenAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{clientKey};
+}
+
+/// Schema v6. Small key/value settings (appearance, and later server options).
+@DataClassName("AppSettingRow")
+class AppSettings extends Table {
+  TextColumn get settingKey => text()();
+  TextColumn get settingValue => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{settingKey};
+}
+
+@DriftDatabase(
+  tables: <Type>[
+    StorageRoots,
+    RecycleItems,
+    Accounts,
+    AccessRules,
+    Shares,
+    ActivityEvents,
+    TransferLog,
+    ClientSightings,
+    AppSettings,
+  ],
+)
 final class AppDatabase extends _$AppDatabase {
   /// Production use: `AppDatabase()` opens (or creates) the on-device
   /// database. `drift_flutter`'s `driftDatabase()` stores `vaultbox.sqlite`
@@ -75,11 +225,46 @@ final class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: "vaultbox"));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 6;
 
-  // No migrations yet — schemaVersion 1 is the first shipped shape. The
-  // first real migration (schemaVersion 2) should follow doc §06's schema
-  // discipline: additive columns with defaults where possible, an explicit
-  // `onUpgrade` step otherwise, and an ADR if a column's meaning changes
-  // rather than just its presence.
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (Migrator m) => m.createAll(),
+    onUpgrade: (Migrator m, int from, int to) async {
+      if (from < 2) {
+        // v2: SAF roots need the tree's root document id. Additive + nullable,
+        // so existing rows stay valid. (Not covered by an automated migration
+        // test yet — see docs/ai-handover/PENDING_TASKS.md.)
+        await m.addColumn(storageRoots, storageRoots.rootDocumentId);
+      }
+      if (from < 3) {
+        // v3: login accounts.
+        await m.createTable(accounts);
+      }
+      if (from < 4) {
+        // v4: member accounts, folder grants and share links. The new account
+        // columns have defaults, so the existing (admin) row stays valid.
+        await m.addColumn(accounts, accounts.role);
+        await m.addColumn(accounts, accounts.isEnabled);
+        await m.addColumn(accounts, accounts.credentialVersion);
+        await m.createTable(accessRules);
+        await m.createTable(shares);
+      }
+      if (from < 5) {
+        // v5: activity (events, transfers, clients) for the Activity tab.
+        await m.createTable(activityEvents);
+        await m.createTable(transferLog);
+        await m.createTable(clientSightings);
+      }
+      if (from < 6) {
+        // v6: key/value settings.
+        await m.createTable(appSettings);
+      }
+    },
+    beforeOpen: (OpeningDetails details) async {
+      // The UI engine and the server's engine each open this file. Wait briefly
+      // for the other one's write instead of failing the request outright.
+      await customStatement("PRAGMA busy_timeout = 5000");
+    },
+  );
 }

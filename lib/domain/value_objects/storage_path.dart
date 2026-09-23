@@ -69,6 +69,52 @@ final class StoragePath {
     return StoragePath._(rootId, List<String>.unmodifiable(segments));
   }
 
+  /// Parses a path that has ALREADY been percent-decoded exactly once by the
+  /// HTTP layer (a URL path segment, a query parameter, a JSON string).
+  ///
+  /// Unlike [parse] this never decodes again: the text is the literal name. That
+  /// matters because file names can legitimately contain `%` sequences — a file
+  /// called `Report%20final.pdf` is that exact name, and decoding it a second
+  /// time would silently address a different file (`Report final.pdf`).
+  ///
+  /// It still refuses everything [parse] refuses: `..`, absolute-looking and
+  /// drive-letter segments, control characters, backslash separators — and any
+  /// segment that would BECOME `.` or `..` if a later layer decoded it (so
+  /// `%2e%2e`, `%252e%252e` … are rejected rather than trusted).
+  factory StoragePath.parseDecoded(String rootId, String raw) {
+    final List<String> segments = <String>[];
+    for (final String segment in raw.replaceAll("\\", "/").split("/")) {
+      if (segment.isEmpty || segment == ".") continue;
+      if (segment == "..") {
+        throw const PathTraversalRejectedFailure(debugDetail: "'..' segment");
+      }
+      if (_decodesToDots(segment)) {
+        throw const PathTraversalRejectedFailure(debugDetail: "encoded dot segment");
+      }
+      if (_looksAbsolute(segment)) {
+        throw const PathTraversalRejectedFailure(debugDetail: "absolute-looking segment");
+      }
+      if (segment.codeUnits.any((int c) => c < 0x20)) {
+        throw const PathTraversalRejectedFailure(debugDetail: "control character in segment");
+      }
+      segments.add(segment);
+    }
+    return StoragePath._(rootId, List<String>.unmodifiable(segments));
+  }
+
+  /// True if repeatedly percent-decoding [segment] (a few rounds) ever yields
+  /// `.` or `..`.
+  static bool _decodesToDots(String segment) {
+    String current = segment;
+    for (int round = 0; round < 4; round++) {
+      final String next = _safeDecode(current);
+      if (next == current) return false;
+      current = next.trim();
+      if (current == "." || current == "..") return true;
+    }
+    return false;
+  }
+
   final String rootId;
   final List<String> segments;
 
@@ -82,16 +128,34 @@ final class StoragePath {
     return StoragePath._(rootId, segments.sublist(0, segments.length - 1));
   }
 
+  /// Appends one **literal** file or folder name.
+  ///
+  /// Unlike [parse], this never percent-decodes or trims: [name] is an actual
+  /// name that came from a directory listing or a text field, not a wire
+  /// path. Routing it through [parse] (as this used to) silently rewrote real
+  /// names — `100%25.txt` became `100%.txt`, `%2F` became a `/` inside one
+  /// segment, and leading/trailing spaces were dropped — so the entry pointed
+  /// at a different file than the one listed. Protocol handlers must still
+  /// call [parse] on client-supplied paths; this is only for names we
+  /// already hold.
   StoragePath child(String name) {
-    // Re-validate through parse() so a hand-built child segment gets the
-    // same traversal checks as anything coming off the wire.
-    final StoragePath validatedChild = StoragePath.parse(rootId, name);
-    if (validatedChild.segments.length != 1) {
+    if (name.trim().isEmpty || name == "." || name == "..") {
+      throw const PathTraversalRejectedFailure(debugDetail: "invalid child name");
+    }
+    if (name.contains("/") || name.contains("\\")) {
       throw const PathTraversalRejectedFailure(
         debugDetail: "child() must be a single segment",
       );
     }
-    return StoragePath._(rootId, <String>[...segments, validatedChild.segments.single]);
+    if (_looksAbsolute(name)) {
+      throw const PathTraversalRejectedFailure(debugDetail: "absolute-looking name");
+    }
+    if (name.codeUnits.any((int c) => c < 0x20)) {
+      throw const PathTraversalRejectedFailure(
+        debugDetail: "control character in name",
+      );
+    }
+    return StoragePath._(rootId, <String>[...segments, name]);
   }
 
   /// True if this path is [other] itself, or lives inside it. Used to block
@@ -118,13 +182,23 @@ final class StoragePath {
       // Malformed percent-encoding — treat the raw string as-is rather than
       // throwing here; the caller-level checks above still apply to it.
       return value;
+    } on ArgumentError {
+      // What Uri.decodeComponent really throws for a stray "%" ("100%.txt"),
+      // which is an ordinary file name, not an attack.
+      return value;
     }
   }
 
   static bool _looksAbsolute(String segment) {
     if (segment.startsWith("/") || segment.startsWith("\\")) return true;
-    // Windows drive letter, e.g. "C:"
-    if (segment.length >= 2 && segment[1] == ":") return true;
+    // Windows drive letter, e.g. "C:". Must be a letter: "1:1 notes.txt" is a
+    // perfectly ordinary Android file name and used to be rejected here.
+    if (segment.length >= 2 && segment[1] == ":") {
+      final int first = segment.codeUnitAt(0);
+      final bool isLetter =
+          (first >= 0x41 && first <= 0x5A) || (first >= 0x61 && first <= 0x7A);
+      if (isLetter) return true;
+    }
     return false;
   }
 

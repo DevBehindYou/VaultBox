@@ -20,19 +20,27 @@ storage locations the person picked, and nothing is ever opened to the internet.
 | 4 — WebDAV | Class 1+2 at `/dav/` | **Done** |
 | 5 — Users and sharing | Roles, folder grants, share/upload links, QR | **Done** |
 | 6 — Activity and diagnostics | Transfers, clients, events, diagnostics, support bundle | **Done** |
-| UI overhaul (M1) | Mockup-faithful design, light/dark, settings hub | **Pushed** (`bfff09c`); small CI fixes pending locally |
-| 9 — FTPS (pulled forward as M2) | FTP / FTPS server and UI | **In progress**, code written locally, never compiled |
+| UI overhaul (M1) | Mockup-faithful design, light/dark, settings hub | **Done** (`bfff09c`, CI fixes in `6587038`) |
+| State management rewrite | Riverpod → `flutter_bloc`, full replace at the user's request | **Done** (`39f716d`..`16fc00f`), confirmed green: analyze clean, both APKs build, 927/942 tests (15 known non-gating flake) |
+| 9 — FTPS (pulled forward as M2) | FTP / FTPS server and UI | **Done**, compiled, tested, green on CI (`6052175`, `2ffdaf0`) — not yet confirmed on a real device |
 | 7 — Security hardening | Throttling, tokens, secret storage, headers | **Partly done** inside phases 3–6 (Argon2id, throttling, sessions, Keystore, CSP/HSTS); rest below |
 | 8 — Vault and privacy | `.nomedia`, camouflage, encrypted Vault | Not started |
-| 10 — Production hardening | Performance, OEM lab, accessibility, localization, release | Not started |
+| 10 — Production hardening | Performance, OEM lab, accessibility, localization, release | **Launcher icon and splash screen done** (`7004190`, real content pending a CI-outcome confirmation); release APK builds in CI (debug-signed, not a real release key yet); rest not started |
 
 ## 2. Near term
 
-### M2 — finish FTP / FTPS (in progress)
-Fix the known `AUTH TLS` ordering bug, verify the never-compiled code against the real APIs, write the
-protocol tests (raw-socket client, generated test certificate), commit, push once, fix CI in one batch.
-Then confirm on hardware: FileZilla or WinSCP from a PC, and the user's other phone's file explorer.
-Details: [TASKS.md](TASKS.md) section A.
+### M2 — FTP / FTPS — done on CI, needs a device confirmation
+Compiled, tested and green (see [TASKS.md](TASKS.md) section A). Still needs: install a debug APK and
+confirm FTPS actually works from a PC client (FileZilla/WinSCP) and the user's other phone's file
+explorer — nothing has touched real hardware yet.
+
+### Device-test follow-up (in progress)
+The user's first real-device pass over a release APK found the app icon, splash screen and web portal
+favicon genuinely missing — now fixed (`7004190`, pending a CI-outcome confirmation — see
+[TASKS.md](TASKS.md) state-in-one-line). Several other reports (light mode, storage folder choice,
+server notification) turned out to already exist in code; two (general layout, portal "usability")
+are waiting on a screenshot or more specific description from the user before anything can be built —
+see [TASKS.md](TASKS.md) section E.
 
 ### M1.5 — restyle the rest to match the mockups
 - Files tab: volume cards, search bar, breadcrumb and sort row, rows as cards (mockup `files_storage_explorer`).
@@ -57,7 +65,7 @@ Ordered roughly by value for effort. All are Dart-only unless noted.
 | IP allow-list | Only listed addresses/subnets may connect; enforced once, in the listeners. |
 | App PIN lock | PIN hashed in settings, lock on resume. Protects the app UI, not the server. |
 | Regenerate TLS certificate | Needs native work in `TlsIdentityStore`; shows a new fingerprint and signs everyone out. |
-| Notification actions | Stop / copy address from the foreground-service notification (native). |
+| Notification actions | The foreground-service notification already has a "Stop" action (`ServerForegroundService.kt`); a "copy address" action would still need adding (native). |
 | Hotspot information | When the phone is the hotspot, show the address others should use. |
 | "Server stopped" and configuration-change events | Fill gaps in the Activity feed. |
 
@@ -76,11 +84,13 @@ session controls, a security review of the FTP and public-link surfaces, depende
 a key hierarchy, and the tests that protect data during move and encrypt (the plan's top data-loss risk).
 
 ### Phase 10 — production hardening
-- Release pipeline: release signing with a secret key held in GitHub Actions secrets (never committed), R8 rules for Drift and Pigeon, `flutter build apk --release` in CI.
+- Release pipeline: `flutter build apk --release` already runs in CI (`e5ee506`), but signs with the
+  debug keystore — still needed: a real signing key held in GitHub Actions secrets (never committed),
+  R8/ProGuard rules for Drift and Pigeon.
 - Stable debug signing so CI APKs update in place (needs the user's OK: it puts a debug keystore in a public repo).
 - Performance: index-backed paging and server-side sort, SAF document-id cache, a real transfer engine with bounded concurrency and cancel.
-- OEM lab: foreground-service survival on Xiaomi/MIUI and other aggressive battery managers.
-- Accessibility pass, localization, launcher icon, coverage in CI, `flutter_lints` bump.
+- OEM lab: foreground-service survival on Xiaomi/MIUI and other aggressive battery managers, including whether its notification actually shows (device-test finding, 2026-09-23 — see [TASKS.md](TASKS.md) section E).
+- Accessibility pass, localization, coverage in CI, `flutter_lints` bump. Launcher icon and splash screen are done (`7004190`) — icon quality is capped by the 160×184px source image; ask the user for higher-res art if it looks soft.
 - Refresh `README.md`, `IMPLEMENTATION_PLAN.md` and `docs/ai-handover/` (only when the user asks).
 
 ## 5. Deliberately not planned

@@ -10,8 +10,8 @@ goes) and [TASKS.md](TASKS.md) (what is left).
 | | |
 |---|---|
 | Branch | `ci/bootstrap` (never merged to `main`; `main` still holds the baseline that could not compile) |
-| Last pushed commit | `16fc00f` — full Riverpod → BLoC rewrite |
-| Last CI result | `flutter analyze` clean, debug APK builds, 927/942 tests pass — 15 failures are a known Flutter SDK Tooltip/ticker bug in `share_screen_test.dart`, not gating (see `TASKS.md` section E) |
+| Last pushed commit | `7004190` — launcher icon, splash screen, web portal favicon. **Not yet confirmed green**: its CI run's `ci-reports` publish step hit a transient GitHub 500 and was re-run (`35879261154`); check that run before assuming the outcome. |
+| Last **confirmed** green commit | `16fc00f` — full Riverpod → BLoC rewrite. `flutter analyze` clean, both debug and release APKs build, 927/942 tests pass — 15 failures are a known Flutter SDK Tooltip/ticker bug in `share_screen_test.dart`, not gating (see `TASKS.md` section F) |
 | Working tree | clean, fully committed |
 | Database schema | Drift v6 |
 | Toolchain | Flutter 3.47.4 / Dart 3.13.3, built and tested only on GitHub Actions (the user cannot install the SDKs locally) |
@@ -231,6 +231,79 @@ every later tap-driven test in the same file cascades into the same exception. I
 (see `docs/TASKS.md` section E for the full note); the user decided to accept and document it rather
 than spend further CI runs guessing at a fix, on the same terms as the pre-existing
 `dart format (advisory)` non-gating step.
+
+---
+
+## Release APK, launcher icon, splash screen, portal favicon — 2026-09-23 — `e5ee506`, `7004190`
+
+At the user's request ("Build the release APKs, i wall install an check them for now."), then in
+response to device-test feedback on the result.
+
+### Release APK (`e5ee506`)
+
+- `.github/workflows/ci.yml`: added `flutter build apk --release` alongside the existing debug build,
+  uploaded as its own artifact (`vaultbox-release-apk`). Uses the `release` buildType already in
+  `android/app/build.gradle.kts`, which signs with the debug keystore (a Flutter-template default,
+  never replaced) — fine to install and try, not a Play Store-ready artifact.
+- CI run `35790492649`: both debug and release APKs built successfully. `flutter test` failed with the
+  same known 927/942 Tooltip flake (see the section above); `dart format (advisory)` failed as always
+  (non-gating). Release APK size: ~30 MB (vs. ~91 MB debug) — expected, AOT compilation and no debug
+  info.
+
+### Device-test feedback and fixes (`7004190`)
+
+The user installed the release APK and reported: default Flutter app icon, no splash screen, "layout
+looks sloppy", no light-mode option, no folder choice for internal/external storage, no notification
+while the server runs, and the web portal "looks sloppy" with no icon. Each claim was checked against
+the actual code/assets before any fix — not assumed:
+
+| Claim | Finding |
+|---|---|
+| No app icon / splash | **Real** — still the unmodified Flutter template (`android/app/src/main/res/mipmap-*/ic_launcher.png`, `drawable/launch_background.xml`). Fixed (below). |
+| Web portal has no icon | **Real** — `assets/portal/index.html`/`public.html` had `<link rel="icon" href="data:,">`, a deliberate empty placeholder. Fixed (below). |
+| No light-mode option | **Already exists** — Settings → "Appearance & Display" → System/Light/Dark, built in `bfff09c` (M1). Not touched; asked the user what they actually saw. |
+| No folder choice for internal/external storage | **Already exists** — `onboarding_storage_screen.dart`'s "SD card or custom folder" option opens Android's SAF picker, and its own subtitle already reads "Pick any folder on this phone or an SD card." Not touched; asked what happened when they tried it. |
+| No server notification | **Has a fix already, likely a device setting** — `MainActivity.kt` requests `POST_NOTIFICATIONS` when the server starts (a fix from an earlier session, after finding `granted=false` on a real phone). Not touched; asked the user to check Android notification permissions and MIUI's battery/autostart restrictions before assuming a new bug. |
+| Layout sloppy / web portal usability | **Unverifiable here** — no device or emulator in this environment. The web portal was previewed directly with `tool/portal_mock_server.js` (built for exactly this) at desktop and mobile widths and looked clean, icon aside. Asked the user for a screenshot rather than guessing at changes. |
+
+Fixes for the two confirmed-real issues:
+
+- `assets/icon/icon.png`, `icon_foreground.png` (new): generated from `assets/images/vaultbox_mark.png`
+  with Python/PIL — background pixels within a distance threshold of the sampled corner color keyed to
+  transparent (soft-edged, not a hard cutoff), cropped to content, padded into a square at the Android
+  adaptive-icon safe zone (content filling ~66% of the canvas), upscaled to 1024px. The flattened
+  `icon.png` composites that foreground onto `#FBF9F4` (`AuroraColors.background`) for the legacy/plain
+  icon slot. **Source is only 160×184px** — flagged to the user as a real quality ceiling; a
+  higher-resolution source image would sharpen the result.
+- `pubspec.yaml`: `flutter_launcher_icons` ^0.14.4 and `flutter_native_splash` ^2.4.8 (dev deps,
+  versions checked against pub.dev), both configured against the two generated images and the app's
+  own `AuroraColors.background` (`#FBF9F4`) / `AuroraColorsDark.surface` (`#15151A`) tokens, so the
+  icon background and splash color match the in-app theme exactly rather than being arbitrary.
+- `.github/workflows/ci.yml`: added a step running `dart run flutter_launcher_icons` and
+  `dart run flutter_native_splash:create` before the APK builds — no local SDK exists to run these
+  generators here, so, like the Drift/Pigeon codegen already in this workflow, they run fresh every CI
+  build from the checked-in source images and pubspec.yaml config. The generated
+  `android/app/src/main/res/*` output is copied into the CI report so it can be committed back into the
+  repo's own checked-in scaffold later (not required for the build itself, which regenerates it every
+  run regardless — see `TASKS.md` section C for that open follow-up).
+- `assets/portal/index.html`, `public.html`: the favicon placeholder replaced with the same icon,
+  resized to 64×64 and inlined as a base64 PNG data URI (the portal's own CSP already allows
+  `img-src ... data:`; the whole page is embedded as literal Dart string constants by
+  `tool/embed_portal.py`, which has no mechanism to reference a separate binary asset file, hence the
+  inlining rather than a normal `<img src="...">` file reference). **A first attempt at this edit
+  manually retyped the base64 string through a tool call and corrupted one character** (found by
+  comparing the embedded string against the source file byte-for-byte, not by visual inspection, which
+  would not have caught it); redone by having a Python script copy the string directly from the
+  generated file into the HTML rather than retyping it. Regenerated
+  `lib/server/portal/portal_bundle.dart` from the corrected sources via `python tool/embed_portal.py`.
+
+### CI infra flake
+
+Run `35879261154`'s "Publish report to the ci-reports branch" step failed with `remote: Internal
+Server Error` on `git push -f` — a transient GitHub-side 500, not a workflow or code defect (every
+other step in that run, including the new icon/splash generator and both APK builds, showed success).
+A rerun was triggered (`gh run rerun --failed`, same run ID) but its result was not checked before the
+user asked to stop the session; see `TASKS.md` state-in-one-line for the exact unresolved status.
 
 ---
 

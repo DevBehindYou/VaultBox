@@ -88,6 +88,35 @@ dev_dependencies:
   # Reference verified version: 29.0.1 (doc §00 / §25).
   pigeon: ^29.0.1
 
+  # --- Launcher icon + splash screen (2026-09-23, user reported the app still
+  # shipped the default Flutter icon and a blank splash) ---
+  # Versions checked against pub.dev, not guessed. Both are code-generators —
+  # `dart run flutter_launcher_icons` / `dart run flutter_native_splash:create`
+  # — that write into android/app/src/main/res/*; there is no local SDK to run
+  # them here, so CI runs them before the APK build (see .github/workflows/ci.yml).
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.8
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "#FBF9F4" # AuroraColors.background
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  min_sdk_android: 29 # matches android/app/build.gradle.kts
+
+flutter_native_splash:
+  color: "#FBF9F4" # AuroraColors.background
+  color_dark: "#15151A" # AuroraColorsDark.surface
+  image: "assets/icon/icon_foreground.png"
+  android_12:
+    image: "assets/icon/icon_foreground.png"
+    color: "#FBF9F4"
+    color_dark: "#15151A"
+  android: true
+  ios: false
+  web: false
+
   # --- Deliberately NOT pulled into Phase 0/1 (see docs/IMPLEMENTATION_PLAN.md §E) ---
   # freezed: ^2.5.7
   # freezed_annotation: ^2.4.4

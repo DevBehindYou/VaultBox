@@ -129,6 +129,24 @@ jobs:
         continue-on-error: true
         run: flutter test --reporter failures-only 2>&1 | tee ci-report/logs/test.log
 
+      # Writes into android/app/src/main/res/* (mipmaps, drawables, styles).
+      # There is no local SDK to run this generator on, so it runs here, every
+      # build, from the checked-in assets/icon/* sources and the
+      # flutter_launcher_icons:/flutter_native_splash: sections of pubspec.yaml
+      # — same pattern as the Drift/Pigeon codegen above. The generated
+      # android/ files are captured below so they can be committed back once,
+      # keeping the repo's own checked-in scaffold in sync (not required for
+      # the build to succeed, just so `git show` matches what actually ships).
+      - name: Generate launcher icon + splash screen
+        id: icons
+        if: steps.pub_get.outcome == 'success'
+        continue-on-error: true
+        run: |
+          {
+            dart run flutter_launcher_icons
+            dart run flutter_native_splash:create
+          } 2>&1 | tee ci-report/logs/icons.log
+
       - name: flutter build apk (debug)
         id: apk
         if: steps.pub_get.outcome == 'success'
@@ -180,6 +198,13 @@ jobs:
           cp lib/platform/pigeon/*.g.dart ci-report/generated/ 2>/dev/null || true
           cp android/app/src/main/kotlin/com/vaultbox/app/pigeon/*.kt ci-report/generated/ 2>/dev/null || true
           cp pubspec.lock ci-report/pubspec.lock 2>/dev/null || true
+          # The icon/splash generator's android/ output, so it can be committed
+          # back into the repo's own checked-in scaffold once (see the step
+          # above) — copies the whole (small: images + XML) resource tree
+          # rather than trying to detect just what changed.
+          mkdir -p ci-report/generated-android
+          cp -r android/app/src/main/res ci-report/generated-android/ 2>/dev/null || true
+          cp android/app/src/main/AndroidManifest.xml ci-report/generated-android/ 2>/dev/null || true
           # Keep the branch small: cap each log at 300 KB (the tail is what matters).
           for f in ci-report/logs/*.log; do
             [ -f "$f" ] || continue
@@ -202,6 +227,7 @@ jobs:
             echo "| dart format (advisory) | ${{ steps.format.outcome }} |"
             echo "| flutter analyze | ${{ steps.analyze.outcome }} |"
             echo "| flutter test | ${{ steps.test.outcome }} |"
+            echo "| generate icon/splash | ${{ steps.icons.outcome }} |"
             echo "| build apk (debug) | ${{ steps.apk.outcome }} |"
             echo "| build apk (release) | ${{ steps.apk_release.outcome }} |"
           } > ci-report/summary.md

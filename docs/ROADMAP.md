@@ -25,7 +25,7 @@ storage locations the person picked, and nothing is ever opened to the internet.
 | 9 — FTPS (pulled forward as M2) | FTP / FTPS server and UI | **Done**, compiled, tested, green on CI (`6052175`, `2ffdaf0`) — not yet confirmed on a real device |
 | 7 — Security hardening | Throttling, tokens, secret storage, headers | **Partly done** inside phases 3–6 (Argon2id, throttling, sessions, Keystore, CSP/HSTS); rest below |
 | 8 — Vault and privacy | `.nomedia`, camouflage, encrypted Vault | Not started |
-| 10 — Production hardening | Performance, OEM lab, accessibility, localization, release | **Launcher icon and splash screen done** (`7004190`, real content pending a CI-outcome confirmation); release APK builds in CI (debug-signed, not a real release key yet); rest not started |
+| 10 — Production hardening | Performance, OEM lab, accessibility, localization, release | **Launcher icon and splash screen done and confirmed green** (`7004190`); release APK builds in CI (debug-signed, not a real release key yet); rest not started |
 
 ## 2. Near term
 
@@ -36,8 +36,7 @@ explorer — nothing has touched real hardware yet.
 
 ### Device-test follow-up (in progress)
 The user's first real-device pass over a release APK found the app icon, splash screen and web portal
-favicon genuinely missing — now fixed (`7004190`, pending a CI-outcome confirmation — see
-[TASKS.md](TASKS.md) state-in-one-line). Several other reports (light mode, storage folder choice,
+favicon genuinely missing — now fixed and confirmed green (`7004190`). Several other reports (light mode, storage folder choice,
 server notification) turned out to already exist in code; two (general layout, portal "usability")
 are waiting on a screenshot or more specific description from the user before anything can be built —
 see [TASKS.md](TASKS.md) section E.

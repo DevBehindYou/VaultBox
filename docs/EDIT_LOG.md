@@ -10,8 +10,8 @@ goes) and [TASKS.md](TASKS.md) (what is left).
 | | |
 |---|---|
 | Branch | `ci/bootstrap` (never merged to `main`; `main` still holds the baseline that could not compile) |
-| Last pushed commit | `7004190` — launcher icon, splash screen, web portal favicon. **Not yet confirmed green**: its CI run's `ci-reports` publish step hit a transient GitHub 500 and was re-run (`35879261154`); check that run before assuming the outcome. |
-| Last **confirmed** green commit | `16fc00f` — full Riverpod → BLoC rewrite. `flutter analyze` clean, both debug and release APKs build, 927/942 tests pass — 15 failures are a known Flutter SDK Tooltip/ticker bug in `share_screen_test.dart`, not gating (see `TASKS.md` section F) |
+| Last pushed commit | `7004190` — launcher icon, splash screen, web portal favicon. |
+| Last **confirmed** green commit | `7004190` (via rerun `35879261154`) — `flutter analyze` clean, both debug and release APKs build, icon/splash generation succeeded, 927/942 tests pass — 15 failures are the known Flutter SDK Tooltip/ticker bug in `share_screen_test.dart`, not gating (see `TASKS.md` section F) |
 | Working tree | clean, fully committed |
 | Database schema | Drift v6 |
 | Toolchain | Flutter 3.47.4 / Dart 3.13.3, built and tested only on GitHub Actions (the user cannot install the SDKs locally) |
@@ -304,6 +304,28 @@ Server Error` on `git push -f` — a transient GitHub-side 500, not a workflow o
 other step in that run, including the new icon/splash generator and both APK builds, showed success).
 A rerun was triggered (`gh run rerun --failed`, same run ID) but its result was not checked before the
 user asked to stop the session; see `TASKS.md` state-in-one-line for the exact unresolved status.
+
+---
+
+## CI confirmation + committed android resources — 2026-09-24
+
+Resumed the session by reading the handover docs and re-checking CI state rather than trusting the
+last session's unresolved note.
+
+- Read `origin/ci-reports` at run `35879261154` (the `7004190` rerun): `summary.md` shows `pub get`,
+  `build_runner`, `pigeon`, `flutter analyze`, icon/splash generation and both APK builds all
+  `success`; only `flutter test` shows `failure`. Read `logs/test.log` directly — the failures are the
+  same 15 `share_screen_test.dart` cases (927/942 pass), the already-documented Flutter SDK
+  Tooltip/ticker bug, not a new regression. `dart format (advisory)` is `failure` as always (not
+  gating). **`7004190` is confirmed green** by the project's own definition.
+- Fetched `generated-android/res/**` from that same `ci-reports` tree and copied it over
+  `android/app/src/main/res/` (the TASKS.md section C open follow-up). New files: adaptive icon
+  (`mipmap-anydpi-v26/ic_launcher.xml`, `values/colors.xml`, `values-v31/styles.xml`,
+  `values-night-v31/styles.xml`); updated in place: launcher mipmaps, splash drawables,
+  `launch_background.xml`, `styles.xml`. `AndroidManifest.xml` content is unchanged (diff was CRLF
+  noise only). Not required for CI to keep building (it regenerates these every run) — keeps `git show`
+  honest about what ships.
+- Updated `TASKS.md` and `ROADMAP.md` to drop the "pending confirmation" language on `7004190`.
 
 ---
 

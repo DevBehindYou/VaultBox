@@ -5,11 +5,10 @@ request. Companion files: [EDIT_LOG.md](EDIT_LOG.md), [CHAT_LOG.md](CHAT_LOG.md)
 [ROADMAP.md](ROADMAP.md).
 
 State in one line: branch `ci/bootstrap`, last pushed commit `7004190` (launcher icon, splash screen,
-web portal favicon). Last **confirmed** green result is commit `16fc00f`: `flutter analyze` clean,
-both debug and release APKs build, 927 of 942 tests pass (15 failures are a known non-gating Flutter
-SDK flake, section F). The `7004190` run's real outcome is still unconfirmed — its `ci-reports` publish
-step hit a transient GitHub 500 and was re-run (run `35879261154`); read that run before assuming
-anything about `7004190` is green. FTP/FTPS (M2) and the Riverpod → BLoC rewrite are both done.
+web portal favicon) — **confirmed green** via rerun `35879261154`: `flutter analyze` clean, both debug
+and release APKs build, icon/splash generation succeeded, 927 of 942 tests pass (same known non-gating
+Flutter SDK flake, section F, all in `share_screen_test.dart`). FTP/FTPS (M2) and the Riverpod → BLoC
+rewrite are both done.
 
 ## A. Finish M2 — FTP / FTPS — DONE (2026-09-23, commits `6052175`, `2ffdaf0`)
 
@@ -52,7 +51,7 @@ no icon.
 - [x] Generated `assets/icon/icon.png` and `icon_foreground.png` from the existing `assets/images/vaultbox_mark.png` (background keyed to transparency, padded to the adaptive-icon safe zone, upscaled to 1024px). **Source is only 160×184px** — this is a real quality ceiling; ask the user for higher-res artwork if the result looks soft.
 - [x] `pubspec.yaml`: added `flutter_launcher_icons` ^0.14.4 and `flutter_native_splash` ^2.4.8 (dev deps), configured against those two images and the app's own `AuroraColors.background` (`#FBF9F4`) / `AuroraColorsDark.surface` (`#15151A`) tokens, so the icon background and splash color match the in-app theme.
 - [x] `.github/workflows/ci.yml`: added a step running both generators before the APK builds (no local SDK to run `dart run flutter_launcher_icons` / `flutter_native_splash:create` here), and a step copying the generated `android/app/src/main/res` output into the CI report.
-- [ ] **Open follow-up**: fetch that generated `android/app/src/main/res` output from a successful run's `ci-reports` publish and commit it into the repo's own checked-in scaffold, so `git show` matches what actually ships (not required for the build to succeed — CI regenerates it fresh every run regardless — just keeps the source tree honest). Blocked on a confirmed-green run: the `7004190` push's `ci-reports` publish failed with a transient GitHub 500 (`Internal Server Error`, unrelated to this repo's code — every other step, including icon generation and both APK builds, showed success in the job list) and was re-run as `35879261154`; that rerun's result was not checked before the user said to stop.
+- [x] **Open follow-up — DONE (session 7)**: fetched the generated `android/app/src/main/res` output from the confirmed-green rerun (`35879261154`) and committed it into the repo's checked-in scaffold, so `git show` matches what actually ships. Added adaptive-icon files (`mipmap-anydpi-v26/ic_launcher.xml`, `values/colors.xml`, `values-v31/styles.xml`, `values-night-v31/styles.xml`) that didn't exist before, and updated launcher/splash images and `launch_background.xml`/`styles.xml` in place. Not required for the build (CI regenerates it fresh every run regardless) — just keeps the source tree honest.
 - [x] Fixed the web portal's favicon: `assets/portal/index.html`/`public.html` had a deliberate empty `data:,` placeholder; replaced with the same icon at 64×64, inlined as a base64 PNG data URI (the portal's CSP already allows `img-src ... data:`). Regenerated `lib/server/portal/portal_bundle.dart` via `python tool/embed_portal.py`. Verified byte-for-byte after an earlier manual-transcription attempt corrupted one character of the base64 — redone by having Python copy the string directly rather than retyping it through a tool call.
 
 ## D. Needs the user

@@ -81,6 +81,14 @@ final class PigeonAndroidStorageHost implements AndroidStorageHost {
     return picked.map(_toPickedFile).toList();
   }
 
+  @override
+  Future<bool> hasManageExternalStoragePermission() =>
+      _guard(_api.hasManageExternalStoragePermission);
+
+  @override
+  Future<void> requestManageExternalStoragePermission() =>
+      _guard(_api.requestManageExternalStoragePermission);
+
   // --- mapping ---
 
   PickedFile _toPickedFile(PickedFileMessage message) {

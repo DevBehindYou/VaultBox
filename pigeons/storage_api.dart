@@ -175,6 +175,24 @@ abstract class AndroidStorageApi {
   /// for an import, and the reason the caller must delete each copy afterwards.
   @async
   List<PickedFileMessage> pickFilesToCache();
+
+  /// Whether the app currently holds "All files access"
+  /// (`Environment.isExternalStorageManager()`). Below API 30 this is always
+  /// true — scoped storage's MANAGE_EXTERNAL_STORAGE gate doesn't exist there.
+  /// Needed so "This phone" can default into the public Downloads folder
+  /// (visible in any file manager) instead of the app-private directory
+  /// scoped storage otherwise confines raw `dart:io` File access to.
+  @async
+  bool hasManageExternalStoragePermission();
+
+  /// Sends the user to the system "All files access" settings screen for this
+  /// app (`Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION`) — Android
+  /// does not allow granting MANAGE_EXTERNAL_STORAGE through an in-app runtime
+  /// dialog, only through this settings screen. Fire-and-forget: the caller
+  /// re-checks [hasManageExternalStoragePermission] the next time it matters
+  /// rather than waiting for a result here.
+  @async
+  void requestManageExternalStoragePermission();
 }
 
 // ---------------------------------------------------------------------------

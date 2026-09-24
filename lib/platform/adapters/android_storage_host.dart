@@ -45,6 +45,15 @@ abstract interface class AndroidStorageHost {
   /// document into the app's cache and returns the copies; the caller OWNS them
   /// and must delete every [PickedFile.cachePath] when done. Empty = cancelled.
   Future<List<PickedFile>> pickFilesToCache();
+
+  /// Whether the app currently holds "All files access". Always true below
+  /// Android 11 (API 30), where MANAGE_EXTERNAL_STORAGE doesn't exist.
+  Future<bool> hasManageExternalStoragePermission();
+
+  /// Opens the system "All files access" settings screen for this app.
+  /// Fire-and-forget — re-check [hasManageExternalStoragePermission] when the
+  /// app resumes rather than waiting for a result here.
+  Future<void> requestManageExternalStoragePermission();
 }
 
 /// A document the user picked, already copied to a plain file in the app cache.

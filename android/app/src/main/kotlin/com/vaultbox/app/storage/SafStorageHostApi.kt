@@ -4,8 +4,11 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.OpenableColumns
+import android.provider.Settings
 import com.vaultbox.app.pigeon.AndroidStorageApi
 import com.vaultbox.app.pigeon.FlutterError
 import com.vaultbox.app.pigeon.PickedFileMessage
@@ -216,6 +219,26 @@ class SafStorageHostApi(
             sizeBytes = target.length(),
             mimeType = resolver.getType(uri),
         )
+    }
+
+    // --- All files access (lets "This phone" default into public Downloads) ---
+
+    override suspend fun hasManageExternalStoragePermission(): Boolean = withContext(Dispatchers.IO) {
+        guarded {
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.R || Environment.isExternalStorageManager()
+        }
+    }
+
+    override suspend fun requestManageExternalStoragePermission() {
+        withContext(Dispatchers.Main) {
+            guarded {
+                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
+                    data = Uri.fromParts("package", context.packageName, null)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            }
+        }
     }
 
     // --- helpers ---

@@ -27,8 +27,20 @@ final class PermissionRevokedFailure extends AppFailure {
   const PermissionRevokedFailure({super.debugDetail})
     : super(
         message:
-            "VaultBox no longer has permission to reach this storage location. "
+            "Atomic Carton no longer has permission to reach this storage location. "
             "Reconnect it to continue.",
+      );
+}
+
+/// "This phone" storage needs "All files access" (Android 11+) before it can
+/// default into the public Downloads folder. Thrown after already launching
+/// the system settings screen for it — see `onboarding_actions.dart`.
+final class StoragePermissionRequiredFailure extends AppFailure {
+  const StoragePermissionRequiredFailure({super.debugDetail})
+    : super(
+        message:
+            "Atomic Carton needs \"All files access\" to keep your files in Downloads, "
+            "where you can find them. Turn it on in Settings, then tap \"This phone\" again.",
       );
 }
 

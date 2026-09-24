@@ -74,7 +74,7 @@ class _OnboardingStorageScreenState extends State<OnboardingStorageScreen> {
             children: <Widget>[
               const AuroraStatusChip(label: "Step 2 of 3", status: AuroraStatus.idle),
               const SizedBox(height: AuroraSpacing.md),
-              Text("Where should VaultBox keep your files?", style: AuroraTypography.headlineMd),
+              Text("Where should Atomic Carton keep your files?", style: AuroraTypography.headlineMd),
               const SizedBox(height: AuroraSpacing.lg),
               if (_failure != null) ...<Widget>[
                 AuroraInlineBanner(
@@ -97,7 +97,8 @@ class _OnboardingStorageScreenState extends State<OnboardingStorageScreen> {
                         children: <Widget>[
                           Text("This phone", style: AuroraTypography.bodyLg),
                           Text(
-                            "VaultBox's own private storage. Works immediately.",
+                            "A Downloads/Atomic-Carton folder you can find in any file manager. "
+                            "May ask for \"All files access\".",
                             style: AuroraTypography.bodySm
                                 .copyWith(color: context.inkSecondary),
                           ),
@@ -129,7 +130,7 @@ class _OnboardingStorageScreenState extends State<OnboardingStorageScreen> {
                           Text("SD card or custom folder", style: AuroraTypography.bodyLg),
                           Text(
                             "Pick any folder on this phone or an SD card. "
-                            "You'll be asked to grant VaultBox access to it.",
+                            "You'll be asked to grant Atomic Carton access to it.",
                             style: AuroraTypography.bodySm
                                 .copyWith(color: context.inkSecondary),
                           ),

@@ -20,6 +20,12 @@ final class FakeAndroidStorageHost implements AndroidStorageHost {
   /// Tree URIs passed to `releasePersistedUri`.
   final List<String> released = <String>[];
 
+  /// What `hasManageExternalStoragePermission()` returns.
+  bool manageExternalStorageGranted = true;
+
+  /// Incremented each time `requestManageExternalStoragePermission()` is called.
+  int manageExternalStorageRequestCount = 0;
+
   /// When set, `createDirectory` throws it (simulates a revoked/refused grant).
   AppFailure? failCreateDirectory;
 
@@ -139,6 +145,14 @@ final class FakeAndroidStorageHost implements AndroidStorageHost {
   @override
   Future<void> releasePersistedUri(String treeUri) async {
     released.add(treeUri);
+  }
+
+  @override
+  Future<bool> hasManageExternalStoragePermission() async => manageExternalStorageGranted;
+
+  @override
+  Future<void> requestManageExternalStoragePermission() async {
+    manageExternalStorageRequestCount++;
   }
 }
 

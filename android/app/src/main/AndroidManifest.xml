@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- Phase 2: server host. INTERNET/ACCESS_NETWORK_STATE for the (future) network
          listener; FOREGROUND_SERVICE(+SPECIAL_USE) for the always-on service on
          Android 14+; POST_NOTIFICATIONS so its notification can show on Android 13+
@@ -9,10 +10,22 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- "This phone" storage defaults into the public Downloads folder (a file
+         manager can see it there; the app-private directory it used to use is
+         invisible without root on many phones). Scoped storage (API 30+) gates
+         raw File access to a public directory behind this permission, granted
+         only via a system Settings screen — see SafStorageHostApi.kt's
+         hasManageExternalStoragePermission/requestManageExternalStoragePermission
+         and onboarding_actions.dart. A file-manager app is Google's own stated
+         accepted use case for it (Play Store policy), moot anyway since this
+         app is sideloaded, not store-distributed. -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage"/>
     <application
-        android:label="VaultBox"
+        android:label="Atomic Carton"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:requestLegacyExternalStorage="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"

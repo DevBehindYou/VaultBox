@@ -23,7 +23,7 @@ final class StorageLocationInfo {
   /// "Internal storage", "SD card or USB drive", …
   final String volumeLabel;
 
-  /// The folder as a path a person would type: `/storage/emulated/0/Documents/VaultBox`.
+  /// The folder as a path a person would type: `/storage/emulated/0/Download/Atomic-Carton`.
   final String path;
 }
 

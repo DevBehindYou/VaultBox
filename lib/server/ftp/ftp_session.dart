@@ -120,7 +120,7 @@ final class FtpSession {
 
   /// Starts the conversation.
   void start() {
-    _reply(220, "VaultBox FTP server ready.");
+    _reply(220, "Atomic Carton FTP server ready.");
     _listen();
     _touch();
   }
@@ -326,7 +326,7 @@ final class FtpSession {
       case "LANG":
         _reply(200, "Noted.");
       case "HELP":
-        _reply(214, "VaultBox FTP server. Use PASV or EPSV for transfers.");
+        _reply(214, "Atomic Carton FTP server. Use PASV or EPSV for transfers.");
       case "QUIT":
         _reply(221, "Goodbye.");
         try {
@@ -388,7 +388,7 @@ final class FtpSession {
       case "MDTM":
         return _mdtm(argument);
       case "STAT":
-        _reply(211, "VaultBox FTP server. Signed in as ${_account!.username}.");
+        _reply(211, "Atomic Carton FTP server. Signed in as ${_account!.username}.");
       case "ABOR":
         _reply(226, "Nothing to abort.");
       default:

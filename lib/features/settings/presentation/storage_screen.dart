@@ -43,7 +43,7 @@ class StorageScreen extends StatelessWidget {
         children: <Widget>[
           const AuroraSubHeader(
             title: "Storage & Volumes",
-            subtitle: "The folders VaultBox serves, and where they really are on this phone.",
+            subtitle: "The folders Atomic Carton serves, and where they really are on this phone.",
           ),
           ...roots.when(
             loading: () => const <Widget>[Center(child: CircularProgressIndicator())],
@@ -222,7 +222,7 @@ class _RootCardState extends State<_RootCard> {
       builder: (BuildContext dialogContext) => AlertDialog(
         title: Text("Stop serving “${widget.root.displayName}”?"),
         content: const Text(
-          "VaultBox forgets this location and no one can reach it through the server any more. "
+          "Atomic Carton forgets this location and no one can reach it through the server any more. "
           "Your files are not deleted, and you can add the folder again later.",
         ),
         actions: <Widget>[

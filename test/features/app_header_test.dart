@@ -38,7 +38,7 @@ void main() {
   testWidgets("names the app and the tab it is on", (WidgetTester tester) async {
     await show(tester, FakeServerHost(), subtitle: "Files");
 
-    expect(find.text("VaultBox"), findsOneWidget);
+    expect(find.text("Atomic Carton"), findsOneWidget);
     expect(find.text("Files"), findsOneWidget);
   });
 

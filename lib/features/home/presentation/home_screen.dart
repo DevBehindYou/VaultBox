@@ -505,7 +505,7 @@ class _StorageCard extends StatelessWidget {
           return AuroraEmptyState(
             icon: Icons.folder_open,
             title: "No storage yet",
-            message: "Pick a folder for VaultBox to manage and serve.",
+            message: "Pick a folder for Atomic Carton to manage and serve.",
             action: AuroraPrimaryButton(
               label: "Set up storage",
               icon: Icons.arrow_forward,

@@ -1,7 +1,8 @@
 name: vaultbox
 description: >
-  VaultBox — turns an Android phone into a secure personal storage server /
-  mini-NAS. Local-first file manager with an optional HTTPS/WebDAV/REST server.
+  Atomic Carton (codename VaultBox) — turns an Android phone into a secure
+  personal storage server / mini-NAS. Local-first file manager with an
+  optional HTTPS/WebDAV/REST server.
 publish_to: "none"
 version: 0.1.0
 

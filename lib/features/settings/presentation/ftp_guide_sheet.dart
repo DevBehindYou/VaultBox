@@ -43,15 +43,15 @@ class _FtpGuide extends StatelessWidget {
       "Add a new storage or network location and choose FTP (or “FTP(S, ES)”).",
       "Host: $host   Port: ${settings.port}",
       "Security: $_security.",
-      if (settings.usesTls) "Accept the certificate when asked: it is VaultBox's own.",
+      if (settings.usesTls) "Accept the certificate when asked: it is Atomic Carton's own.",
       "Turn passive mode on (it usually is by default).",
-      "Sign in with a VaultBox account's username and password.",
+      "Sign in with a Atomic Carton account's username and password.",
     ]),
     _Step("Windows, Mac or Linux (FileZilla, WinSCP, Cyberduck)", <String>[
       "New connection ▸ protocol FTP. Host $host, port ${settings.port}.",
       "Encryption: $_security.",
       "Transfer mode: passive.",
-      "Sign in with a VaultBox account.",
+      "Sign in with a Atomic Carton account.",
     ]),
     _Step("A camera, scanner or older device", <String>[
       "Use the same host and port, and the encryption it supports.",
@@ -59,7 +59,7 @@ class _FtpGuide extends StatelessWidget {
         "Plain FTP is switched on, so this works — but passwords travel unencrypted. Use it only on a network you trust."
       else
         "Many older devices can only do plain FTP, which is switched off here. Devices that support implicit FTPS "
-            "need that mode chosen in VaultBox.",
+            "need that mode chosen in Atomic Carton.",
     ]),
     _Step("If it won't connect", <String>[
       "Both devices must be on the same Wi-Fi, and “Allow other devices on my network” must be on.",

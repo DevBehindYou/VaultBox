@@ -58,7 +58,7 @@ final class RunDiagnostics {
           title: title,
           status: DiagnosticStatus.problem,
           detail: "This check couldn't be carried out.",
-          hint: "Close and reopen VaultBox, then run the checks again.",
+          hint: "Close and reopen Atomic Carton, then run the checks again.",
         ),
       ];
     }
@@ -110,7 +110,7 @@ final class RunDiagnostics {
             subject: root.displayName,
             status: DiagnosticStatus.problem,
             detail: "Reachable, but its files can't be listed.",
-            hint: "VaultBox may have lost permission to the folder. Add it again.",
+            hint: "Atomic Carton may have lost permission to the folder. Add it again.",
           ),
         );
       }

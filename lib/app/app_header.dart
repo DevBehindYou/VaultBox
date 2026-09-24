@@ -27,7 +27,7 @@ class AppHeader extends StatelessWidget {
         children: <Widget>[
           ClipRRect(
             borderRadius: AuroraRadii.standardAll,
-            child: Image.asset("assets/images/vaultbox_mark.png", width: 32, height: 32, fit: BoxFit.cover),
+            child: Image.asset("assets/images/atomic_carton_mark.png", width: 32, height: 32, fit: BoxFit.cover),
           ),
           const SizedBox(width: AuroraSpacing.sm),
           Flexible(
@@ -35,7 +35,7 @@ class AppHeader extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text("VaultBox", style: context.brand(22), maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text("Atomic Carton", style: context.brand(22), maxLines: 1, overflow: TextOverflow.ellipsis),
                 Text(subtitle, style: context.mono(size: 10, color: context.inkTertiary), maxLines: 1),
               ],
             ),

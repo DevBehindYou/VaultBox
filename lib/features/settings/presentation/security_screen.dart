@@ -331,7 +331,7 @@ class _CertificateCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            "Browsers warn about this certificate because VaultBox made it itself. Before you trust it, "
+            "Browsers warn about this certificate because Atomic Carton made it itself. Before you trust it, "
             "compare this fingerprint with the one the browser shows.",
             style: context.bodySecondary,
           ),

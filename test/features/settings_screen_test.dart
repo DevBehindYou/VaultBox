@@ -148,7 +148,7 @@ void main() {
         "Appearance & Display",
         "System",
         "Diagnostics",
-        "About VaultBox",
+        "About Atomic Carton",
       ]) {
         expect(find.text(title), findsOneWidget, reason: title);
       }
@@ -284,7 +284,7 @@ void main() {
       await tester.tap(find.text("Copy support bundle"));
       await tester.pumpAndSettle();
 
-      expect(copied, startsWith("VaultBox support bundle"));
+      expect(copied, startsWith("Atomic Carton support bundle"));
       expect(copied, contains("App version: 0.1.0"));
       expect(copied, contains("Network access: on"));
       expect(copied, contains("[OK] Accounts"));

@@ -116,7 +116,7 @@ class _AdminSetupScreenState extends State<AdminSetupScreen> {
               Text("Create your admin account", style: AuroraTypography.headlineMd),
               const SizedBox(height: AuroraSpacing.sm),
               Text(
-                "This is the login for VaultBox's server. Choose a long passphrase — "
+                "This is the login for Atomic Carton's server. Choose a long passphrase — "
                 "it is stored only as a salted hash and can't be recovered.",
                 style: AuroraTypography.bodyMd.copyWith(color: context.inkSecondary),
               ),

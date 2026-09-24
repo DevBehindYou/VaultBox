@@ -57,7 +57,7 @@ void main() {
       config: const ServerConfig(allowNetworkAccess: true, httpEnabled: true),
     );
 
-    expect(text, startsWith("VaultBox support bundle"));
+    expect(text, startsWith("Atomic Carton support bundle"));
     expect(text, contains("Made: 2026-09-20T12:00:00.000Z"));
     expect(text, contains("App version: 1.2.3"));
     expect(text, contains("State: running"));

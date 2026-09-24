@@ -30,7 +30,7 @@ class OnboardingReadyScreen extends StatelessWidget {
               ),
               const Spacer(),
               AuroraPrimaryButton(
-                label: "Go to VaultBox",
+                label: "Go to Atomic Carton",
                 // go(), not push() — this replaces the onboarding stack so the
                 // back button can never re-enter it (same principle as doc
                 // §7.2's login-redirect rule: don't leave a dead-end screen

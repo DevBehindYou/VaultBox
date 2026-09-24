@@ -101,7 +101,7 @@ final class CreateShare {
       throw const ValidationFailure(message: "That location isn't allowed.");
     }
     if (target.segments.isNotEmpty && target.segments.first.toLowerCase() == ".vaultbox") {
-      throw const ValidationFailure(message: "VaultBox's own folder can't be shared.");
+      throw const ValidationFailure(message: "Atomic Carton's own folder can't be shared.");
     }
 
     final Permission needed = kind == ShareKind.download ? Permission.read : Permission.write;

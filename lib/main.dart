@@ -54,7 +54,7 @@ class VaultBoxApp extends StatelessWidget {
     };
 
     return MaterialApp.router(
-      title: "VaultBox",
+      title: "Atomic Carton",
       debugShowCheckedModeBanner: false,
       theme: AuroraTheme.light(style: style, density: density),
       darkTheme: AuroraTheme.dark(style: style, density: density),

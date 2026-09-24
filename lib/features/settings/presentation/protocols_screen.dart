@@ -150,7 +150,7 @@ class _WebPortalCard extends StatelessWidget {
       icon: Icons.language,
       title: "Web Portal",
       tag: "HTTPS",
-      description: "The browser page for your files. Encrypted with a certificate VaultBox made itself.",
+      description: "The browser page for your files. Encrypted with a certificate Atomic Carton made itself.",
       enabled: config.httpsEnabled,
       onToggle: canChange ? (bool on) => unawaited(_save(context, config.copyWith(httpsEnabled: on))) : null,
       lockedNote: canChange ? null : "Stop the server to change this.",
@@ -312,7 +312,7 @@ class _NetworkCard extends StatelessWidget {
           builder: (BuildContext dialogContext) => AlertDialog(
             title: const Text("Create an admin account first"),
             content: const Text(
-              "Other devices need a login to use VaultBox. Create the admin account, then turn network access on.",
+              "Other devices need a login to use Atomic Carton. Create the admin account, then turn network access on.",
             ),
             actions: <Widget>[
               TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text("Not now")),
@@ -328,7 +328,7 @@ class _NetworkCard extends StatelessWidget {
         builder: (BuildContext dialogContext) => AlertDialog(
           title: const Text("Allow network access?"),
           content: const Text(
-            "Other devices on your Wi-Fi will be able to reach this phone's VaultBox server. Traffic is "
+            "Other devices on your Wi-Fi will be able to reach this phone's Atomic Carton server. Traffic is "
             "encrypted, but only turn this on for networks you trust.",
           ),
           actions: <Widget>[
@@ -360,7 +360,7 @@ class _NetworkCard extends StatelessWidget {
         const AuroraSettingRow(
           icon: Icons.public_off_outlined,
           title: "Never on the internet",
-          subtitle: "VaultBox only listens on your local network. It never opens a port on your router.",
+          subtitle: "Atomic Carton only listens on your local network. It never opens a port on your router.",
         ),
       ],
     );

@@ -1,0 +1,36 @@
+<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- WHITE BACKGROUND -->
+  <rect width="300" height="300" fill="#ffffff" />
+  
+  <defs>
+    <linearGradient id="v1-top" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f4eeff" /><stop offset="100%" stop-color="#d1b3ff" />
+    </linearGradient>
+    <linearGradient id="v1-left" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8a5cf5" /><stop offset="100%" stop-color="#5c3abf" />
+    </linearGradient>
+    <linearGradient id="v1-right" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#b290ff" /><stop offset="100%" stop-color="#7a4ddb" />
+    </linearGradient>
+    <filter id="v1-glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+
+  <!-- Isometric Cube (Thick Outlines) -->
+  <path d="M 150 165 L 45 105 L 45 195 L 150 255 Z" fill="url(#v1-left)" stroke="#1a1a3a" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M 150 165 L 255 105 L 255 195 L 150 255 Z" fill="url(#v1-right)" stroke="#1a1a3a" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M 150 45 L 255 105 L 150 165 L 45 105 Z" fill="url(#v1-top)" stroke="#1a1a3a" stroke-width="10" stroke-linejoin="round"/>
+
+  <!-- Inner Cutout Details -->
+  <path d="M 150 165 L 95 135 L 95 185 L 150 215 Z" fill="#6a44d9" stroke="#1a1a3a" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M 150 165 L 205 135 L 205 185 L 150 215 Z" fill="#9d75ff" stroke="#1a1a3a" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M 150 115 L 205 135 L 150 165 L 95 135 Z" fill="#f4eeff" stroke="#1a1a3a" stroke-width="6" stroke-linejoin="round"/>
+
+  <!-- Atomic Symbol on Top -->
+  <g filter="url(#v1-glow)">
+    <circle cx="150" cy="105" r="12" fill="#1a1a3a" />
+    <circle cx="150" cy="105" r="6" fill="#4a90e2" />
+    <ellipse cx="150" cy="105" rx="35" ry="12" fill="none" stroke="#4a90e2" stroke-width="5" transform="rotate(0 150 105)" />
+    <ellipse cx="150" cy="105" rx="35" ry="12" fill="none" stroke="#8a5cf5" stroke-width="5" transform="rotate(60 150 105)" />
+    <ellipse cx="150" cy="105" rx="35" ry="12" fill="none" stroke="#d1b3ff" stroke-width="5" transform="rotate(120 150 105)" />
+  </g>
+</svg>

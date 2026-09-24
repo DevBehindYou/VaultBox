@@ -105,7 +105,7 @@ final class WebDavHandler {
           request,
           const ApiResponse(
           HttpStatus.unauthorized,
-          headers: <String, String>{HttpHeaders.wwwAuthenticateHeader: 'Basic realm="VaultBox", charset="UTF-8"'},
+          headers: <String, String>{HttpHeaders.wwwAuthenticateHeader: 'Basic realm="Atomic Carton", charset="UTF-8"'},
           ),
         ),
         DavThrottled(:final Duration retryAfter) => ApiResponse(
@@ -288,7 +288,7 @@ final class WebDavHandler {
     final MultiStatus out = MultiStatus();
 
     if (target.isTop) {
-      out.response(_href(null, null, collection: true), _propstats(query, _DavResource.collection(displayName: "VaultBox")));
+      out.response(_href(null, null, collection: true), _propstats(query, _DavResource.collection(displayName: "Atomic Carton")));
       if (depth == "1") {
         for (final StorageRoot root in roots.bySlug.values) {
           out.response(
@@ -538,7 +538,7 @@ final class WebDavHandler {
   }
 
   ApiResponse _collectionNote(ApiRequest request) {
-    final List<int> text = utf8.encode("This is a VaultBox WebDAV folder. Mount it as a network drive to browse it.\n");
+    final List<int> text = utf8.encode("This is an Atomic Carton WebDAV folder. Mount it as a network drive to browse it.\n");
     return ApiResponse(
       HttpStatus.ok,
       bytes: request.method == "HEAD" ? const <int>[] : text,

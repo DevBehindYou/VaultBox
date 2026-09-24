@@ -242,7 +242,7 @@ class ShareCreatedDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              "Copy it now — for safety VaultBox keeps only a fingerprint of the link, "
+              "Copy it now — for safety Atomic Carton keeps only a fingerprint of the link, "
               "so it can't be shown again.",
               style: AuroraTypography.bodyMd.copyWith(color: context.inkSecondary),
             ),

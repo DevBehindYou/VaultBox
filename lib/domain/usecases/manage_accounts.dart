@@ -144,7 +144,7 @@ final class SetAccessRules {
       }
       final String normalized = path.isRoot ? "/" : path.normalized;
       if (path.segments.isNotEmpty && path.segments.first.toLowerCase() == ".vaultbox") {
-        throw const ValidationFailure(message: "That folder is VaultBox's own and can't be shared.");
+        throw const ValidationFailure(message: "That folder is Atomic Carton's own and can't be shared.");
       }
       if (!seen.add("${grant.rootId}|$normalized")) {
         throw const ValidationFailure(message: "That folder is listed twice.");

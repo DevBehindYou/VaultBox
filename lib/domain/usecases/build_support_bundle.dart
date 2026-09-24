@@ -21,7 +21,7 @@ String buildSupportBundle({
   int maxEvents = 50,
 }) {
   final StringBuffer out = StringBuffer()
-    ..writeln("VaultBox support bundle")
+    ..writeln("Atomic Carton support bundle")
     ..writeln("Made: ${now.toUtc().toIso8601String()}")
     ..writeln("App version: $appVersion")
     ..writeln()

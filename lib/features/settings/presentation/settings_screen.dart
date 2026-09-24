@@ -105,11 +105,11 @@ class SettingsScreen extends StatelessWidget {
               ),
               AuroraSettingRow(
                 icon: Icons.info_outline,
-                title: "About VaultBox",
+                title: "About Atomic Carton",
                 subtitle: "Version $appVersion and open-source licences",
                 onTap: () => showLicensePage(
                   context: context,
-                  applicationName: "VaultBox",
+                  applicationName: "Atomic Carton",
                   applicationVersion: appVersion,
                 ),
               ),
@@ -118,7 +118,7 @@ class SettingsScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: AuroraSpacing.lg),
             child: Text(
-              "VaultBox keeps your files on this phone. Nothing is sent to any cloud.",
+              "Atomic Carton keeps your files on this phone. Nothing is sent to any cloud.",
               style: context.caption,
               textAlign: TextAlign.center,
             ),

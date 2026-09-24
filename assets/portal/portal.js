@@ -1,4 +1,4 @@
-/* VaultBox web portal.
+/* Atomic Carton web portal.
  *
  * One dependency-free page. It talks to the same versioned API as any other
  * client (/api/v1/...) using a bearer token kept in sessionStorage — never a
@@ -181,7 +181,7 @@
     not_found: "That item no longer exists.",
     root_not_found: "That storage location isn't available.",
     storage_unavailable: "That storage isn't reachable right now.",
-    storage_permission_revoked: "VaultBox lost access to this storage. Reconnect it on the phone.",
+    storage_permission_revoked: "Atomic Carton lost access to this storage. Reconnect it on the phone.",
     already_exists: "Something with that name already exists.",
     parent_not_found: "That folder no longer exists.",
     destination_not_found: "The destination folder no longer exists.",
@@ -381,7 +381,7 @@
         h(
           "main",
           { class: "card" },
-          h("div", { class: "brand" }, h("span", { class: "brand-mark", "aria-hidden": "true" }), h("h1", { text: "VaultBox" })),
+          h("div", { class: "brand" }, h("span", { class: "brand-mark", "aria-hidden": "true" }), h("h1", { text: "Atomic Carton" })),
           h("p", { class: "lede", text: "Sign in to reach the files on this phone." }),
           form,
           insecure
@@ -512,7 +512,7 @@
       h(
         "header",
         { class: "topbar" },
-        h("div", { class: "brand" }, h("span", { class: "brand-mark", "aria-hidden": "true" }), h("h1", { text: "VaultBox" })),
+        h("div", { class: "brand" }, h("span", { class: "brand-mark", "aria-hidden": "true" }), h("h1", { text: "Atomic Carton" })),
         h("span", { class: "spacer" }),
         h("span", { class: "who", text: state.user ? state.user.username : "" }),
         button("Sign out", "logout", { onclick: signOut, small: true, kind: "quiet" })
@@ -676,7 +676,7 @@
   function renderFiles() {
     var panel = shell.panel;
     if (!state.rootId) {
-      panel.replaceChildren(emptyState("No storage is shared yet", "Add a storage location in the VaultBox app on the phone."));
+      panel.replaceChildren(emptyState("No storage is shared yet", "Add a storage location in the Atomic Carton app on the phone."));
       return;
     }
     if (state.error) {

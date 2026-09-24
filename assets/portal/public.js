@@ -1,4 +1,4 @@
-/* VaultBox public link page (/s/<token> to download, /u/<token> to upload).
+/* Atomic Carton public link page (/s/<token> to download, /u/<token> to upload).
  *
  * No account and no cookie: the link's secret token in the address is the only
  * credential. Everything shown is inserted as text, never as HTML.
@@ -145,7 +145,7 @@
         h(
           "main",
           { class: "card" },
-          h("div", { class: "brand" }, h("span", { class: "brand-mark", "aria-hidden": "true" }), h("h1", { text: "VaultBox" })),
+          h("div", { class: "brand" }, h("span", { class: "brand-mark", "aria-hidden": "true" }), h("h1", { text: "Atomic Carton" })),
           children
         )
       )
@@ -293,7 +293,7 @@
       );
     }
     appEl.replaceChildren(
-      h("main", { class: "page" }, h("div", { class: "brand" }, h("span", { class: "brand-mark", "aria-hidden": "true" }), h("h1", { text: "VaultBox" })), expiryNote(info), crumbs(info), h("section", { class: "panel" }, body), insecureNote())
+      h("main", { class: "page" }, h("div", { class: "brand" }, h("span", { class: "brand-mark", "aria-hidden": "true" }), h("h1", { text: "Atomic Carton" })), expiryNote(info), crumbs(info), h("section", { class: "panel" }, body), insecureNote())
     );
   }
 
@@ -320,7 +320,7 @@
     var card = h(
       "main",
       { class: "card" },
-      h("div", { class: "brand" }, h("span", { class: "brand-mark", "aria-hidden": "true" }), h("h1", { text: "VaultBox" })),
+      h("div", { class: "brand" }, h("span", { class: "brand-mark", "aria-hidden": "true" }), h("h1", { text: "Atomic Carton" })),
       h("p", { class: "lede", text: "Send files to the phone's owner. You won't see what else is in the folder." }),
       limit || left ? h("p", { class: "lede", text: [limit, left].filter(Boolean).join(" ") }) : null,
       expiryNote(info),

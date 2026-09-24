@@ -40,23 +40,23 @@ class _WebDavGuide extends StatelessWidget {
         "Add a new storage or network location and choose WebDAV.",
         "Host: $host   Port: $port   Path: /dav",
         secure ? "Turn on HTTPS / SSL, and accept the certificate when asked." : "Leave HTTPS / SSL off (this address is plain HTTP).",
-        "Sign in with a VaultBox account's username and password.",
+        "Sign in with a Atomic Carton account's username and password.",
       ]),
       _Step("Mac (Finder)", <String>[
         "Go ▸ Connect to Server (⌘K).",
         "Enter $address and press Connect.",
-        "Sign in with a VaultBox account; accept the certificate if it warns you.",
+        "Sign in with a Atomic Carton account; accept the certificate if it warns you.",
       ]),
       _Step("Windows", <String>[
         "Use an app that lets you accept the certificate: WinSCP, Cyberduck or RaiDrive all support WebDAV.",
         "Choose WebDAV (HTTPS), host $host, port $port, path /dav.",
         "Windows' own “Map network drive” refuses certificates it doesn't already trust, so it won't connect to "
-            "VaultBox's self-made certificate.",
+            "Atomic Carton's self-made certificate.",
       ]),
       _Step("Linux", <String>[
         "GNOME Files: Other Locations ▸ enter davs://$host:$port/dav",
         "KDE Dolphin: enter webdavs://$host:$port/dav",
-        "Sign in with a VaultBox account; accept the certificate.",
+        "Sign in with a Atomic Carton account; accept the certificate.",
       ]),
     ];
   }

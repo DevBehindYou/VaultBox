@@ -50,7 +50,7 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
           title: "Checks",
           status: DiagnosticStatus.problem,
           detail: "The checks couldn't be run.",
-          hint: "Close and reopen VaultBox, then try again.",
+          hint: "Close and reopen Atomic Carton, then try again.",
         ),
       ];
     }

@@ -202,7 +202,10 @@ void main() {
     await tester.tap(find.text("New folder"));
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.byType(TextField), "Photos");
+    await tester.enterText(
+      find.descendant(of: find.byType(AlertDialog), matching: find.byType(TextField)),
+      "Photos",
+    );
     await tester.tap(find.text("Create"));
     await tester.pumpAndSettle();
 

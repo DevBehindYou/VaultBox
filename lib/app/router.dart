@@ -2,17 +2,20 @@ import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:go_router/go_router.dart";
 
+import "../core/design/aurora_components.dart";
 import "../core/design/aurora_context.dart";
 import "../core/design/aurora_spacing.dart";
 import "../core/design/aurora_typography.dart";
 import "../core/design/aurora_widgets.dart";
 import "../core/state/resource.dart";
+import "../core/utils/byte_format.dart";
 import "../domain/entities/account.dart";
 import "../domain/entities/storage_root.dart";
 import "../features/activity/presentation/activity_screen.dart";
 import "../features/files/presentation/files_screen.dart";
 import "../features/files/viewmodel/files_view_model.dart";
 import "../features/home/presentation/home_screen.dart";
+import "../platform/adapters/volume_stats_source.dart";
 import "../features/onboarding/presentation/admin_setup_screen.dart";
 import "../features/onboarding/presentation/onboarding_ready_screen.dart";
 import "../features/onboarding/presentation/onboarding_storage_screen.dart";
@@ -177,6 +180,8 @@ class _FilesEntryPointState extends State<_FilesEntryPoint> {
   @override
   Widget build(BuildContext context) {
     final Resource<List<StorageRoot>> roots = context.watch<StorageRootsCubit>().state;
+    final Map<String, VolumeStats> stats =
+        context.watch<RootStatsCubit>().state.value ?? const <String, VolumeStats>{};
 
     return roots.when(
       loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
@@ -206,32 +211,139 @@ class _FilesEntryPointState extends State<_FilesEntryPoint> {
           children: <Widget>[
             SafeArea(
               bottom: false,
-              child: SizedBox(
-                height: 56,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AuroraSpacing.marginCompact,
-                    vertical: AuroraSpacing.sm,
-                  ),
-                  itemCount: list.length,
-                  separatorBuilder: (BuildContext context, int index) =>
-                      const SizedBox(width: AuroraSpacing.sm),
-                  itemBuilder: (BuildContext context, int index) {
-                    final StorageRoot candidate = list[index];
-                    return ChoiceChip(
-                      label: Text(candidate.displayName),
-                      selected: candidate.id == root.id,
-                      onSelected: (_) => setState(() => _selectedId = candidate.id),
-                    );
-                  },
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AuroraSpacing.marginCompact,
+                  AuroraSpacing.sm,
+                  AuroraSpacing.marginCompact,
+                  0,
+                ),
+                child: Row(
+                  children: <Widget>[
+                    Text("Volumes & Mounts", style: AuroraTypography.headlineSm),
+                    const Spacer(),
+                    Text(
+                      "${list.length} MOUNTED",
+                      style: AuroraTypography.labelMonoMd.copyWith(color: context.inkTertiary),
+                    ),
+                  ],
                 ),
               ),
             ),
+            const SizedBox(height: AuroraSpacing.sm),
+            SizedBox(
+              height: 152,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: AuroraSpacing.marginCompact),
+                itemCount: list.length,
+                separatorBuilder: (BuildContext context, int index) =>
+                    const SizedBox(width: AuroraSpacing.sm),
+                itemBuilder: (BuildContext context, int index) {
+                  final StorageRoot candidate = list[index];
+                  return _VolumeCard(
+                    root: candidate,
+                    stats: stats[candidate.id],
+                    selected: candidate.id == root.id,
+                    onTap: () => setState(() => _selectedId = candidate.id),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: AuroraSpacing.sm),
             Expanded(child: files),
           ],
         );
       },
+    );
+  }
+}
+
+/// One card in the Files tab's volume row: kind, name, and a used/free meter
+/// when the native side has reported [stats] (see `RootStatsCubit`).
+class _VolumeCard extends StatelessWidget {
+  const _VolumeCard({
+    required this.root,
+    required this.stats,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final StorageRoot root;
+  final VolumeStats? stats;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final VolumeStats? measured = stats;
+    final int? used = measured == null ? null : measured.totalBytes - measured.freeBytes;
+
+    return SizedBox(
+      width: 176,
+      child: AuroraCard(
+        onTap: onTap,
+        borderColor: selected ? context.scheme.primary : null,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: AuroraColors.auroraLavender.withValues(alpha: 0.14),
+                    borderRadius: AuroraRadii.standardAll,
+                  ),
+                  child: Icon(
+                    root.isRemovable ? Icons.sd_card_outlined : Icons.smartphone_outlined,
+                    size: 18,
+                    color: AuroraColors.auroraLavender,
+                  ),
+                ),
+                const Spacer(),
+                if (root.isDefault)
+                  const AuroraStatusChip(label: "Default", status: AuroraStatus.idle)
+                else if (!root.isAvailable)
+                  const AuroraStatusChip(label: "Offline", status: AuroraStatus.warning),
+              ],
+            ),
+            const SizedBox(height: AuroraSpacing.sm),
+            Text(
+              root.displayName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AuroraTypography.bodyLg.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              !root.isAvailable
+                  ? "Not reachable"
+                  : measured == null
+                  ? "Size unknown"
+                  : "${ByteFormat.format(used!)} / ${ByteFormat.format(measured.totalBytes)}",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AuroraTypography.labelMonoMd.copyWith(color: context.inkSecondary),
+            ),
+            const Spacer(),
+            if (measured != null && root.isAvailable)
+              AuroraStorageMeter(
+                format: ByteFormat.format,
+                showLegend: false,
+                segments: <MeterSegment>[
+                  MeterSegment(label: "Used", bytes: used!, color: AuroraColors.auroraLavender),
+                  MeterSegment(
+                    label: "Free",
+                    bytes: measured.freeBytes,
+                    color: context.statusSuccessBorder,
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

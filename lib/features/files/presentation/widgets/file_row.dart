@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../../../core/design/aurora_colors.dart";
+import "../../../../core/design/aurora_context.dart";
 import "../../../../core/design/aurora_spacing.dart";
 import "../../../../core/design/aurora_typography.dart";
 import "../../../../core/utils/byte_format.dart";
@@ -22,15 +23,23 @@ class FileRow extends StatelessWidget {
     required this.onTap,
     super.key,
     this.onLongPress,
+    this.onMenu,
     this.selected = false,
     this.selectionMode = false,
   });
 
-  static const double rowHeight = 68;
+  /// Card height + the margin around it — kept as one constant so the list
+  /// above can still use `itemExtent` (see files_screen.dart's `_buildList`).
+  static const double rowHeight = 76;
 
   final StorageEntry entry;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
+
+  /// The row's "⋮" button, when not in selection mode. Null hides it (used
+  /// by callers — like the destination picker — that don't offer per-row
+  /// actions).
+  final VoidCallback? onMenu;
   final bool selected;
   final bool selectionMode;
 
@@ -44,57 +53,73 @@ class FileRow extends StatelessWidget {
     final Color selectionAccent =
         isDark ? AuroraColorsDark.selectionBlue : AuroraColors.selectionBlue;
 
-    return SizedBox(
-      height: rowHeight,
-      child: Material(
-        color: selected ? selectionFill : Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          onLongPress: onLongPress,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AuroraSpacing.md,
-              vertical: AuroraSpacing.sm,
-            ),
-            child: Row(
-              children: <Widget>[
-                if (selectionMode)
-                  Padding(
-                    padding: const EdgeInsets.only(right: AuroraSpacing.sm),
-                    child: Icon(
-                      selected ? Icons.check_circle : Icons.circle_outlined,
-                      size: 22,
-                      color: selected ? selectionAccent : subtle,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AuroraSpacing.marginCompact,
+        0,
+        AuroraSpacing.marginCompact,
+        AuroraSpacing.sm,
+      ),
+      child: SizedBox(
+        height: rowHeight - AuroraSpacing.sm,
+        child: Material(
+          color: selected ? selectionFill : context.cardColor,
+          borderRadius: AuroraRadii.mdAll,
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            onLongPress: onLongPress,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AuroraSpacing.md,
+                vertical: AuroraSpacing.sm,
+              ),
+              child: Row(
+                children: <Widget>[
+                  if (selectionMode)
+                    Padding(
+                      padding: const EdgeInsets.only(right: AuroraSpacing.sm),
+                      child: Icon(
+                        selected ? Icons.check_circle : Icons.circle_outlined,
+                        size: 22,
+                        color: selected ? selectionAccent : subtle,
+                      ),
+                    ),
+                  _EntryGlyph(entry: entry),
+                  const SizedBox(width: AuroraSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          entry.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AuroraTypography.bodyLg.copyWith(
+                            fontWeight: entry.isDirectory ? FontWeight.w600 : FontWeight.w400,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _subtitle(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AuroraTypography.bodySm.copyWith(color: subtle),
+                        ),
+                      ],
                     ),
                   ),
-                _EntryGlyph(entry: entry),
-                const SizedBox(width: AuroraSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        entry.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AuroraTypography.bodyLg.copyWith(
-                          fontWeight: entry.isDirectory ? FontWeight.w600 : FontWeight.w400,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        _subtitle(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AuroraTypography.bodySm.copyWith(color: subtle),
-                      ),
-                    ],
-                  ),
-                ),
-                if (entry.isDirectory && !selectionMode)
-                  Icon(Icons.chevron_right, size: 20, color: subtle),
-              ],
+                  if (!selectionMode && onMenu != null)
+                    IconButton(
+                      icon: Icon(Icons.more_vert, color: subtle),
+                      tooltip: "More",
+                      onPressed: onMenu,
+                    )
+                  else if (entry.isDirectory && !selectionMode)
+                    Icon(Icons.chevron_right, size: 20, color: subtle),
+                ],
+              ),
             ),
           ),
         ),

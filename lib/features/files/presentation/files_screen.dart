@@ -64,6 +64,8 @@ class _FilesScreenBody extends StatefulWidget {
 
 class _FilesScreenBodyState extends State<_FilesScreenBody> {
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
+  String _query = "";
 
   @override
   void initState() {
@@ -78,6 +80,7 @@ class _FilesScreenBodyState extends State<_FilesScreenBody> {
     _scrollController
       ..removeListener(_onScroll)
       ..dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -109,6 +112,16 @@ class _FilesScreenBodyState extends State<_FilesScreenBody> {
               onSortTap: () => _showSortSheet(context, viewModel, state),
               onOpenRecycleBin: () => _openRecycleBin(context, viewModel),
             ),
+            if (!state.isSelectionMode)
+              _FilesToolbar(
+                directory: widget.directory,
+                searchController: _searchController,
+                onQueryChanged: (String value) => setState(() => _query = value),
+                sortField: state.sortField,
+                sortAscending: state.sortAscending,
+                onSortTap: () => _showSortSheet(context, viewModel, state),
+                onBreadcrumbTap: (int depth) => _goToBreadcrumb(depth),
+              ),
             if (state.failure != null)
               Padding(
                 padding: const EdgeInsets.fromLTRB(
@@ -195,15 +208,27 @@ class _FilesScreenBodyState extends State<_FilesScreenBody> {
       return const _EmptyFolder();
     }
 
+    // Search only ever looks at pages already loaded (state.entries) — same
+    // "per-loaded-page" limitation sort already has (no index-backed search
+    // yet, PENDING_TASKS). Good enough for a folder a person can see through.
+    final String query = _query.trim().toLowerCase();
+    final List<StorageEntry> visible = query.isEmpty
+        ? state.entries
+        : state.entries.where((StorageEntry e) => e.name.toLowerCase().contains(query)).toList();
+
+    if (visible.isEmpty) {
+      return _NoSearchResults(query: _query);
+    }
+
     return ListView.builder(
       controller: _scrollController,
       // itemExtent lets the framework skip child measurement entirely —
       // required for large directories to scroll smoothly (see FileRow).
       itemExtent: FileRow.rowHeight,
       padding: const EdgeInsets.only(bottom: AuroraSpacing.dockScrollClearance),
-      itemCount: state.entries.length + (state.isLoadingMore ? 1 : 0),
+      itemCount: visible.length + (query.isEmpty && state.isLoadingMore ? 1 : 0),
       itemBuilder: (BuildContext context, int index) {
-        if (index >= state.entries.length) {
+        if (index >= visible.length) {
           return const Center(
             child: SizedBox(
               height: 20,
@@ -212,7 +237,7 @@ class _FilesScreenBodyState extends State<_FilesScreenBody> {
             ),
           );
         }
-        final StorageEntry entry = state.entries[index];
+        final StorageEntry entry = visible[index];
         return FileRow(
           entry: entry,
           selected: state.isSelected(entry),
@@ -225,9 +250,113 @@ class _FilesScreenBodyState extends State<_FilesScreenBody> {
               _openDirectory(entry);
             }
           },
+          onMenu: () => _showEntryMenu(context, viewModel, entry),
         );
       },
     );
+  }
+
+  /// Pops back to the directory [depth] levels deep (0 = the root) — every
+  /// subfolder is its own pushed [FilesScreen], so this is just popping the
+  /// difference, not a new navigation mechanism.
+  void _goToBreadcrumb(int depth) {
+    final int pops = widget.directory.path.segments.length - depth;
+    for (int i = 0; i < pops; i++) {
+      Navigator.of(context).pop();
+    }
+  }
+
+  /// Per-row "⋮" menu: the same actions the selection bar offers, applied to
+  /// just this one entry (selecting it first reuses that existing logic
+  /// rather than duplicating the transfer/delete/share flows).
+  Future<void> _showEntryMenu(
+    BuildContext context,
+    FilesCubit viewModel,
+    StorageEntry entry,
+  ) async {
+    final String? action = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (BuildContext sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.drive_file_rename_outline),
+                title: const Text("Rename"),
+                onTap: () => Navigator.of(sheetContext).pop("rename"),
+              ),
+              ListTile(
+                leading: const Icon(Icons.copy_outlined),
+                title: const Text("Copy"),
+                onTap: () => Navigator.of(sheetContext).pop("copy"),
+              ),
+              ListTile(
+                leading: const Icon(Icons.drive_file_move_outlined),
+                title: const Text("Move"),
+                onTap: () => Navigator.of(sheetContext).pop("move"),
+              ),
+              if (!entry.isDirectory)
+                ListTile(
+                  leading: const Icon(Icons.share_outlined),
+                  title: const Text("Share"),
+                  onTap: () => Navigator.of(sheetContext).pop("share"),
+                ),
+              if (entry.isDirectory)
+                ListTile(
+                  leading: const Icon(Icons.move_to_inbox_outlined),
+                  title: const Text("Ask for files"),
+                  onTap: () => Navigator.of(sheetContext).pop("ask"),
+                ),
+              ListTile(
+                leading: const Icon(Icons.delete_outline),
+                title: const Text("Delete"),
+                onTap: () => Navigator.of(sheetContext).pop("delete"),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    if (action == null || !context.mounted) return;
+
+    if (action == "rename") {
+      await _renameEntry(context, viewModel, entry);
+      return;
+    }
+
+    // Every other action reuses the selection-based flow: select just this
+    // entry (the menu only shows outside selection mode, so this starts from
+    // no selection), run the existing handler, then clear the selection.
+    viewModel.toggleSelection(entry);
+    switch (action) {
+      case "copy":
+        await _copySelected(context, viewModel);
+      case "move":
+        await _moveSelected(context, viewModel);
+      case "share":
+        await _shareSelected(context, entry, ShareKind.download);
+      case "ask":
+        await _shareSelected(context, entry, ShareKind.upload);
+      case "delete":
+        await _confirmDelete(context, viewModel);
+    }
+    if (viewModel.state.isSelected(entry)) viewModel.toggleSelection(entry);
+  }
+
+  Future<void> _renameEntry(
+    BuildContext context,
+    FilesCubit viewModel,
+    StorageEntry entry,
+  ) async {
+    final String? newName = await showDialog<String>(
+      context: context,
+      builder: (BuildContext dialogContext) => _RenameDialog(initialName: entry.name),
+    );
+    final String trimmed = (newName ?? "").trim();
+    if (trimmed.isEmpty || trimmed == entry.name) return;
+    await viewModel.rename(entry, trimmed);
   }
 
   void _openDirectory(StorageEntry entry) {
@@ -453,6 +582,204 @@ class _CreateFolderDialogState extends State<_CreateFolderDialog> {
   }
 }
 
+/// Search box + breadcrumb + current sort, above the file list. Hidden during
+/// selection mode (see the caller) — none of it is useful mid-bulk-action.
+class _FilesToolbar extends StatelessWidget {
+  const _FilesToolbar({
+    required this.directory,
+    required this.searchController,
+    required this.onQueryChanged,
+    required this.sortField,
+    required this.sortAscending,
+    required this.onSortTap,
+    required this.onBreadcrumbTap,
+  });
+
+  final FileRef directory;
+  final TextEditingController searchController;
+  final ValueChanged<String> onQueryChanged;
+  final FileSortField sortField;
+  final bool sortAscending;
+  final VoidCallback onSortTap;
+
+  /// Called with the tapped crumb's depth (0 = the root).
+  final ValueChanged<int> onBreadcrumbTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AuroraSpacing.marginCompact,
+        0,
+        AuroraSpacing.marginCompact,
+        AuroraSpacing.sm,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          TextField(
+            controller: searchController,
+            onChanged: onQueryChanged,
+            decoration: InputDecoration(
+              isDense: true,
+              hintText: "Search files in ${directory.root.displayName}…",
+              prefixIcon: const Icon(Icons.search, size: 20),
+              suffixIcon: searchController.text.isEmpty
+                  ? null
+                  : IconButton(
+                      icon: const Icon(Icons.close, size: 18),
+                      tooltip: "Clear search",
+                      onPressed: () {
+                        searchController.clear();
+                        onQueryChanged("");
+                      },
+                    ),
+              filled: true,
+              fillColor: context.cardColor,
+              border: OutlineInputBorder(
+                borderRadius: AuroraRadii.standardAll,
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+          const SizedBox(height: AuroraSpacing.sm),
+          Row(
+            children: <Widget>[
+              Expanded(child: _Breadcrumb(directory: directory, onTap: onBreadcrumbTap)),
+              const SizedBox(width: AuroraSpacing.sm),
+              InkWell(
+                onTap: onSortTap,
+                borderRadius: AuroraRadii.pillAll,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: context.cardColor,
+                    borderRadius: AuroraRadii.pillAll,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(
+                        sortAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                        size: 14,
+                        color: context.inkSecondary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(_sortLabel(sortField), style: AuroraTypography.labelMonoMd),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  static String _sortLabel(FileSortField field) => switch (field) {
+    FileSortField.name => "Name",
+    FileSortField.modified => "Date",
+    FileSortField.size => "Size",
+    FileSortField.type => "Type",
+  };
+}
+
+class _Breadcrumb extends StatelessWidget {
+  const _Breadcrumb({required this.directory, required this.onTap});
+
+  final FileRef directory;
+  final ValueChanged<int> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final List<String> segments = directory.path.segments;
+    final List<Widget> crumbs = <Widget>[
+      _Crumb(label: directory.root.displayName, current: segments.isEmpty, onTap: () => onTap(0)),
+    ];
+    for (int i = 0; i < segments.length; i++) {
+      crumbs.add(Icon(Icons.chevron_right, size: 16, color: context.inkTertiary));
+      crumbs.add(
+        _Crumb(label: segments[i], current: i == segments.length - 1, onTap: () => onTap(i + 1)),
+      );
+    }
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(children: crumbs),
+    );
+  }
+}
+
+class _Crumb extends StatelessWidget {
+  const _Crumb({required this.label, required this.current, required this.onTap});
+
+  final String label;
+  final bool current;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: current ? null : onTap,
+      borderRadius: AuroraRadii.standardAll,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: current
+              ? AuroraTypography.bodySm.copyWith(fontWeight: FontWeight.w700)
+              : AuroraTypography.bodySm.copyWith(color: context.inkSecondary),
+        ),
+      ),
+    );
+  }
+}
+
+/// Same controller-ownership shape as [_CreateFolderDialog] — see its doc
+/// comment for why the controller must be owned here, not by the caller.
+class _RenameDialog extends StatefulWidget {
+  const _RenameDialog({required this.initialName});
+
+  final String initialName;
+
+  @override
+  State<_RenameDialog> createState() => _RenameDialogState();
+}
+
+class _RenameDialogState extends State<_RenameDialog> {
+  late final TextEditingController _controller = TextEditingController(text: widget.initialName);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() => Navigator.of(context).pop(_controller.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text("Rename"),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: const InputDecoration(hintText: "New name"),
+        onSubmitted: (String value) => _submit(),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text("Cancel"),
+        ),
+        TextButton(onPressed: _submit, child: const Text("Rename")),
+      ],
+    );
+  }
+}
+
 class _FilesHeader extends StatelessWidget {
   const _FilesHeader({
     required this.directory,
@@ -623,6 +950,31 @@ class _SelectionAction extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _NoSearchResults extends StatelessWidget {
+  const _NoSearchResults({required this.query});
+
+  final String query;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(Icons.search_off, size: 40, color: context.inkTertiary),
+          const SizedBox(height: AuroraSpacing.md),
+          Text('No results for "$query"', style: AuroraTypography.bodyLg),
+          const SizedBox(height: AuroraSpacing.xs),
+          Text(
+            "Only files already loaded on this screen are searched.",
+            style: AuroraTypography.bodySm.copyWith(color: context.inkSecondary),
+          ),
+        ],
       ),
     );
   }

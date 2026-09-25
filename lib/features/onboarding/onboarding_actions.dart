@@ -9,6 +9,7 @@ import "../../data/services/direct_path_storage_backend.dart";
 import "../../data/services/saf_storage_backend.dart";
 import "../../domain/entities/storage_root.dart";
 import "../../domain/repositories/id_generator.dart";
+import "../../domain/repositories/storage_backend.dart";
 import "../../domain/repositories/storage_root_repository.dart";
 import "../../domain/value_objects/storage_capabilities.dart";
 import "../../domain/value_objects/storage_path.dart";
@@ -70,6 +71,7 @@ Future<String> addAppStorageRoot(BuildContext context) async {
   } on PathConflictFailure {
     // Already set up from a previous run — fine.
   }
+  await _createNoMedia(backend, rootId);
 
   context.read<BackendRegistry>().register(backend);
   await context.read<StorageRootRepository>().addRoot(
@@ -139,6 +141,7 @@ Future<String?> registerSafRoot({
     await host.releasePersistedUri(tree.treeUri);
     rethrow;
   }
+  await _createNoMedia(backend, rootId);
 
   registry.register(backend);
   await roots.addRoot(
@@ -155,4 +158,30 @@ Future<String?> registerSafRoot({
     ),
   );
   return rootId;
+}
+
+/// Drops an empty `.nomedia` marker at the root so Android's media scanner
+/// leaves this folder's photos/videos out of Gallery/Photos apps — files
+/// stay real, ordinary files (still visible to any file *manager*, still
+/// reachable through the app and the server); this only keeps them from
+/// cluttering someone else's media apps. Best-effort: a backend that can't
+/// write it (a read-only or momentarily unreachable root) shouldn't block
+/// setting up the root over a cosmetic nicety.
+Future<void> _createNoMedia(StorageBackend backend, String rootId) async {
+  StorageWriteHandle? handle;
+  try {
+    handle = await backend.openWrite(StoragePath.parse(rootId, ".nomedia"));
+    await handle.commit();
+  } on PathConflictFailure {
+    // Already there from a previous run — fine.
+  } on Object {
+    // Cosmetic; don't fail root setup over a backend that can't manage this
+    // (a read-only root, a momentarily unreachable one, or — in tests —
+    // FakeAndroidStorageHost, which can't fabricate a real file descriptor).
+    try {
+      await handle?.abort();
+    } on Object {
+      // Already in a best-effort path; nothing more to do.
+    }
+  }
 }

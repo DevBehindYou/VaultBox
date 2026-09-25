@@ -124,6 +124,11 @@ final class FilesCubit extends Cubit<FilesState> {
   static const int _pageSize = 100;
   static const String _reservedDirName = ".vaultbox";
 
+  /// Marker file that keeps this root's media out of Gallery/Photos apps
+  /// (see `onboarding_actions.dart`'s `_createNoMedia`) — bookkeeping, not
+  /// user content, same reasoning as [_reservedDirName].
+  static const String _noMediaFileName = ".nomedia";
+
   String? _cursor;
 
   /// Bumped by every [loadFirstPage] (and on close). A load only applies its
@@ -245,7 +250,10 @@ final class FilesCubit extends Cubit<FilesState> {
       ...state.entries,
       // `.vaultbox` is VaultBox's own bookkeeping (Recycle Bin lives in it).
       // Showing it lets a user delete or rename it and silently break restore.
-      ...page.where((StorageEntry e) => !(atRoot && e.name == _reservedDirName)),
+      // `.nomedia` is the same idea: bookkeeping, not something to browse.
+      ...page.where(
+        (StorageEntry e) => !(atRoot && (e.name == _reservedDirName || e.name == _noMediaFileName)),
+      ),
     ];
     _sortInPlace(combined);
 

@@ -17,7 +17,6 @@ import "package:vaultbox/domain/entities/activity.dart";
 import "package:vaultbox/domain/entities/ftp_settings.dart";
 import "package:vaultbox/domain/entities/server_config.dart";
 import "package:vaultbox/domain/entities/server_state.dart";
-import "package:vaultbox/domain/entities/share.dart";
 import "package:vaultbox/domain/entities/storage_root.dart";
 import "package:vaultbox/domain/repositories/account_repository.dart";
 import "package:vaultbox/domain/repositories/activity_repository.dart";
@@ -412,12 +411,10 @@ void main() {
 
       expect(find.text("None online"), findsOneWidget);
       expect(find.text("Idle"), findsOneWidget);
-      expect(find.text("0 active"), findsOneWidget);
-      expect(find.text("1 account"), findsOneWidget);
       expect(find.textContaining("Nothing has happened yet"), findsOneWidget);
     });
 
-    testWidgets("who is here, what is moving, and how many links are live", (WidgetTester tester) async {
+    testWidgets("who is here and what is moving", (WidgetTester tester) async {
       await activity.touchClient(
         ClientRecord(
           actor: "bob",
@@ -440,24 +437,11 @@ void main() {
           totalBytes: 1024,
         ),
       );
-      await shares.add(
-        Share(
-          id: "s1",
-          kind: ShareKind.download,
-          rootId: "mem",
-          path: "/x",
-          isDirectory: false,
-          createdBy: "1",
-          createdAt: clock.now(),
-          tokenHash: "h",
-        ),
-      );
       await show(tester, FakeServerHost(lan));
 
       expect(find.text("1 Online"), findsOneWidget);
       expect(find.text("bob"), findsOneWidget);
       expect(find.text("1 moving"), findsOneWidget);
-      expect(find.text("1 active"), findsOneWidget);
       expect(find.text("holiday.mp4"), findsOneWidget);
       expect(find.text("50%"), findsOneWidget);
       expect(find.text("To bob"), findsOneWidget);

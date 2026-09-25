@@ -15,11 +15,9 @@ import "../../../core/design/aurora_widgets.dart";
 import "../../../core/errors/app_failure.dart";
 import "../../../core/state/resource.dart";
 import "../../../core/utils/byte_format.dart";
-import "../../../domain/entities/account.dart";
 import "../../../domain/entities/activity.dart";
 import "../../../domain/entities/server_config.dart";
 import "../../../domain/entities/server_state.dart";
-import "../../../domain/entities/share.dart";
 import "../../../domain/entities/storage_root.dart";
 import "../../../domain/repositories/clock.dart";
 import "../../../domain/repositories/server_host.dart";
@@ -606,6 +604,13 @@ class _RootLine extends StatelessWidget {
 
 // ------------------------------------------------------------------ metrics
 
+// Clients and Transfers are readings this screen's own scope already covers
+// (see the file doc comment: "who is here and what is moving"). Links and
+// People used to sit here too, as two more tiles both pointing at /share —
+// but that's sharing *management*, not a server-status reading, and Settings
+// > People & links is already the one place to reach it. A dashboard duplicating
+// a settings entry point just to save a tap adds a second, easy-to-forget path
+// to the same screen instead of one clear one.
 class _MetricGrid extends StatelessWidget {
   const _MetricGrid();
 
@@ -614,72 +619,37 @@ class _MetricGrid extends StatelessWidget {
     final DateTime now = context.read<Clock>().now();
     final List<ClientRecord> clients = context.watch<ActivityClientsCubit>().state.value ?? const <ClientRecord>[];
     final List<TransferRecord> transfers = context.watch<ActivityTransfersCubit>().state.value ?? const <TransferRecord>[];
-    final List<Share> shares = context.watch<SharesCubit>().state.value ?? const <Share>[];
-    final List<Account> accounts = context.watch<AccountsCubit>().state.value ?? const <Account>[];
 
     final List<ClientRecord> online = clients
         .where((ClientRecord c) => now.difference(c.lastSeenAt) < clientActiveWithin)
         .toList();
     final int moving = transfers.where((TransferRecord t) => t.isRunning && !isStalled(t, now)).length;
-    final int activeLinks = shares.where((Share s) => s.isActive(now)).length;
-    final int admins = accounts.where((Account a) => a.isAdmin).length;
 
-    return Column(
-      children: <Widget>[
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Expanded(
-                child: AuroraMetricCard(
-                  title: "Clients",
-                  icon: Icons.devices_outlined,
-                  value: online.isEmpty ? "None online" : "${online.length} Online",
-                  caption: online.isEmpty ? "Nobody connected" : online.map((ClientRecord c) => c.actor).toSet().take(3).join(", "),
-                  onTap: () => context.go("/activity"),
-                ),
-              ),
-              const SizedBox(width: AuroraSpacing.sm),
-              Expanded(
-                child: AuroraMetricCard(
-                  title: "Transfers",
-                  icon: Icons.swap_vert,
-                  value: moving == 0 ? "Idle" : "$moving moving",
-                  caption: moving == 0 ? "Nothing in progress" : "Files in or out now",
-                  onTap: () => context.go("/activity"),
-                ),
-              ),
-            ],
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Expanded(
+            child: AuroraMetricCard(
+              title: "Clients",
+              icon: Icons.devices_outlined,
+              value: online.isEmpty ? "None online" : "${online.length} Online",
+              caption: online.isEmpty ? "Nobody connected" : online.map((ClientRecord c) => c.actor).toSet().take(3).join(", "),
+              onTap: () => context.go("/activity"),
+            ),
           ),
-        ),
-        const SizedBox(height: AuroraSpacing.sm),
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Expanded(
-                child: AuroraMetricCard(
-                  title: "Links",
-                  icon: Icons.link,
-                  value: "$activeLinks active",
-                  caption: shares.length == activeLinks ? "Shared with people" : "${shares.length - activeLinks} finished",
-                  onTap: () => unawaited(context.push("/share")),
-                ),
-              ),
-              const SizedBox(width: AuroraSpacing.sm),
-              Expanded(
-                child: AuroraMetricCard(
-                  title: "People",
-                  icon: Icons.group_outlined,
-                  value: "${accounts.length} ${accounts.length == 1 ? "account" : "accounts"}",
-                  caption: accounts.isEmpty ? "No one can sign in" : "$admins admin, ${accounts.length - admins} member",
-                  onTap: () => unawaited(context.push("/share")),
-                ),
-              ),
-            ],
+          const SizedBox(width: AuroraSpacing.sm),
+          Expanded(
+            child: AuroraMetricCard(
+              title: "Transfers",
+              icon: Icons.swap_vert,
+              value: moving == 0 ? "Idle" : "$moving moving",
+              caption: moving == 0 ? "Nothing in progress" : "Files in or out now",
+              onTap: () => context.go("/activity"),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

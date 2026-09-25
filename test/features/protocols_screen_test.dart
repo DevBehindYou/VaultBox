@@ -568,11 +568,27 @@ void main() {
       capabilities: StorageCapabilities.fullLocal(),
     );
 
-    /// The checkbox for [rootName] inside the card that holds [cardTitle].
-    Finder checkboxFor(String cardTitle, String rootName) => find.descendant(
-      of: find.ancestor(of: find.text(cardTitle), matching: find.byType(AuroraCard)),
-      matching: find.widgetWithText(CheckboxListTile, rootName),
-    );
+    /// The row for [rootName] inside the card that holds [cardTitle] — an
+    /// `InkWell` (protocols_screen.dart's `_StorageAccessRow`, a private
+    /// class this test file can't name directly), found by walking up from
+    /// its own root-name text, scoped to the right card by walking up from
+    /// the card's own title first.
+    Finder rowFor(String cardTitle, String rootName) => find
+        .ancestor(
+          of: find.descendant(
+            of: find.ancestor(of: find.text(cardTitle), matching: find.byType(AuroraCard)),
+            matching: find.text(rootName),
+          ),
+          matching: find.byType(InkWell),
+        )
+        .first;
+
+    bool isChecked(WidgetTester tester, String cardTitle, String rootName) {
+      final Icon icon = tester.widget<Icon>(
+        find.descendant(of: rowFor(cardTitle, rootName), matching: find.byType(Icon)),
+      );
+      return icon.icon == Icons.check_box;
+    }
 
     testWidgets("with no storage yet, no protocol card shows a storage-access section", (WidgetTester tester) async {
       await show(tester, FakeServerHost());
@@ -585,21 +601,21 @@ void main() {
 
       expect(find.text("STORAGE ACCESS"), findsNWidgets(4), reason: "Web Portal, Plain HTTP, WebDAV, FTP");
       for (final String card in <String>["Web Portal", "Plain HTTP", "WebDAV storage", "FTP / FTPS"]) {
-        expect(tester.widget<CheckboxListTile>(checkboxFor(card, "Internal")).value, isTrue);
-        expect(tester.widget<CheckboxListTile>(checkboxFor(card, "SD card")).value, isTrue);
+        expect(isChecked(tester, card, "Internal"), isTrue, reason: card);
+        expect(isChecked(tester, card, "SD card"), isTrue, reason: card);
       }
     });
 
     testWidgets("unchecking one root for one protocol persists an explicit set, others stay unrestricted", (WidgetTester tester) async {
       await show(tester, FakeServerHost(), roots: <StorageRoot>[internal, external]);
 
-      await tester.tap(checkboxFor("FTP / FTPS", "SD card"));
+      await tester.tap(rowFor("FTP / FTPS", "SD card"));
       await tester.pumpAndSettle();
 
-      expect(tester.widget<CheckboxListTile>(checkboxFor("FTP / FTPS", "SD card")).value, isFalse);
-      expect(tester.widget<CheckboxListTile>(checkboxFor("FTP / FTPS", "Internal")).value, isTrue);
+      expect(isChecked(tester, "FTP / FTPS", "SD card"), isFalse);
+      expect(isChecked(tester, "FTP / FTPS", "Internal"), isTrue);
       // A protocol nobody has restricted yet still shows both as reachable.
-      expect(tester.widget<CheckboxListTile>(checkboxFor("Web Portal", "SD card")).value, isTrue);
+      expect(isChecked(tester, "Web Portal", "SD card"), isTrue);
 
       final Map<String, String> saved = await store.readAll();
       expect(saved["protocol_access_ftp"], "internal");
@@ -612,14 +628,14 @@ void main() {
       expect(saved["protocol_access_webdav"], "*");
     });
 
-    testWidgets("while the server runs, storage-access checkboxes are locked too", (WidgetTester tester) async {
+    testWidgets("while the server runs, storage-access rows are locked too", (WidgetTester tester) async {
       await show(
         tester,
         FakeServerHost(const ServerState(run: ServerRunState.running, endpoint: "https://127.0.0.1:8443/")),
         roots: <StorageRoot>[internal],
       );
 
-      expect(tester.widget<CheckboxListTile>(checkboxFor("Web Portal", "Internal")).onChanged, isNull);
+      expect(tester.widget<InkWell>(rowFor("Web Portal", "Internal")).onTap, isNull);
     });
   });
 }

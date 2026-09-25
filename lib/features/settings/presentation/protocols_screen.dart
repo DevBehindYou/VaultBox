@@ -143,25 +143,70 @@ class _StorageAccessSection extends StatelessWidget {
           style: context.mono(size: 10, color: context.inkTertiary).copyWith(letterSpacing: 0.6),
         ),
         for (final StorageRoot root in roots)
-          CheckboxListTile(
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-            controlAffinity: ListTileControlAffinity.leading,
-            title: Text(root.displayName, style: context.body),
-            value: effective.contains(root.id),
-            onChanged: !canChange
+          _StorageAccessRow(
+            root: root,
+            checked: effective.contains(root.id),
+            onTap: !canChange
                 ? null
-                : (bool? checked) {
+                : () {
                     final Set<String> next = Set<String>.of(effective);
-                    if (checked ?? false) {
-                      next.add(root.id);
-                    } else {
+                    if (effective.contains(root.id)) {
                       next.remove(root.id);
+                    } else {
+                      next.add(root.id);
                     }
                     onChanged(next);
                   },
           ),
       ],
+    );
+  }
+}
+
+/// One root's checkbox row — plain `InkWell` + icon, not `CheckboxListTile`:
+/// `AuroraCard` paints its background via `DecoratedBox`, not `Material`, and
+/// `ListTile`-family widgets assert loudly ("background color or ink splashes
+/// may be invisible") when their nearest `Material` ancestor is further away
+/// than that. Same shape as [_ModeOption] just above, which already sidesteps
+/// this the same way inside the very same cards.
+class _StorageAccessRow extends StatelessWidget {
+  const _StorageAccessRow({required this.root, required this.checked, required this.onTap});
+
+  final StorageRoot root;
+  final bool checked;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      checked: checked,
+      button: true,
+      label: root.displayName,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: AuroraRadii.mdAll,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+          child: Row(
+            children: <Widget>[
+              Icon(
+                checked ? Icons.check_box : Icons.check_box_outline_blank,
+                size: 20,
+                color: checked ? context.scheme.primary : context.inkTertiary,
+              ),
+              const SizedBox(width: AuroraSpacing.sm),
+              Expanded(
+                child: ExcludeSemantics(
+                  child: Text(
+                    root.displayName,
+                    style: context.body.copyWith(color: onTap == null ? context.inkSecondary : context.inkPrimary),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

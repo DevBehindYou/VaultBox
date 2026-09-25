@@ -8,6 +8,7 @@ import "../../core/errors/app_failure.dart";
 import "../../domain/entities/account.dart";
 import "../../domain/entities/activity.dart";
 import "../../domain/entities/ftp_settings.dart";
+import "../../domain/entities/protocol_storage_access.dart";
 import "../../domain/entities/storage_root.dart";
 import "../../domain/models/file_ref.dart";
 import "../../domain/models/operation_batch.dart";
@@ -580,10 +581,10 @@ final class FtpSession {
     final List<String> segments = resolveFtpPath(_cwd, argument ?? "");
     if (segments.isEmpty) return const _Target.top(<String>[]);
 
-    final RootNames names = RootNames.of(await _deps.gate.visibleRoots());
+    final RootNames names = RootNames.of(await _deps.gate.visibleRoots(protocol: ProtocolKind.ftp));
     final StorageRoot? known = names.byName(segments.first);
     if (known == null) throw const StorageFault(FaultKind.rootNotFound);
-    final StorageRoot root = await _deps.gate.root(known.id, forWrite: forWrite);
+    final StorageRoot root = await _deps.gate.root(known.id, forWrite: forWrite, protocol: ProtocolKind.ftp);
 
     StoragePath path = StoragePath.root(root.id);
     for (final String segment in segments.skip(1)) {
@@ -754,7 +755,7 @@ final class FtpSession {
 
   Future<List<FtpEntry>> _entriesOf(_Target target) async {
     if (target.isTop) {
-      final List<StorageRoot> roots = await _deps.gate.visibleRoots();
+      final List<StorageRoot> roots = await _deps.gate.visibleRoots(protocol: ProtocolKind.ftp);
       final RootNames names = RootNames.of(roots);
       return <FtpEntry>[
         for (final StorageRoot root in roots)

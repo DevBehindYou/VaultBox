@@ -9,6 +9,7 @@ import "../domain/entities/account.dart";
 import "../domain/entities/activity.dart";
 import "../domain/entities/app_preferences.dart";
 import "../domain/entities/ftp_settings.dart";
+import "../domain/entities/protocol_storage_access.dart";
 import "../domain/entities/server_config.dart";
 import "../domain/entities/server_state.dart";
 import "../domain/entities/share.dart";
@@ -233,6 +234,13 @@ class FtpSettingsCubit extends ResourceFutureCubit<FtpSettings> {
     : super(() async => FtpSettings.fromMap(await settings.readAll()));
 }
 
+/// Per-protocol storage-root visibility (the Server tab's "Storage access"
+/// sections) — same load-from-generic-settings shape as [FtpSettingsCubit].
+class ProtocolStorageAccessCubit extends ResourceFutureCubit<ProtocolStorageAccess> {
+  ProtocolStorageAccessCubit(SettingsRepository settings)
+    : super(() async => ProtocolStorageAccess.fromMap(await settings.readAll()));
+}
+
 /// The app-scoped Cubits above, wired in dependency order (`OwnerAccountCubit`
 /// must come after `AccountsCubit`, `RootStatsCubit` after `StorageRootsCubit`
 /// — see their own doc comments). Placed once at the app root, below the
@@ -282,6 +290,9 @@ List<BlocProvider<dynamic>> buildAppBlocProviders() {
     ),
     BlocProvider<FtpSettingsCubit>(
       create: (BuildContext context) => FtpSettingsCubit(context.read<SettingsRepository>()),
+    ),
+    BlocProvider<ProtocolStorageAccessCubit>(
+      create: (BuildContext context) => ProtocolStorageAccessCubit(context.read<SettingsRepository>()),
     ),
   ];
 }

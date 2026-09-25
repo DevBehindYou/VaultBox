@@ -5,6 +5,7 @@ import "../../core/errors/app_failure.dart";
 import "../../core/utils/mime_types.dart";
 import "../../domain/entities/account.dart";
 import "../../domain/entities/activity.dart";
+import "../../domain/entities/protocol_storage_access.dart";
 import "../../domain/entities/storage_root.dart";
 import "../../domain/models/file_ref.dart";
 import "../../domain/models/operation_batch.dart";
@@ -195,7 +196,7 @@ final class WebDavHandler {
   /// Roots by URL name. A root's URL name is its display name made URL-safe,
   /// with `-2`, `-3`… added when two roots would share one.
   Future<_Roots> _roots() async {
-    final RootNames names = RootNames.of(await _gate.visibleRoots());
+    final RootNames names = RootNames.of(await _gate.visibleRoots(protocol: ProtocolKind.webdav));
     return _Roots(names.bySlug, names.slugById);
   }
 
@@ -205,7 +206,7 @@ final class WebDavHandler {
     if (segments.isEmpty) return const _Resolved.top();
     final StorageRoot? known = roots.bySlug[segments.first.toLowerCase()];
     if (known == null) throw const StorageFault(FaultKind.rootNotFound);
-    final StorageRoot root = await _gate.root(known.id, forWrite: forWrite);
+    final StorageRoot root = await _gate.root(known.id, forWrite: forWrite, protocol: ProtocolKind.webdav);
     final StoragePath path = _gate.parse(root, "/${segments.skip(1).join("/")}");
     return _Resolved(root, path, roots.slugById[root.id]!);
   }

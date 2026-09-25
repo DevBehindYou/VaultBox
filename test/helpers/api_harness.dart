@@ -11,6 +11,7 @@ import "package:vaultbox/data/security/in_memory_session_store.dart";
 import "package:vaultbox/data/services/memory_storage_backend.dart";
 import "package:vaultbox/data/services/system_clock.dart";
 import "package:vaultbox/domain/entities/account.dart";
+import "package:vaultbox/domain/entities/protocol_storage_access.dart";
 import "package:vaultbox/domain/entities/share.dart";
 import "package:vaultbox/domain/entities/storage_root.dart";
 import "package:vaultbox/domain/security/authorizer.dart";
@@ -72,7 +73,11 @@ final class ApiHarness {
       initial: roots ?? <StorageRoot>[root()],
     );
     final FileRepositoryImpl files = FileRepositoryImpl(resolveBackend: registry.forRoot);
-    final StorageGate gate = StorageGate(roots: rootRepository, authorizer: authorizer);
+    final StorageGate gate = StorageGate(
+      roots: rootRepository,
+      authorizer: authorizer,
+      access: const ProtocolStorageAccess(),
+    );
     final InMemoryShareRepository shareRepository = InMemoryShareRepository();
     final ShareUnlocks unlocks = ShareUnlocks(clock: clock);
     final DownloadTicketService tickets = DownloadTicketService(clock: clock);

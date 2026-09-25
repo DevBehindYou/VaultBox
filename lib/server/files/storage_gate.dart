@@ -1,5 +1,6 @@
 import "../../core/errors/app_failure.dart";
 import "../../domain/entities/account.dart";
+import "../../domain/entities/protocol_storage_access.dart";
 import "../../domain/entities/storage_root.dart";
 import "../../domain/repositories/storage_root_repository.dart";
 import "../../domain/security/authorizer.dart";
@@ -72,12 +73,21 @@ final class StorageFault implements Exception {
 ///  - a read-only root refuses every mutation;
 ///  - the [Authorizer] is asked per path, per action.
 final class StorageGate {
-  StorageGate({required StorageRootRepository roots, required Authorizer authorizer})
-    : _roots = roots,
-      _authorizer = authorizer;
+  StorageGate({
+    required StorageRootRepository roots,
+    required Authorizer authorizer,
+    required ProtocolStorageAccess access,
+  }) : _roots = roots,
+       _authorizer = authorizer,
+       _access = access;
 
   final StorageRootRepository _roots;
   final Authorizer _authorizer;
+
+  /// Loaded once when the server (re)starts — same lifecycle as
+  /// [ServerConfig]/[FtpSettings]; changing it in Settings needs a restart,
+  /// same "Stop the server to change this" rule those already follow.
+  final ProtocolStorageAccess _access;
 
   /// VaultBox's bookkeeping folder. Compared lower-cased: some Android storage
   /// is case-insensitive.
@@ -90,18 +100,27 @@ final class StorageGate {
   /// Whether a single top-level [name] would collide with it.
   static bool isReservedName(String name) => name.toLowerCase() == reservedDirName;
 
-  /// Roots a client may see (enabled ones), whether or not they are reachable.
-  Future<List<StorageRoot>> visibleRoots() async {
+  /// Roots [protocol] may see (enabled, and — if that protocol's "Storage
+  /// access" section restricts it — in its allowed set), whether or not they
+  /// are reachable.
+  Future<List<StorageRoot>> visibleRoots({required ProtocolKind protocol}) async {
     final List<StorageRoot> roots = await _roots.listRoots();
+    final Set<String>? allowed = _access.forProtocol(protocol);
     return <StorageRoot>[
       for (final StorageRoot root in roots)
-        if (root.isEnabled) root,
+        if (root.isEnabled && (allowed == null || allowed.contains(root.id))) root,
     ];
   }
 
-  Future<StorageRoot> root(String rootId, {bool forWrite = false}) async {
+  /// Resolves [rootId] for [protocol]. A root that protocol isn't allowed to
+  /// see reports [FaultKind.rootNotFound] — the same fault an unknown id
+  /// gets — never a distinct "forbidden", so a restricted root's existence
+  /// isn't revealed to a protocol that can't use it.
+  Future<StorageRoot> root(String rootId, {bool forWrite = false, required ProtocolKind protocol}) async {
     final StorageRoot? root = await _roots.getRoot(rootId);
     if (root == null || !root.isEnabled) throw const StorageFault(FaultKind.rootNotFound);
+    final Set<String>? allowed = _access.forProtocol(protocol);
+    if (allowed != null && !allowed.contains(rootId)) throw const StorageFault(FaultKind.rootNotFound);
     if (!root.isAvailable) throw const StorageFault(FaultKind.unavailable);
     if (forWrite && !root.capabilities.canWrite) throw const StorageFault(FaultKind.readOnly);
     return root;

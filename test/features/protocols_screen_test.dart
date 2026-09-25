@@ -8,13 +8,17 @@ import "package:vaultbox/core/design/aurora_theme.dart";
 import "package:vaultbox/core/design/aurora_widgets.dart";
 import "package:vaultbox/data/repositories/in_memory_account_repository.dart";
 import "package:vaultbox/data/repositories/in_memory_settings_repository.dart";
+import "package:vaultbox/data/repositories/in_memory_storage_root_repository.dart";
 import "package:vaultbox/domain/entities/account.dart";
 import "package:vaultbox/domain/entities/ftp_settings.dart";
 import "package:vaultbox/domain/entities/server_config.dart";
 import "package:vaultbox/domain/entities/server_state.dart";
+import "package:vaultbox/domain/entities/storage_root.dart";
 import "package:vaultbox/domain/repositories/account_repository.dart";
 import "package:vaultbox/domain/repositories/server_host.dart";
 import "package:vaultbox/domain/repositories/settings_repository.dart";
+import "package:vaultbox/domain/repositories/storage_root_repository.dart";
+import "package:vaultbox/domain/value_objects/storage_capabilities.dart";
 import "package:vaultbox/features/settings/presentation/protocols_screen.dart";
 
 import "../helpers/fake_server_host.dart";
@@ -34,7 +38,7 @@ void main() {
   /// What is saved for FTP right now.
   Future<FtpSettings> savedFtp() async => FtpSettings.fromMap(await store.readAll());
 
-  Widget harness(FakeServerHost host, {bool withAdmin = true}) {
+  Widget harness(FakeServerHost host, {bool withAdmin = true, List<StorageRoot> roots = const <StorageRoot>[]}) {
     final GoRouter router = GoRouter(
       routes: <RouteBase>[
         GoRoute(path: "/", builder: (BuildContext c, GoRouterState s) => const ProtocolsScreen()),
@@ -52,6 +56,7 @@ void main() {
         RepositoryProvider<ServerHost>.value(value: host),
         RepositoryProvider<SettingsRepository>.value(value: store),
         RepositoryProvider<AccountRepository>.value(value: accounts),
+        RepositoryProvider<StorageRootRepository>.value(value: InMemoryStorageRootRepository(initial: roots)),
       ],
       child: MultiBlocProvider(
         providers: <BlocProvider<dynamic>>[
@@ -59,17 +64,26 @@ void main() {
           BlocProvider<ServerConfigCubit>(create: (BuildContext context) => ServerConfigCubit(context.read<ServerHost>())),
           BlocProvider<AdminExistsCubit>(create: (BuildContext context) => AdminExistsCubit(context.read<AccountRepository>())),
           BlocProvider<FtpSettingsCubit>(create: (BuildContext context) => FtpSettingsCubit(context.read<SettingsRepository>())),
+          BlocProvider<StorageRootsCubit>(create: (BuildContext context) => StorageRootsCubit(context.read<StorageRootRepository>())),
+          BlocProvider<ProtocolStorageAccessCubit>(
+            create: (BuildContext context) => ProtocolStorageAccessCubit(context.read<SettingsRepository>()),
+          ),
         ],
         child: MaterialApp.router(theme: AuroraTheme.light(), routerConfig: router),
       ),
     );
   }
 
-  Future<void> show(WidgetTester tester, FakeServerHost host, {bool withAdmin = true}) async {
+  Future<void> show(
+    WidgetTester tester,
+    FakeServerHost host, {
+    bool withAdmin = true,
+    List<StorageRoot> roots = const <StorageRoot>[],
+  }) async {
     tester.view.physicalSize = const Size(800, 3000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(harness(host, withAdmin: withAdmin));
+    await tester.pumpWidget(harness(host, withAdmin: withAdmin, roots: roots));
     await tester.pumpAndSettle();
   }
 
@@ -535,5 +549,77 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text("route:/settings/security"), findsOneWidget);
+  });
+
+  group("storage access", () {
+    const StorageRoot internal = StorageRoot(
+      id: "internal",
+      displayName: "Internal",
+      backendType: StorageBackendType.memory,
+      uriOrPath: "memory://internal",
+      capabilities: StorageCapabilities.fullLocal(),
+      isDefault: true,
+    );
+    const StorageRoot external = StorageRoot(
+      id: "external",
+      displayName: "SD card",
+      backendType: StorageBackendType.memory,
+      uriOrPath: "memory://external",
+      capabilities: StorageCapabilities.fullLocal(),
+    );
+
+    /// The checkbox for [rootName] inside the card that holds [cardTitle].
+    Finder checkboxFor(String cardTitle, String rootName) => find.descendant(
+      of: find.ancestor(of: find.text(cardTitle), matching: find.byType(AuroraCard)),
+      matching: find.widgetWithText(CheckboxListTile, rootName),
+    );
+
+    testWidgets("with no storage yet, no protocol card shows a storage-access section", (WidgetTester tester) async {
+      await show(tester, FakeServerHost());
+
+      expect(find.text("STORAGE ACCESS"), findsNothing);
+    });
+
+    testWidgets("every root starts checked (unrestricted) once storage exists", (WidgetTester tester) async {
+      await show(tester, FakeServerHost(), roots: <StorageRoot>[internal, external]);
+
+      expect(find.text("STORAGE ACCESS"), findsNWidgets(4), reason: "Web Portal, Plain HTTP, WebDAV, FTP");
+      for (final String card in <String>["Web Portal", "Plain HTTP", "WebDAV storage", "FTP / FTPS"]) {
+        expect(tester.widget<CheckboxListTile>(checkboxFor(card, "Internal")).value, isTrue);
+        expect(tester.widget<CheckboxListTile>(checkboxFor(card, "SD card")).value, isTrue);
+      }
+    });
+
+    testWidgets("unchecking one root for one protocol persists an explicit set, others stay unrestricted", (WidgetTester tester) async {
+      await show(tester, FakeServerHost(), roots: <StorageRoot>[internal, external]);
+
+      await tester.tap(checkboxFor("FTP / FTPS", "SD card"));
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<CheckboxListTile>(checkboxFor("FTP / FTPS", "SD card")).value, isFalse);
+      expect(tester.widget<CheckboxListTile>(checkboxFor("FTP / FTPS", "Internal")).value, isTrue);
+      // A protocol nobody has restricted yet still shows both as reachable.
+      expect(tester.widget<CheckboxListTile>(checkboxFor("Web Portal", "SD card")).value, isTrue);
+
+      final Map<String, String> saved = await store.readAll();
+      expect(saved["protocol_access_ftp"], "internal");
+      // Every save round-trips all four keys (SettingsRepository has no
+      // delete, so "unrestricted" has to be a real written value, "*", not
+      // just an absent key — see ProtocolStorageAccess). The other three
+      // protocols were never touched, so they're written back unrestricted.
+      expect(saved["protocol_access_web_portal_https"], "*");
+      expect(saved["protocol_access_plain_http"], "*");
+      expect(saved["protocol_access_webdav"], "*");
+    });
+
+    testWidgets("while the server runs, storage-access checkboxes are locked too", (WidgetTester tester) async {
+      await show(
+        tester,
+        FakeServerHost(const ServerState(run: ServerRunState.running, endpoint: "https://127.0.0.1:8443/")),
+        roots: <StorageRoot>[internal],
+      );
+
+      expect(tester.widget<CheckboxListTile>(checkboxFor("Web Portal", "Internal")).onChanged, isNull);
+    });
   });
 }

@@ -11,6 +11,7 @@ import "package:vaultbox/data/services/memory_storage_backend.dart";
 import "package:vaultbox/data/services/system_clock.dart";
 import "package:vaultbox/domain/entities/account.dart";
 import "package:vaultbox/domain/entities/ftp_settings.dart";
+import "package:vaultbox/domain/entities/protocol_storage_access.dart";
 import "package:vaultbox/domain/entities/storage_root.dart";
 import "package:vaultbox/domain/repositories/recycle_bin_repository.dart";
 import "package:vaultbox/domain/security/authorizer.dart";
@@ -75,7 +76,11 @@ final class FtpHarness {
       ],
     );
     final FileRepositoryImpl files = FileRepositoryImpl(resolveBackend: (StorageRoot root) => backends[root.id]!);
-    final StorageGate gate = StorageGate(roots: roots, authorizer: authorizer);
+    final StorageGate gate = StorageGate(
+      roots: roots,
+      authorizer: authorizer,
+      access: const ProtocolStorageAccess(),
+    );
 
     final SessionManager sessions = SessionManager(store: InMemorySessionStore(), clock: clock);
     final LoginService login = LoginService(

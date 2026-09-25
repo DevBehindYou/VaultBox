@@ -45,7 +45,7 @@ Future<void> serverMain() async {
     final bool network = config.allowNetworkAccess ?? false;
     final String host = network ? (await lanAddress() ?? "0.0.0.0") : "127.0.0.1";
     final List<String> endpoints = <String>[];
-    services = ServerServices.create();
+    services = await ServerServices.create();
     final VaultApi api = services.api;
 
     if (config.httpsEnabled ?? true) {

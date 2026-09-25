@@ -4,6 +4,7 @@ import "dart:io";
 import "../app/providers.dart";
 import "../data/security/in_memory_session_store.dart";
 import "../domain/entities/ftp_settings.dart";
+import "../domain/entities/protocol_storage_access.dart";
 import "../domain/repositories/clock.dart";
 import "../domain/security/download_tickets.dart";
 import "../domain/security/login_service.dart";
@@ -33,7 +34,7 @@ import "webdav/webdav_handler.dart";
 final class ServerServices {
   ServerServices._(this.api, this.dav, this._ftpDeps, this._clock, this._deps, this._purgeTimer);
 
-  factory ServerServices.create() {
+  static Future<ServerServices> create() async {
     final AppDependencies deps = AppDependencies.build();
     final Clock clock = deps.clock;
 
@@ -50,9 +51,11 @@ final class ServerServices {
     unawaited(login.warmUp().catchError((Object _) {}));
 
     final DownloadTicketService tickets = DownloadTicketService(clock: clock);
+    final ProtocolStorageAccess access = ProtocolStorageAccess.fromMap(await deps.settingsRepository.readAll());
     final StorageGate gate = StorageGate(
       roots: deps.storageRootRepository,
       authorizer: deps.authorizer,
+      access: access,
     );
     final ShareUnlocks unlocks = ShareUnlocks(clock: clock);
     // History for the Activity tab: written here, read by the app from the shared database.

@@ -4,6 +4,7 @@ import "../../core/errors/app_failure.dart";
 import "../../core/utils/mime_types.dart";
 import "../../domain/entities/account.dart";
 import "../../domain/entities/activity.dart";
+import "../../domain/entities/protocol_storage_access.dart";
 import "../../domain/entities/storage_root.dart";
 import "../../domain/models/file_ref.dart";
 import "../../domain/models/operation_batch.dart";
@@ -115,7 +116,7 @@ final class FileEndpoints {
         return ApiResponse.error(HttpStatus.notFound, "not_found");
       }
 
-      final StorageRoot root = await _root(ticket.rootId);
+      final StorageRoot root = await _root(request, ticket.rootId);
       final StoragePath path = _parse(root, ticket.path, allowRoot: false);
       return _serveFile(request, account, root, path);
     });
@@ -187,7 +188,11 @@ final class FileEndpoints {
     };
   }
 
-  Future<StorageRoot> _root(String rootId, {bool forWrite = false}) => _gate.root(rootId, forWrite: forWrite);
+  Future<StorageRoot> _root(ApiRequest request, String rootId, {bool forWrite = false}) => _gate.root(
+    rootId,
+    forWrite: forWrite,
+    protocol: request.secure ? ProtocolKind.webPortalHttps : ProtocolKind.plainHttp,
+  );
 
   StoragePath _parse(StorageRoot root, String? raw, {bool allowRoot = true}) =>
       _gate.parse(root, raw, allowRoot: allowRoot);
@@ -214,7 +219,7 @@ final class FileEndpoints {
   // --- browsing ---
 
   Future<ApiResponse> _entries(ApiRequest request, ApiCaller caller, String rootId) async {
-    final StorageRoot root = await _root(rootId);
+    final StorageRoot root = await _root(request, rootId);
     final int? limit = _parseLimit(request.query["limit"]);
     if (limit == null) return ApiResponse.error(HttpStatus.badRequest, "bad_request");
     final String? rawCursor = request.query["cursor"];
@@ -261,7 +266,7 @@ final class FileEndpoints {
   }
 
   Future<ApiResponse> _stat(ApiRequest request, ApiCaller caller, String rootId) async {
-    final StorageRoot root = await _root(rootId);
+    final StorageRoot root = await _root(request, rootId);
     final StoragePath path = _parse(root, request.query["path"]);
     _require(caller, Permission.read, root, path);
 
@@ -315,7 +320,7 @@ final class FileEndpoints {
   }
 
   Future<ApiResponse> _download(ApiRequest request, ApiCaller caller, String rootId) async {
-    final StorageRoot root = await _root(rootId);
+    final StorageRoot root = await _root(request, rootId);
     final StoragePath path = _parse(root, request.query["path"], allowRoot: false);
     return _serveFile(request, caller.account, root, path);
   }
@@ -361,7 +366,7 @@ final class FileEndpoints {
 
   /// Issues a short-lived link for one existing file (see [DownloadTicketService]).
   Future<ApiResponse> _ticket(ApiRequest request, ApiCaller caller, String rootId) async {
-    final StorageRoot root = await _root(rootId);
+    final StorageRoot root = await _root(request, rootId);
     final Map<String, Object?> body = await readJsonObject(request);
     final Object? raw = body["path"];
     if (raw is! String) return ApiResponse.error(HttpStatus.badRequest, "bad_request");
@@ -385,7 +390,7 @@ final class FileEndpoints {
   }
 
   Future<ApiResponse> _upload(ApiRequest request, ApiCaller caller, String rootId) async {
-    final StorageRoot root = await _root(rootId, forWrite: true);
+    final StorageRoot root = await _root(request, rootId, forWrite: true);
     final StoragePath path = _parse(root, request.query["path"], allowRoot: false);
     _require(caller, Permission.write, root, path);
 
@@ -410,7 +415,7 @@ final class FileEndpoints {
   // --- changes ---
 
   Future<ApiResponse> _mkdir(ApiRequest request, ApiCaller caller, String rootId) async {
-    final StorageRoot root = await _root(rootId, forWrite: true);
+    final StorageRoot root = await _root(request, rootId, forWrite: true);
     final Map<String, Object?> body = await readJsonObject(request);
     final Object? raw = body["path"];
     if (raw is! String) return ApiResponse.error(HttpStatus.badRequest, "bad_request");
@@ -427,7 +432,7 @@ final class FileEndpoints {
   }
 
   Future<ApiResponse> _rename(ApiRequest request, ApiCaller caller, String rootId) async {
-    final StorageRoot root = await _root(rootId, forWrite: true);
+    final StorageRoot root = await _root(request, rootId, forWrite: true);
     final Map<String, Object?> body = await readJsonObject(request);
     final Object? rawPath = body["path"];
     final Object? newName = body["newName"];
@@ -459,7 +464,7 @@ final class FileEndpoints {
   }
 
   Future<ApiResponse> _moveOrCopy(ApiRequest request, ApiCaller caller, String rootId, {required bool move}) async {
-    final StorageRoot root = await _root(rootId, forWrite: true);
+    final StorageRoot root = await _root(request, rootId, forWrite: true);
     final Map<String, Object?> body = await readJsonObject(request);
     final List<StoragePath> sources = _pathList(root, body["sources"]);
     final Object? rawDestination = body["destination"];
@@ -485,7 +490,7 @@ final class FileEndpoints {
   }
 
   Future<ApiResponse> _deleteToRecycleBin(ApiRequest request, ApiCaller caller, String rootId) async {
-    final StorageRoot root = await _root(rootId, forWrite: true);
+    final StorageRoot root = await _root(request, rootId, forWrite: true);
     final Map<String, Object?> body = await readJsonObject(request);
     final List<StoragePath> paths = _pathList(root, body["paths"]);
     for (final StoragePath path in paths) {

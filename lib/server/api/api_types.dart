@@ -16,6 +16,7 @@ final class ApiRequest {
     required this.remoteAddress,
     this.bearerToken,
     this.headers = const <String, String>{},
+    this.secure = true,
     List<int>? body,
     Stream<List<int>>? bodyStream,
     int? contentLength,
@@ -33,6 +34,12 @@ final class ApiRequest {
 
   /// The client's IP address (used to throttle logins).
   final String remoteAddress;
+
+  /// Which listener this request arrived on — `RequestRouter.secure` at the
+  /// time it built this request. Decides which "Storage access" set applies
+  /// ([ProtocolKind.webPortalHttps] vs [ProtocolKind.plainHttp]) when a
+  /// handler resolves a storage root.
+  final bool secure;
 
   /// The token from `Authorization: Bearer <token>`, if one was sent.
   final String? bearerToken;

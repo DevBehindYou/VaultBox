@@ -13,8 +13,10 @@ import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
 import "../../../core/errors/app_failure.dart";
 import "../../../domain/entities/ftp_settings.dart";
+import "../../../domain/entities/protocol_storage_access.dart";
 import "../../../domain/entities/server_config.dart";
 import "../../../domain/entities/server_state.dart";
+import "../../../domain/entities/storage_root.dart";
 import "../../../domain/repositories/server_host.dart";
 import "../../../domain/repositories/settings_repository.dart";
 import "../../home/home_summary.dart";
@@ -32,6 +34,9 @@ class ProtocolsScreen extends StatelessWidget {
     final ServerState server = context.watch<ServerStateCubit>().state.value ?? const ServerState.stopped();
     final ServerConfig? config = context.watch<ServerConfigCubit>().state.value;
     final FtpSettings? ftp = context.watch<FtpSettingsCubit>().state.value;
+    final ProtocolStorageAccess access =
+        context.watch<ProtocolStorageAccessCubit>().state.value ?? const ProtocolStorageAccess();
+    final List<StorageRoot> roots = context.watch<StorageRootsCubit>().state.value ?? const <StorageRoot>[];
     final bool canChange = server.run == ServerRunState.stopped || server.run == ServerRunState.failed;
 
     return Scaffold(
@@ -53,20 +58,110 @@ class ProtocolsScreen extends StatelessWidget {
           if (config == null)
             const Center(child: CircularProgressIndicator())
           else ...<Widget>[
-            _WebPortalCard(config: config, server: server, canChange: canChange),
+            _WebPortalCard(
+              config: config,
+              server: server,
+              canChange: canChange,
+              access: access,
+              roots: roots,
+            ),
             const SizedBox(height: AuroraSpacing.md),
-            _HttpCard(config: config, canChange: canChange),
+            _HttpCard(config: config, canChange: canChange, access: access, roots: roots),
             const SizedBox(height: AuroraSpacing.md),
-            _WebDavCard(config: config, server: server),
+            _WebDavCard(config: config, server: server, access: access, roots: roots),
             if (ftp != null) ...<Widget>[
               const SizedBox(height: AuroraSpacing.md),
-              _FtpCard(ftp: ftp, config: config, server: server, canChange: canChange),
+              _FtpCard(
+                ftp: ftp,
+                config: config,
+                server: server,
+                canChange: canChange,
+                access: access,
+                roots: roots,
+              ),
             ],
             const AuroraSectionHeader(title: "Network"),
             _NetworkCard(config: config, canChange: canChange),
           ],
         ],
       ),
+    );
+  }
+}
+
+/// Saves one protocol's allowed-root set and reloads [ProtocolStorageAccessCubit].
+Future<void> _saveAccess(
+  BuildContext context,
+  ProtocolStorageAccess current,
+  ProtocolKind protocol,
+  Set<String>? next,
+) async {
+  try {
+    await context.read<SettingsRepository>().writeAll(current.withProtocol(protocol, next).toMap());
+    unawaited(context.read<ProtocolStorageAccessCubit>().refresh());
+  } on AppFailure catch (failure) {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failure.message)));
+  }
+}
+
+/// The "Storage access" block every protocol card ends with: one checkbox
+/// per configured storage root, deciding whether this protocol may reach
+/// it. Nothing to show (no roots yet) renders nothing — no empty card
+/// clutter before onboarding adds the first one.
+///
+/// No separate on/off switch on purpose: [allowedIds] `null` (unrestricted,
+/// the default nobody has to touch) displays as every root checked, and
+/// checking/unchecking any one of them immediately starts saving an
+/// explicit set — a newly added root then defaults to NOT exposed to a
+/// protocol someone already narrowed, fail-closed rather than silently
+/// widening what an already-deliberate choice reaches.
+class _StorageAccessSection extends StatelessWidget {
+  const _StorageAccessSection({
+    required this.allowedIds,
+    required this.roots,
+    required this.canChange,
+    required this.onChanged,
+  });
+
+  final Set<String>? allowedIds;
+  final List<StorageRoot> roots;
+  final bool canChange;
+  final ValueChanged<Set<String>> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    if (roots.isEmpty) return const SizedBox.shrink();
+    final Set<String> effective = allowedIds ?? roots.map((StorageRoot r) => r.id).toSet();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const Divider(height: AuroraSpacing.lg),
+        Text(
+          "STORAGE ACCESS",
+          style: context.mono(size: 10, color: context.inkTertiary).copyWith(letterSpacing: 0.6),
+        ),
+        for (final StorageRoot root in roots)
+          CheckboxListTile(
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+            controlAffinity: ListTileControlAffinity.leading,
+            title: Text(root.displayName, style: context.body),
+            value: effective.contains(root.id),
+            onChanged: !canChange
+                ? null
+                : (bool? checked) {
+                    final Set<String> next = Set<String>.of(effective);
+                    if (checked ?? false) {
+                      next.add(root.id);
+                    } else {
+                      next.remove(root.id);
+                    }
+                    onChanged(next);
+                  },
+          ),
+      ],
     );
   }
 }
@@ -138,11 +233,19 @@ class _ServiceCard extends StatelessWidget {
 // --------------------------------------------------------------- web portal
 
 class _WebPortalCard extends StatelessWidget {
-  const _WebPortalCard({required this.config, required this.server, required this.canChange});
+  const _WebPortalCard({
+    required this.config,
+    required this.server,
+    required this.canChange,
+    required this.access,
+    required this.roots,
+  });
 
   final ServerConfig config;
   final ServerState server;
   final bool canChange;
+  final ProtocolStorageAccess access;
+  final List<StorageRoot> roots;
 
   @override
   Widget build(BuildContext context) {
@@ -157,20 +260,34 @@ class _WebPortalCard extends StatelessWidget {
       port: config.port,
       onChangePort: canChange ? () => unawaited(_changePort(context, config, https: true)) : null,
       status: server.isRunning && config.httpsEnabled ? "Listening" : (config.httpsEnabled ? "Ready" : "Off"),
-      footer: TextButton.icon(
-        onPressed: () => context.go("/settings/security"),
-        icon: const Icon(Icons.verified_user_outlined, size: 16),
-        label: const Text("Certificate and security"),
+      footer: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          TextButton.icon(
+            onPressed: () => context.go("/settings/security"),
+            icon: const Icon(Icons.verified_user_outlined, size: 16),
+            label: const Text("Certificate and security"),
+          ),
+          _StorageAccessSection(
+            allowedIds: access.webPortalHttpsRootIds,
+            roots: roots,
+            canChange: canChange,
+            onChanged: (Set<String> next) =>
+                unawaited(_saveAccess(context, access, ProtocolKind.webPortalHttps, next)),
+          ),
+        ],
       ),
     );
   }
 }
 
 class _HttpCard extends StatelessWidget {
-  const _HttpCard({required this.config, required this.canChange});
+  const _HttpCard({required this.config, required this.canChange, required this.access, required this.roots});
 
   final ServerConfig config;
   final bool canChange;
+  final ProtocolStorageAccess access;
+  final List<StorageRoot> roots;
 
   Future<void> _toggle(BuildContext context, bool on) async {
     if (on) {
@@ -208,6 +325,12 @@ class _HttpCard extends StatelessWidget {
       onChangePort: canChange ? () => unawaited(_changePort(context, config, https: false)) : null,
       status: config.httpEnabled ? "Insecure · unencrypted" : "Off",
       warn: config.httpEnabled,
+      footer: _StorageAccessSection(
+        allowedIds: access.plainHttpRootIds,
+        roots: roots,
+        canChange: canChange,
+        onChanged: (Set<String> next) => unawaited(_saveAccess(context, access, ProtocolKind.plainHttp, next)),
+      ),
     );
   }
 }
@@ -215,13 +338,16 @@ class _HttpCard extends StatelessWidget {
 // ------------------------------------------------------------------ WebDAV
 
 class _WebDavCard extends StatelessWidget {
-  const _WebDavCard({required this.config, required this.server});
+  const _WebDavCard({required this.config, required this.server, required this.access, required this.roots});
 
   final ServerConfig config;
   final ServerState server;
+  final ProtocolStorageAccess access;
+  final List<StorageRoot> roots;
 
   @override
   Widget build(BuildContext context) {
+    final bool canChange = server.run == ServerRunState.stopped || server.run == ServerRunState.failed;
     final String? base = primaryAddress(server);
     final String shown = base == null
         ? "${config.httpsEnabled ? "https" : "http"}://<phone address>:${config.httpsEnabled ? config.port : config.httpPort}/dav/"
@@ -287,6 +413,12 @@ class _WebDavCard extends StatelessWidget {
               icon: const Icon(Icons.menu_book_outlined, size: 16),
               label: const Text("Setup guide for phones and computers"),
             ),
+          ),
+          _StorageAccessSection(
+            allowedIds: access.webdavRootIds,
+            roots: roots,
+            canChange: canChange,
+            onChanged: (Set<String> next) => unawaited(_saveAccess(context, access, ProtocolKind.webdav, next)),
           ),
         ],
       ),
@@ -370,12 +502,21 @@ class _NetworkCard extends StatelessWidget {
 // --------------------------------------------------------------------- FTP
 
 class _FtpCard extends StatelessWidget {
-  const _FtpCard({required this.ftp, required this.config, required this.server, required this.canChange});
+  const _FtpCard({
+    required this.ftp,
+    required this.config,
+    required this.server,
+    required this.canChange,
+    required this.access,
+    required this.roots,
+  });
 
   final FtpSettings ftp;
   final ServerConfig config;
   final ServerState server;
   final bool canChange;
+  final ProtocolStorageAccess access;
+  final List<StorageRoot> roots;
 
   static String tagFor(FtpMode mode) => switch (mode) {
     FtpMode.explicitTls => "FTPES",
@@ -669,6 +810,12 @@ class _FtpCard extends StatelessWidget {
               icon: const Icon(Icons.menu_book_outlined, size: 16),
               label: const Text("How to connect with FTP"),
             ),
+          ),
+          _StorageAccessSection(
+            allowedIds: access.ftpRootIds,
+            roots: roots,
+            canChange: canChange,
+            onChanged: (Set<String> next) => unawaited(_saveAccess(context, access, ProtocolKind.ftp, next)),
           ),
         ],
       ),

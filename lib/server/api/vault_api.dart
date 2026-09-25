@@ -2,6 +2,7 @@ import "dart:io";
 
 import "../../domain/entities/account.dart";
 import "../../domain/entities/activity.dart";
+import "../../domain/entities/protocol_storage_access.dart";
 import "../../domain/entities/storage_root.dart";
 import "../../domain/repositories/account_repository.dart";
 import "../../domain/security/authorizer.dart";
@@ -105,7 +106,7 @@ final class VaultApi {
       return _only("GET", request, () async => ApiResponse(HttpStatus.ok, json: _user(caller.account)));
     }
     if (route.length == 1 && route[0] == "roots") {
-      return _only("GET", request, () => _handleRoots(caller));
+      return _only("GET", request, () => _handleRoots(request, caller));
     }
     // roots/{id}/{action}
     return _files.handle(request, caller, route[1], route[2]);
@@ -215,8 +216,10 @@ final class VaultApi {
 
   // --- storage ---
 
-  Future<ApiResponse> _handleRoots(ApiCaller caller) async {
-    final List<StorageRoot> roots = await _gate.visibleRoots();
+  Future<ApiResponse> _handleRoots(ApiRequest request, ApiCaller caller) async {
+    final List<StorageRoot> roots = await _gate.visibleRoots(
+      protocol: request.secure ? ProtocolKind.webPortalHttps : ProtocolKind.plainHttp,
+    );
     return ApiResponse(
       HttpStatus.ok,
       json: <String, Object?>{

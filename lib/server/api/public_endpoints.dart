@@ -9,6 +9,7 @@ import "../../core/errors/app_failure.dart";
 import "../../core/utils/mime_types.dart";
 import "../../domain/entities/account.dart";
 import "../../domain/entities/activity.dart";
+import "../../domain/entities/protocol_storage_access.dart";
 import "../../domain/entities/share.dart";
 import "../../domain/entities/storage_root.dart";
 import "../../domain/models/file_ref.dart";
@@ -229,7 +230,16 @@ final class PublicEndpoints {
     if (creator == null || !creator.isEnabled) {
       throw ApiReject(ApiResponse.error(HttpStatus.notFound, "not_found"));
     }
-    final StorageRoot root = await _gate.root(share.rootId, forWrite: share.kind == ShareKind.upload);
+    // A share link is already scoped to this one root+path at creation time
+    // (kickoff §51: "who is signed in doesn't matter" for links) — never
+    // filtered again by a protocol's own "Storage access" toggles, so hiding
+    // a root from, say, WebDAV can't retroactively break a link someone
+    // already has.
+    final StorageRoot root = await _gate.root(
+      share.rootId,
+      forWrite: share.kind == ShareKind.upload,
+      protocol: ProtocolKind.shareLink,
+    );
     final StoragePath base = StoragePath.parseDecoded(root.id, share.path);
     final Permission needed = share.kind == ShareKind.download ? Permission.read : Permission.write;
     // The link is only as strong as the person who made it is now.

@@ -17,7 +17,7 @@ void main() {
     final GoRouter router = GoRouter(
       routes: <RouteBase>[
         GoRoute(path: "/", builder: (BuildContext c, GoRouterState s) => Scaffold(body: AppHeader(subtitle: subtitle))),
-        GoRoute(path: "/settings/protocols", builder: (BuildContext c, GoRouterState s) => const Scaffold(body: Text("route:protocols"))),
+        GoRoute(path: "/settings", builder: (BuildContext c, GoRouterState s) => const Scaffold(body: Text("route:settings"))),
         GoRoute(path: "/settings/security", builder: (BuildContext c, GoRouterState s) => const Scaffold(body: Text("route:security"))),
       ],
     );
@@ -79,13 +79,13 @@ void main() {
   });
 
   group("shortcuts", () {
-    testWidgets("the sliders button opens Protocols & Network", (WidgetTester tester) async {
+    testWidgets("the sliders button opens Settings", (WidgetTester tester) async {
       await show(tester, FakeServerHost());
 
-      await tester.tap(find.byTooltip("Server and network settings"));
+      await tester.tap(find.byTooltip("Settings"));
       await tester.pumpAndSettle();
 
-      expect(find.text("route:protocols"), findsOneWidget);
+      expect(find.text("route:settings"), findsOneWidget);
     });
 
     testWidgets("the round button opens Security & Sessions, and says so to screen readers", (WidgetTester tester) async {

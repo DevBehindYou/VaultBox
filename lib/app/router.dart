@@ -89,6 +89,18 @@ GoRouter buildRouter() {
         path: "/onboarding/ready",
         builder: (BuildContext context, GoRouterState state) => const OnboardingReadyScreen(),
       ),
+      // Share/People (outside the shell: Share lost its dock tab to Server —
+      // reached from Home, Files' per-item Share action, and the Settings
+      // hub's "People & links" row instead). ShareScreen has no AppBar of
+      // its own (it used to sit under the shared AppHeader as a tab root),
+      // so it gets one here.
+      GoRoute(
+        path: "/share",
+        builder: (BuildContext context, GoRouterState state) => Scaffold(
+          appBar: AppBar(title: const Text("People & links")),
+          body: const ShareScreen(),
+        ),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (BuildContext context, GoRouterState state, StatefulNavigationShell shell) {
           return ShellScaffold(shell: shell);
@@ -111,11 +123,15 @@ GoRouter buildRouter() {
               ),
             ],
           ),
+          // "Server" replaced "Share" in the dock — Share/People still exist,
+          // reached from Home, Files (per-item Share) and the Settings hub's
+          // "People & links" row via the top-level /share route below, not a
+          // tab of their own any more.
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
-                path: "/share",
-                builder: (BuildContext context, GoRouterState state) => const ShareScreen(),
+                path: "/server",
+                builder: (BuildContext context, GoRouterState state) => const ProtocolsScreen(),
               ),
             ],
           ),
@@ -133,10 +149,6 @@ GoRouter buildRouter() {
                 path: "/settings",
                 builder: (BuildContext context, GoRouterState state) => const SettingsScreen(),
                 routes: <RouteBase>[
-                  GoRoute(
-                    path: "protocols",
-                    builder: (BuildContext context, GoRouterState state) => const ProtocolsScreen(),
-                  ),
                   GoRoute(
                     path: "security",
                     builder: (BuildContext context, GoRouterState state) => const SecurityScreen(),

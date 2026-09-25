@@ -35,7 +35,15 @@ class AppHeader extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text("Atomic Carton", style: context.brand(22), maxLines: 1, overflow: TextOverflow.ellipsis),
+                // FittedBox, not maxLines+ellipsis: "Atomic Carton" is longer than
+                // "VaultBox" was and clipped to "Atomi…" in this fixed-height bar
+                // on a real phone — scale the whole word down to fit instead of
+                // truncating it (found on-device, 2026-09-25).
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text("Atomic Carton", style: context.brand(22), maxLines: 1),
+                ),
                 Text(subtitle, style: context.mono(size: 10, color: context.inkTertiary), maxLines: 1),
               ],
             ),
@@ -43,9 +51,9 @@ class AppHeader extends StatelessWidget {
           const Spacer(),
           ServerStatusPill(server: server),
           IconButton(
-            tooltip: "Server and network settings",
+            tooltip: "Settings",
             icon: Icon(Icons.tune, color: context.inkSecondary),
-            onPressed: () => context.go("/settings/protocols"),
+            onPressed: () => context.go("/settings"),
           ),
           Semantics(
             button: true,

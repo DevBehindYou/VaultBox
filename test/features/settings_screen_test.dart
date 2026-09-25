@@ -118,13 +118,13 @@ void main() {
             path: "/settings",
             builder: (BuildContext c, GoRouterState s) => const SettingsScreen(),
             routes: <RouteBase>[
-              stub("protocols"),
               stub("security"),
               stub("storage"),
               stub("appearance"),
               GoRoute(path: "diagnostics", builder: (BuildContext c, GoRouterState s) => const DiagnosticsScreen()),
             ],
           ),
+          GoRoute(path: "/server", builder: (BuildContext c, GoRouterState s) => const Scaffold(body: Text("route:/server"))),
           GoRoute(path: "/share", builder: (BuildContext c, GoRouterState s) => const Scaffold(body: Text("route:/share"))),
         ],
       );
@@ -181,7 +181,7 @@ void main() {
       await tester.pumpAndSettle();
 
       for (final (String row, String route) in <(String, String)>[
-        ("Protocols & Network", "route:/settings/protocols"),
+        ("Protocols & Network", "route:/server"),
         ("Security & Sessions", "route:/settings/security"),
         ("Storage & Volumes", "route:/settings/storage"),
         ("Appearance & Display", "route:/settings/appearance"),

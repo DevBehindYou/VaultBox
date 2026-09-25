@@ -91,7 +91,7 @@ void main() {
       routes: <RouteBase>[
         GoRoute(path: "/", builder: (BuildContext c, GoRouterState s) => const HomeScreen()),
         for (final String path in <String>[
-          "/settings/protocols",
+          "/server",
           "/settings/storage",
           "/activity",
           "/share",
@@ -297,7 +297,7 @@ void main() {
       await tester.tap(find.text("Protocol options"));
       await tester.pumpAndSettle();
 
-      expect(find.text("route:/settings/protocols"), findsOneWidget);
+      expect(find.text("route:/server"), findsOneWidget);
     });
   });
 

@@ -18,12 +18,19 @@ class ShellScaffold extends StatelessWidget {
 
   final StatefulNavigationShell shell;
 
+  // Settings is a sixth branch (see router.dart) reached from AppHeader's
+  // tune icon, not from the dock — kickoff's five permanent destinations
+  // stayed four-wide-plus-a-gear once Settings had a real header entry
+  // point, so the dock no longer needs to spend a slot on it too. Share took
+  // the same route out (reached from Home, Files and Settings instead); its
+  // dock slot now shows Server (Protocols & Network) directly, since that
+  // screen — not Home's status card — is where every protocol's own on/off
+  // switch and its port live.
   static const List<_Destination> _destinations = <_Destination>[
     _Destination(icon: Icons.dns_outlined, label: "Home"),
     _Destination(icon: Icons.folder_outlined, label: "Files"),
-    _Destination(icon: Icons.share_outlined, label: "Share"),
+    _Destination(icon: Icons.router_outlined, label: "Server"),
     _Destination(icon: Icons.swap_vert, label: "Activity"),
-    _Destination(icon: Icons.tune, label: "Settings"),
   ];
 
   @override
@@ -38,7 +45,14 @@ class ShellScaffold extends StatelessWidget {
         bottom: false,
         child: Column(
           children: <Widget>[
-            AppHeader(subtitle: _destinations[shell.currentIndex].label),
+            // Settings (branch index 4) has no dock item any more, so its
+            // index falls outside _destinations — fall back to a fixed label
+            // rather than indexing out of range.
+            AppHeader(
+              subtitle: shell.currentIndex < _destinations.length
+                  ? _destinations[shell.currentIndex].label
+                  : "Settings",
+            ),
             Expanded(
               child: MediaQuery.removePadding(context: context, removeTop: true, child: shell),
             ),

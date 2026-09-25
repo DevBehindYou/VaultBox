@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:go_router/go_router.dart";
@@ -51,7 +53,7 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.hub_outlined,
                 title: "Protocols & Network",
                 subtitle: protocols,
-                onTap: () => context.go("/settings/protocols"),
+                onTap: () => context.go("/server"),
               ),
               AuroraSettingRow(
                 icon: Icons.shield_outlined,
@@ -79,7 +81,7 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.group_outlined,
                 title: "People & links",
                 subtitle: "Accounts, folder access, share and upload links",
-                onTap: () => context.go("/share"),
+                onTap: () => unawaited(context.push("/share")),
               ),
             ],
           ),

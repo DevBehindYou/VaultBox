@@ -64,6 +64,21 @@ class VaultBoxApp extends StatelessWidget {
         ThemePreference.dark => ThemeMode.dark,
       },
       routerConfig: router,
+      // Found on a real phone at the OS's max accessibility text size (2.0x):
+      // the dock and header have fixed heights (kickoff's Aurora Glass dock,
+      // the 60px AppHeader bar) that a full unclamped scale overflows —
+      // "BOTTOM OVERFLOWED BY 34 PIXELS" on the dock, a clipped header
+      // subtitle, a clipped button label. 1.3x held up cleanly everywhere
+      // checked (Home, the onboarding banner, the dock); this clamps rather
+      // than redesigning every fixed-height widget in the app for unlimited
+      // scale — still real enlargement for low vision, just not unbounded.
+      builder: (BuildContext context, Widget? child) {
+        final TextScaler clamped = MediaQuery.textScalerOf(context).clamp(maxScaleFactor: 1.3);
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: clamped),
+          child: child!,
+        );
+      },
     );
   }
 }

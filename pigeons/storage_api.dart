@@ -27,6 +27,8 @@
 // `openDocumentTree` in particular could not have worked as a synchronous
 // method — it has to wait for an Activity result.
 
+import "dart:typed_data";
+
 import "package:pigeon/pigeon.dart";
 
 @ConfigurePigeon(
@@ -132,10 +134,7 @@ abstract class AndroidStorageApi {
   String createDirectory(String treeUri, String parentDocumentId, String name);
 
   /// Creates an empty document and returns its id — the caller then opens a
-  /// file descriptor separately (see [openFileDescriptor]) to write content.
-  /// Splitting create-then-write (rather than one call that also takes bytes)
-  /// is what makes streaming large files possible at all through this
-  /// bridge.
+  /// stream on it (see [openStream]) to write content.
   @async
   String createFile(String treeUri, String parentDocumentId, String name, String mimeType);
 
@@ -146,24 +145,30 @@ abstract class AndroidStorageApi {
   @async
   String renameDocument(String treeUri, String documentId, String newName);
 
-  /// Opens a raw file descriptor via
-  /// `ContentResolver.openFileDescriptor(uri, mode)`, then `detachFd()`s
-  /// it — ownership transfers to the caller from this point, so Dart is
-  /// responsible for closing whatever it opens from this fd. [mode] is
-  /// `"r"`, `"w"`, or `"rw"` — the same vocabulary
-  /// `ContentResolver.openFileDescriptor` itself takes.
+  /// Opens a document for streaming and returns a handle for [readChunk] /
+  /// [writeChunk] / [closeStream]. [mode] is `"r"` (read from byte [start])
+  /// or `"w"` (truncate, then write; [start] ignored).
   ///
-  /// Dart-side usage: `File('/proc/self/fd/$fd')` — Android's `/proc`
-  /// exposes a process's own open descriptors as regular file paths, which
-  /// is what lets `dart:io` stream through a SAF-backed file at normal
-  /// throughput instead of round-tripping every chunk over a platform
-  /// channel. This is the highest-risk, least-verified part of this whole
-  /// contract — it needs on-device validation (large file, both directions,
-  /// cancellation mid-transfer, and behaviour across the Android versions
-  /// VaultBox targets) before anything depends on it for real user data. See
-  /// docs/IMPLEMENTATION_PLAN.md's risk register.
+  /// Bytes travel over the channel in chunks rather than through
+  /// `File('/proc/self/fd/N')`: re-opening that path re-resolves it to the
+  /// provider's lower-filesystem path (e.g. `/mnt/media_rw/...` for an SD
+  /// card), which the app may not open — EACCES on Android 14 (found on a
+  /// real device, 2026-09-26). The native side reads and writes through the
+  /// descriptor it opened itself, which the grant covers.
   @async
-  int openFileDescriptor(String treeUri, String documentId, String mode);
+  int openStream(String treeUri, String documentId, String mode, int start);
+
+  /// Up to [maxBytes] bytes; an empty result means end of file.
+  @async
+  Uint8List readChunk(int handle, int maxBytes);
+
+  @async
+  void writeChunk(int handle, Uint8List bytes);
+
+  /// Flushes (and syncs, for writes) and releases the handle. Safe to call on
+  /// an already-closed or unknown handle.
+  @async
+  void closeStream(int handle);
 
   /// Launches `ACTION_OPEN_DOCUMENT` (multi-select), then copies every picked
   /// document into a fresh directory under the app's cache and returns the

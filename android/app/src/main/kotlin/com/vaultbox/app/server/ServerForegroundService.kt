@@ -8,7 +8,9 @@ import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import com.vaultbox.app.MainActivity
 import com.vaultbox.app.pigeon.AndroidStorageApi
 import com.vaultbox.app.pigeon.ServerConfigMessage
@@ -37,6 +39,11 @@ import io.flutter.embedding.engine.dart.DartExecutor
 class ServerForegroundService : Service() {
     private var engine: FlutterEngine? = null
 
+    // The start request that launched [engine]; a failed run stops only that
+    // request, so a "Try again" that arrived meanwhile keeps the service alive.
+    private var engineStartId = 0
+    private var latestStartId = 0
+
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -44,6 +51,7 @@ class ServerForegroundService : Service() {
             stopSelf()
             return START_NOT_STICKY
         }
+        latestStartId = startId
         startServer()
         return START_NOT_STICKY
     }
@@ -59,7 +67,13 @@ class ServerForegroundService : Service() {
     }
 
     private fun startServer() {
-        if (engine != null) return // already running
+        if (engine != null) {
+            if (ServerStateStore.current.state != ServerRunStateMessage.FAILED) return // already running
+            // A failed start's engine is still around (its stopSelf may not have
+            // run yet): replace it instead of treating it as "already running".
+            engine?.destroy()
+            engine = null
+        }
 
         ensureChannel()
         // Must be called promptly after startForegroundService(), before anything slow.
@@ -87,6 +101,7 @@ class ServerForegroundService : Service() {
                 ),
             )
             engine = newEngine
+            engineStartId = latestStartId
         } catch (t: Throwable) {
             publish(
                 ServerStateMessage(
@@ -102,6 +117,13 @@ class ServerForegroundService : Service() {
     private inner class RuntimeHost : ServerRuntimeApi {
         override fun reportState(state: ServerStateMessage) {
             publish(state)
+            // Tear a failed start down so the next start gets a fresh engine
+            // (onDestroy keeps FAILED visible). Posted, not called inline: this
+            // runs inside a message from the very engine being destroyed.
+            if (state.state == ServerRunStateMessage.FAILED) {
+                val failedStartId = engineStartId
+                Handler(Looper.getMainLooper()).post { stopSelf(failedStartId) }
+            }
         }
 
         override fun getConfig(): ServerConfigMessage = ServerConfigStore(applicationContext).get()
@@ -148,7 +170,7 @@ class ServerForegroundService : Service() {
         val manager = getSystemService(NotificationManager::class.java)
         if (manager.getNotificationChannel(CHANNEL_ID) == null) {
             manager.createNotificationChannel(
-                NotificationChannel(CHANNEL_ID, "VaultBox server", NotificationManager.IMPORTANCE_LOW),
+                NotificationChannel(CHANNEL_ID, "Atomic Carton server", NotificationManager.IMPORTANCE_LOW),
             )
         }
     }
@@ -168,7 +190,7 @@ class ServerForegroundService : Service() {
         )
         @Suppress("DEPRECATION")
         return Notification.Builder(this, CHANNEL_ID)
-            .setContentTitle("VaultBox server")
+            .setContentTitle("Atomic Carton server")
             .setContentText(text)
             .setSmallIcon(applicationInfo.icon)
             .setOngoing(true)

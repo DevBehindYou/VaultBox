@@ -3,6 +3,7 @@ import "dart:ui";
 
 import "package:flutter/widgets.dart";
 
+import "../core/logging/app_logger.dart";
 import "../domain/entities/ftp_settings.dart";
 import "../platform/pigeon/storage_api.g.dart";
 import "api/vault_api.dart";
@@ -32,6 +33,7 @@ import "tls_context.dart";
 Future<void> serverMain() async {
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
+  AppLogger.init();
 
   final ServerRuntimeApi runtime = ServerRuntimeApi();
   await runtime.reportState(ServerStateMessage(state: ServerRunStateMessage.starting));

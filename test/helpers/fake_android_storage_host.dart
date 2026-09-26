@@ -1,3 +1,5 @@
+import "dart:typed_data";
+
 import "package:vaultbox/core/errors/app_failure.dart";
 import "package:vaultbox/platform/adapters/android_storage_host.dart";
 
@@ -34,15 +36,37 @@ final class FakeAndroidStorageHost implements AndroidStorageHost {
   };
   int _idCounter = 0;
 
+  /// When set, `writeChunk` throws it once this many bytes have been written
+  /// to a stream (simulates a card pulled mid-write).
+  AppFailure? failWriteAfter;
+  int failWriteAfterBytes = 0;
+
+  final Map<int, _FakeStream> _streams = <int, _FakeStream>{};
+  int _handleCounter = 0;
+
+  /// Streams opened and not yet closed — must be 0 after every operation.
+  int get openStreamCount => _streams.length;
+
   void seedFile({
     required List<String> parentPath,
     required String name,
     int sizeBytes = 0,
+    List<int>? content,
   }) {
     final String parentId = _idFor(parentPath);
     final String id = "file-${_idCounter++}";
-    _nodes[id] = _FakeNode.file(name: name, sizeBytes: sizeBytes);
+    _nodes[id] = _FakeNode.file(name: name, bytes: content ?? List<int>.filled(sizeBytes, 0));
     _nodes[parentId]!.childIds.add(id);
+  }
+
+  /// The stored bytes of the file at [path], or null if there is none.
+  Uint8List? contentOf(List<String> path) {
+    try {
+      final _FakeNode node = _nodes[_idFor(path)]!;
+      return node.isDirectory ? null : Uint8List.fromList(node.bytes);
+    } on StateError {
+      return null;
+    }
   }
 
   String _idFor(List<String> segments) {
@@ -102,7 +126,7 @@ final class FakeAndroidStorageHost implements AndroidStorageHost {
     String mimeType,
   ) async {
     final String id = "file-${_idCounter++}";
-    _nodes[id] = _FakeNode.file(name: name, sizeBytes: 0);
+    _nodes[id] = _FakeNode.file(name: name, bytes: <int>[]);
     _nodes[parentDocumentId]!.childIds.add(id);
     return id;
   }
@@ -122,11 +146,39 @@ final class FakeAndroidStorageHost implements AndroidStorageHost {
   }
 
   @override
-  Future<int> openFileDescriptor(String treeUri, String documentId, String mode) {
-    throw UnsupportedError(
-      "FakeAndroidStorageHost cannot fabricate a real OS file descriptor — "
-      "see this test file's top-of-file scope note.",
-    );
+  Future<int> openStream(String treeUri, String documentId, {required String mode, int start = 0}) async {
+    final _FakeNode? node = _nodes[documentId];
+    if (node == null || node.isDirectory) {
+      throw const UnexpectedFailure(debugDetail: "not_found: no such document");
+    }
+    final bool writing = mode == "w";
+    if (writing) node.bytes = <int>[];
+    final int handle = ++_handleCounter;
+    _streams[handle] = _FakeStream(node, writing: writing, position: writing ? 0 : start);
+    return handle;
+  }
+
+  @override
+  Future<Uint8List> readChunk(int handle, int maxBytes) async {
+    final _FakeStream stream = _streams[handle]!;
+    final List<int> bytes = stream.node.bytes;
+    final int from = stream.position.clamp(0, bytes.length);
+    final int to = (from + maxBytes).clamp(0, bytes.length);
+    stream.position = to;
+    return Uint8List.fromList(bytes.sublist(from, to));
+  }
+
+  @override
+  Future<void> writeChunk(int handle, Uint8List bytes) async {
+    final _FakeStream stream = _streams[handle]!;
+    final AppFailure? failure = failWriteAfter;
+    if (failure != null && stream.node.bytes.length + bytes.length > failWriteAfterBytes) throw failure;
+    stream.node.bytes.addAll(bytes);
+  }
+
+  @override
+  Future<void> closeStream(int handle) async {
+    _streams.remove(handle);
   }
 
   @override
@@ -157,12 +209,22 @@ final class FakeAndroidStorageHost implements AndroidStorageHost {
 }
 
 final class _FakeNode {
-  _FakeNode.directory({required this.name}) : isDirectory = true, sizeBytes = null;
+  _FakeNode.directory({required this.name}) : isDirectory = true, bytes = <int>[];
 
-  _FakeNode.file({required this.name, required int this.sizeBytes}) : isDirectory = false;
+  _FakeNode.file({required this.name, required List<int> bytes}) : isDirectory = false, bytes = List<int>.of(bytes);
 
   String name;
   final bool isDirectory;
-  final int? sizeBytes;
+  List<int> bytes;
   final List<String> childIds = <String>[];
+
+  int? get sizeBytes => isDirectory ? null : bytes.length;
+}
+
+final class _FakeStream {
+  _FakeStream(this.node, {required this.writing, required this.position});
+
+  final _FakeNode node;
+  final bool writing;
+  int position;
 }

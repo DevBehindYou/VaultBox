@@ -1,3 +1,5 @@
+import "dart:typed_data";
+
 import "package:flutter/services.dart" show PlatformException;
 
 import "../../core/errors/app_failure.dart";
@@ -72,8 +74,17 @@ final class PigeonAndroidStorageHost implements AndroidStorageHost {
       _guard(() => _api.renameDocument(treeUri, documentId, newName));
 
   @override
-  Future<int> openFileDescriptor(String treeUri, String documentId, String mode) =>
-      _guard(() => _api.openFileDescriptor(treeUri, documentId, mode));
+  Future<int> openStream(String treeUri, String documentId, {required String mode, int start = 0}) =>
+      _guard(() => _api.openStream(treeUri, documentId, mode, start));
+
+  @override
+  Future<Uint8List> readChunk(int handle, int maxBytes) => _guard(() => _api.readChunk(handle, maxBytes));
+
+  @override
+  Future<void> writeChunk(int handle, Uint8List bytes) => _guard(() => _api.writeChunk(handle, bytes));
+
+  @override
+  Future<void> closeStream(int handle) => _guard(() => _api.closeStream(handle));
 
   @override
   Future<List<PickedFile>> pickFilesToCache() async {

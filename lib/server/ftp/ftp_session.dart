@@ -4,7 +4,10 @@ import "dart:io";
 import "dart:math";
 import "dart:typed_data";
 
+import "package:logging/logging.dart";
+
 import "../../core/errors/app_failure.dart";
+import "../../core/logging/app_logger.dart";
 import "../../domain/entities/account.dart";
 import "../../domain/entities/activity.dart";
 import "../../domain/entities/ftp_settings.dart";
@@ -21,10 +24,13 @@ import "../api/api_types.dart";
 import "../files/file_transfer.dart";
 import "../files/root_names.dart";
 import "../files/storage_gate.dart";
+import "../network_addresses.dart";
 import "../webdav/dav_auth.dart";
 import "ftp_deps.dart";
 import "ftp_listing.dart";
 import "ftp_paths.dart";
+
+final Logger _log = AppLogger.of("FtpSession");
 
 /// Where a path in the FTP tree points: the top (the list of storage
 /// locations), or an item inside one of them.
@@ -121,6 +127,7 @@ final class FtpSession {
 
   /// Starts the conversation.
   void start() {
+    _ignoreDoneErrors(_control);
     _reply(220, "Atomic Carton FTP server ready.");
     _listen();
     _touch();
@@ -167,6 +174,13 @@ final class FtpSession {
       // already gone
     }
     if (!_done.isCompleted) _done.complete();
+  }
+
+  /// A write to a connection the client already reset fails through `done`,
+  /// which nothing else waits on — without this it surfaced as an unhandled
+  /// SocketException each time a client dropped.
+  static void _ignoreDoneErrors(Socket socket) {
+    unawaited(socket.done.then<void>((Object? _) {}, onError: (Object _) {}));
   }
 
   void _reply(int code, String text) {
@@ -518,6 +532,7 @@ final class FtpSession {
       return;
     }
     _control = secure;
+    _ignoreDoneErrors(secure);
     _subscription = null;
     _tlsActive = true;
     _account = null;
@@ -626,7 +641,7 @@ final class FtpSession {
   Future<void> _pasv() async {
     await _closePassive();
     final _Passive passive = await _openPassive();
-    final InternetAddress local = _control.address;
+    final InternetAddress local = await _advertisedAddress();
     if (local.type != InternetAddressType.IPv4) {
       await passive.server.close();
       _reply(522, "Use EPSV.");
@@ -635,6 +650,15 @@ final class FtpSession {
     _passive = passive;
     final List<String> octets = local.address.split(".");
     _reply(227, "Entering Passive Mode (${octets.join(",")},${passive.port >> 8},${passive.port & 255}).");
+  }
+
+  /// The address PASV tells the client to connect to. Not `_control.address`
+  /// as-is: behind a listener bound to 0.0.0.0 that reads 0.0.0.0, which
+  /// clients can't connect to (seen on a real device, 2026-09-26).
+  Future<InternetAddress> _advertisedAddress() async {
+    final InternetAddress local = _control.address;
+    if (local.address != InternetAddress.anyIPv4.address) return local;
+    return await localAddressFacing(_control.remoteAddress) ?? local;
   }
 
   Future<void> _epsv(String? argument) async {
@@ -829,7 +853,8 @@ final class FtpSession {
       };
       await _sendText(data, lines.map((String l) => "$l\r\n").join());
       _reply(226, "Listing sent.");
-    } on Object {
+    } on Object catch (error) {
+      _log.warning("FTP listing failed: ${error.runtimeType}: $error");
       data.destroy();
       _reply(426, "The listing was interrupted.");
     } finally {
@@ -901,7 +926,8 @@ final class FtpSession {
       await data.flush();
       await data.close();
       _reply(226, "Transfer complete.");
-    } on Object {
+    } on Object catch (error) {
+      _log.warning("FTP download failed: ${error.runtimeType}: $error");
       data.destroy();
       meter.finish(TransferState.interrupted);
       _reply(426, "The transfer was interrupted.");
@@ -950,12 +976,14 @@ final class FtpSession {
       );
       _reply(226, "Transfer complete.");
     } on StorageFault catch (fault) {
+      _log.warning("FTP upload ended with ${fault.kind}");
       data.destroy();
       _replyFault(fault);
     } on NotEnoughSpaceFailure {
       data.destroy();
       _reply(552, "There isn't enough space.");
-    } on Object {
+    } on Object catch (error) {
+      _log.warning("FTP upload failed: ${error.runtimeType}: $error");
       data.destroy();
       _reply(426, "The upload was interrupted.");
     } finally {

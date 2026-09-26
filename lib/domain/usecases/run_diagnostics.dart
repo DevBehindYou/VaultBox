@@ -4,14 +4,13 @@ import "../entities/server_config.dart";
 import "../entities/server_state.dart";
 import "../entities/share.dart";
 import "../entities/storage_root.dart";
-import "../models/file_ref.dart";
 import "../repositories/account_repository.dart";
 import "../repositories/clock.dart";
 import "../repositories/file_repository.dart";
 import "../repositories/server_host.dart";
 import "../repositories/share_repository.dart";
 import "../repositories/storage_root_repository.dart";
-import "../value_objects/storage_path.dart";
+import "test_storage_access.dart";
 
 /// Looks at every part that has to work for VaultBox to be useful, and says in
 /// plain words what it found. Each check runs on its own: one that can't be
@@ -93,27 +92,26 @@ final class RunDiagnostics {
         );
         continue;
       }
-      try {
-        await _files.list(FileRef(root: root, path: StoragePath.root(root.id)), pageSize: 1).take(1).toList();
-        results.add(
-          DiagnosticCheck(
-            title: "Storage location",
-            subject: root.displayName,
-            status: DiagnosticStatus.ok,
-            detail: root.capabilities.canWrite ? "Readable and writable." : "Readable, but read-only.",
-          ),
-        );
-      } on Object {
-        results.add(
-          DiagnosticCheck(
-            title: "Storage location",
-            subject: root.displayName,
-            status: DiagnosticStatus.problem,
-            detail: "Reachable, but its files can't be listed.",
-            hint: "Atomic Carton may have lost permission to the folder. Add it again.",
-          ),
-        );
-      }
+      // A real write, read-back and delete, not just a listing: an SD-card
+      // folder once listed fine while every byte read and write failed, and
+      // this check still said "Readable and writable".
+      final StorageTestResult probe = await TestStorageAccess(_files, _clock).call(root);
+      results.add(
+        probe.ok
+            ? DiagnosticCheck(
+                title: "Storage location",
+                subject: root.displayName,
+                status: DiagnosticStatus.ok,
+                detail: root.capabilities.canWrite ? "Readable and writable." : "Readable, but read-only.",
+              )
+            : DiagnosticCheck(
+                title: "Storage location",
+                subject: root.displayName,
+                status: DiagnosticStatus.problem,
+                detail: probe.message,
+                hint: "Atomic Carton may have lost permission to the folder. Add it again.",
+              ),
+      );
     }
     return results;
   }

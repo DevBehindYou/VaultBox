@@ -1,26 +1,19 @@
+import "dart:async";
+import "dart:typed_data";
+
 import "package:flutter_test/flutter_test.dart";
 import "package:vaultbox/core/errors/app_failure.dart";
 import "package:vaultbox/data/services/saf_storage_backend.dart";
 import "package:vaultbox/domain/value_objects/storage_entry.dart";
+import "package:vaultbox/domain/repositories/storage_backend.dart";
 import "package:vaultbox/domain/value_objects/storage_path.dart";
+import "package:vaultbox/domain/value_objects/write_mode.dart";
 
 import "../helpers/fake_android_storage_host.dart";
 
-/// **Scope note, read before extending this file.** [SafStorageBackend]'s
-/// `openRead`/`openWrite`/`copy` depend on `File('/proc/self/fd/$fd')` — a
-/// real Android/Linux kernel feature backed by an actual open file
-/// descriptor on the native side (see the class's own doc comment and
-/// `pigeons/storage_api.dart`). `dart:io` has no portable way to fabricate a
-/// raw OS file descriptor from pure Dart, so [FakeAndroidStorageHost] below
-/// cannot faithfully back those three methods — faking them would mean
-/// testing a fake's behaviour, not the class's. Untested here on purpose,
-/// not by oversight; validating the byte-I/O path is on-device/integration
-/// work (docs/IMPLEMENTATION_PLAN.md risk register).
-///
-/// Everything this file DOES cover — path→documentId resolution,
-/// list/stat/createDirectory/rename/delete, and the metadata half of `copy`
-/// (directory recursion, conflict detection) — has no such dependency and is
-/// fully exercised here.
+/// [SafStorageBackend] against an in-memory [FakeAndroidStorageHost]: path to
+/// documentId resolution, metadata operations, and byte I/O through the
+/// chunked `openStream`/`readChunk`/`writeChunk`/`closeStream` bridge.
 void main() {
   late FakeAndroidStorageHost host;
   late SafStorageBackend backend;
@@ -106,5 +99,87 @@ void main() {
       () => backend.copy(at("A"), at("B")),
       throwsA(isA<PathConflictFailure>()),
     );
+  });
+
+  group("byte I/O", () {
+    List<int> pattern(int length) => List<int>.generate(length, (int i) => (i * 31 + 7) & 0xff);
+
+    Future<List<int>> readAll(Stream<List<int>> stream) async =>
+        (await stream.toList()).expand((List<int> c) => c).toList();
+
+    test("a file larger than one chunk writes and reads back byte for byte", () async {
+      final List<int> data = pattern(SafStorageBackend.chunkSize * 2 + 12345);
+      final StorageWriteHandle handle = await backend.openWrite(at("/big.bin"));
+      await handle.sink.addStream(Stream<List<int>>.fromIterable(<List<int>>[
+        for (int i = 0; i < data.length; i += 65536) data.sublist(i, i + 65536 > data.length ? data.length : i + 65536),
+      ]));
+      expect(await handle.commit(), data.length);
+
+      expect(host.contentOf(<String>["big.bin"]), data);
+      expect(await readAll(backend.openRead(at("/big.bin"))), data);
+      expect(host.openStreamCount, 0);
+    });
+
+    test("a byte range reads exactly start..end inclusive", () async {
+      host.seedFile(parentPath: <String>[], name: "r.bin", content: pattern(2000));
+      expect(await readAll(backend.openRead(at("/r.bin"), start: 100, end: 199)), pattern(2000).sublist(100, 200));
+      expect(await readAll(backend.openRead(at("/r.bin"), start: 1990)), pattern(2000).sublist(1990));
+      expect(host.openStreamCount, 0);
+    });
+
+    test("cancelling a read part-way releases the native stream", () async {
+      host.seedFile(parentPath: <String>[], name: "c.bin", content: pattern(SafStorageBackend.chunkSize * 3));
+      final Completer<void> first = Completer<void>();
+      final StreamSubscription<List<int>> sub = backend.openRead(at("/c.bin")).listen((_) {
+        if (!first.isCompleted) first.complete();
+      });
+      await first.future;
+      await sub.cancel();
+      expect(host.openStreamCount, 0);
+    });
+
+    test("a write that fails mid-way reports the error, removes the new file and releases the stream", () async {
+      host
+        ..failWriteAfter = const PermissionRevokedFailure(debugDetail: "card pulled")
+        ..failWriteAfterBytes = SafStorageBackend.chunkSize;
+      final StorageWriteHandle handle = await backend.openWrite(at("/half.bin"));
+      await expectLater(
+        handle.sink.addStream(Stream<List<int>>.value(pattern(SafStorageBackend.chunkSize * 3))),
+        throwsA(isA<PermissionRevokedFailure>()),
+      );
+      await handle.abort();
+
+      expect((await backend.stat(at("/half.bin"))).exists, isFalse);
+      expect(host.openStreamCount, 0);
+    });
+
+    test("replace truncates: a shorter overwrite leaves no old tail", () async {
+      host.seedFile(parentPath: <String>[], name: "t.txt", content: pattern(5000));
+      final StorageWriteHandle handle = await backend.openWrite(at("/t.txt"), mode: WriteMode.replace);
+      await handle.sink.addStream(Stream<List<int>>.value(<int>[1, 2, 3]));
+      await handle.commit();
+      expect(host.contentOf(<String>["t.txt"]), <int>[1, 2, 3]);
+    });
+
+    test("create refuses an existing file", () async {
+      host.seedFile(parentPath: <String>[], name: "x.bin", sizeBytes: 3);
+      expect(backend.openWrite(at("/x.bin")), throwsA(isA<PathConflictFailure>()));
+    });
+
+    test("copy duplicates the bytes and keeps the source", () async {
+      host.seedFile(parentPath: <String>[], name: "src.bin", content: pattern(700000));
+      await backend.copy(at("/src.bin"), at("/dst.bin"));
+      expect(host.contentOf(<String>["dst.bin"]), pattern(700000));
+      expect(host.contentOf(<String>["src.bin"]), pattern(700000));
+      expect(host.openStreamCount, 0);
+    });
+
+    test("an empty file round-trips", () async {
+      final StorageWriteHandle handle = await backend.openWrite(at("/empty.bin"));
+      await handle.sink.addStream(const Stream<List<int>>.empty());
+      expect(await handle.commit(), 0);
+      expect(await readAll(backend.openRead(at("/empty.bin"))), isEmpty);
+      expect(host.contentOf(<String>["empty.bin"]), Uint8List(0));
+    });
   });
 }

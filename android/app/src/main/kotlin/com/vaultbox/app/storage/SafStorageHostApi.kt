@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import android.provider.OpenableColumns
 import android.provider.Settings
@@ -16,7 +17,11 @@ import com.vaultbox.app.pigeon.SafEntryMessage
 import com.vaultbox.app.pigeon.SafEntryTypeMessage
 import com.vaultbox.app.pigeon.SafTreeMessage
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicLong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -34,9 +39,7 @@ import kotlin.coroutines.resume
  *  - errors are reported by throwing [FlutterError]; the Dart adapter
  *    (`PigeonAndroidStorageHost`) maps its `code` to an `AppFailure`.
  *
- * STATUS: compiles in CI. NOT exercised on a device — multi-provider interop,
- * very large files through [openFileDescriptor], and behaviour across Android
- * versions are all unverified (IMPLEMENTATION_PLAN R-19/R-20).
+ * Byte I/O goes through [openStream]/[readChunk]/[writeChunk]/[closeStream].
  */
 class SafStorageHostApi(
     private val context: Context,
@@ -166,21 +169,83 @@ class SafStorageHostApi(
         }
 
     // --- Byte I/O ---
+    //
+    // Chunked through the channel instead of handing Dart a raw fd to reopen as
+    // /proc/self/fd/N: that reopen resolves to the provider's lower-filesystem
+    // path and fails with EACCES on Android 14 for SD-card trees.
 
-    override suspend fun openFileDescriptor(treeUri: String, documentId: String, mode: String): Long =
+    override suspend fun openStream(treeUri: String, documentId: String, mode: String, start: Long): Long =
         withContext(Dispatchers.IO) {
             guarded {
                 val documentUri = DocumentsContract.buildDocumentUriUsingTree(Uri.parse(treeUri), documentId)
+                val writing = mode == "w"
                 // Plain "w" does NOT truncate on many SAF providers, which would
                 // leave stale tail bytes after a shorter overwrite. "wt" does.
-                val effectiveMode = if (mode == "w") "wt" else mode
-                val pfd = resolver.openFileDescriptor(documentUri, effectiveMode)
-                    ?: throw IllegalStateException("Provider refused to open a file descriptor")
-                // detachFd() transfers ownership to the caller: Dart must close
-                // whatever it opens from this fd.
-                pfd.detachFd().toLong()
+                val pfd = resolver.openFileDescriptor(documentUri, if (writing) "wt" else "r")
+                    ?: throw IllegalStateException("Provider refused to open the document")
+                val stream = try {
+                    if (writing) {
+                        OpenStream(pfd, input = null, output = FileOutputStream(pfd.fileDescriptor))
+                    } else {
+                        val input = FileInputStream(pfd.fileDescriptor)
+                        if (start > 0) input.channel.position(start)
+                        OpenStream(pfd, input = input, output = null)
+                    }
+                } catch (e: Exception) {
+                    pfd.close()
+                    throw e
+                }
+                val handle = nextHandle.incrementAndGet()
+                streams[handle] = stream
+                handle
             }
         }
+
+    override suspend fun readChunk(handle: Long, maxBytes: Long): ByteArray =
+        withContext(Dispatchers.IO) {
+            guarded {
+                val input = streams[handle]?.input ?: throw IllegalStateException("No open read stream $handle")
+                val buffer = ByteArray(maxBytes.toInt().coerceIn(1, MAX_CHUNK))
+                var filled = 0
+                while (filled < buffer.size) {
+                    val n = input.read(buffer, filled, buffer.size - filled)
+                    if (n < 0) break
+                    filled += n
+                }
+                if (filled == buffer.size) buffer else buffer.copyOf(filled)
+            }
+        }
+
+    override suspend fun writeChunk(handle: Long, bytes: ByteArray) {
+        withContext(Dispatchers.IO) {
+            guarded {
+                val output = streams[handle]?.output ?: throw IllegalStateException("No open write stream $handle")
+                output.write(bytes)
+            }
+        }
+    }
+
+    override suspend fun closeStream(handle: Long) {
+        withContext(Dispatchers.IO) {
+            val stream = streams.remove(handle) ?: return@withContext
+            guarded {
+                try {
+                    stream.output?.let {
+                        it.flush()
+                        // Pipe- or network-backed providers can't sync; the flush above already handed the bytes over.
+                        try {
+                            it.fd.sync()
+                        } catch (ignored: java.io.SyncFailedException) {
+                        }
+                    }
+                } finally {
+                    stream.input?.close()
+                    stream.output?.close()
+                    stream.pfd.close()
+                }
+            }
+        }
+    }
 
     // --- Importing files from anywhere (system picker) ---
 
@@ -297,7 +362,18 @@ class SafStorageHostApi(
         throw FlutterError(code = "io_error", message = e.message, details = e.javaClass.simpleName)
     }
 
+    private class OpenStream(
+        val pfd: ParcelFileDescriptor,
+        val input: FileInputStream?,
+        val output: FileOutputStream?,
+    )
+
+    private val streams = ConcurrentHashMap<Long, OpenStream>()
+    private val nextHandle = AtomicLong(0)
+
     private companion object {
+        const val MAX_CHUNK = 4 * 1024 * 1024
+
         val ENTRY_PROJECTION = arrayOf(
             DocumentsContract.Document.COLUMN_DOCUMENT_ID,
             DocumentsContract.Document.COLUMN_DISPLAY_NAME,

@@ -30,3 +30,23 @@ Future<String?> lanAddress() async {
   }
   return null;
 }
+
+/// This phone's IPv4 address on the network [peer] is on. A socket accepted by
+/// a listener bound to 0.0.0.0 reports 0.0.0.0 as its own `.address`, so an FTP
+/// PASV reply can't use that; this finds the real interface instead.
+Future<InternetAddress?> localAddressFacing(InternetAddress peer) async {
+  if (peer.isLoopback) return InternetAddress.loopbackIPv4;
+  if (peer.type != InternetAddressType.IPv4) return null;
+  final List<String> want = peer.address.split(".");
+  InternetAddress? sameSlash16;
+  for (final NetworkInterface interface in await NetworkInterface.list(type: InternetAddressType.IPv4)) {
+    for (final InternetAddress address in interface.addresses) {
+      final List<String> have = address.address.split(".");
+      if (have[0] == want[0] && have[1] == want[1]) {
+        if (have[2] == want[2]) return address;
+        sameSlash16 ??= address;
+      }
+    }
+  }
+  return sameSlash16;
+}

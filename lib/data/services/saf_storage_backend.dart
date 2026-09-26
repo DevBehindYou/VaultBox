@@ -1,5 +1,5 @@
 import "dart:async";
-import "dart:io";
+import "dart:typed_data";
 
 import "../../core/errors/app_failure.dart";
 import "../../domain/repositories/storage_backend.dart";
@@ -127,17 +127,37 @@ final class SafStorageBackend implements StorageBackend {
     );
   }
 
+  /// Bytes per platform-channel round trip.
+  static const int chunkSize = 512 * 1024;
+
   @override
   Stream<List<int>> openRead(StoragePath path, {int? start, int? end}) async* {
     final String documentId = await _resolveDocumentId(path);
-    final int fd = await _host.openFileDescriptor(_treeUri, documentId, "r");
-    // /proc/self/fd is what makes this a real stream instead of a chunked
-    // platform-channel relay — see the doc comment on
-    // AndroidStorageApi.openFileDescriptor in pigeons/storage_api.dart for
-    // why this needs on-device verification before it's trusted for large
-    // files.
-    final File fdFile = File("/proc/self/fd/$fd");
-    yield* fdFile.openRead(start, end == null ? null : end + 1);
+    final int first = start ?? 0;
+    final int handle = await _host.openStream(_treeUri, documentId, mode: "r", start: first);
+    try {
+      int? remaining = end == null ? null : end - first + 1;
+      while (remaining == null || remaining > 0) {
+        final Uint8List chunk = await _host.readChunk(
+          handle,
+          remaining == null || remaining > chunkSize ? chunkSize : remaining,
+        );
+        if (chunk.isEmpty) break;
+        if (remaining != null) remaining -= chunk.length;
+        yield chunk;
+      }
+    } finally {
+      // Also runs when the listener cancels (a client disconnecting mid-download).
+      await _closeQuietly(handle);
+    }
+  }
+
+  Future<void> _closeQuietly(int handle) async {
+    try {
+      await _host.closeStream(handle);
+    } on Object {
+      // Releasing a handle that already failed; nothing more to do.
+    }
   }
 
   @override
@@ -174,11 +194,17 @@ final class SafStorageBackend implements StorageBackend {
     // real option SAF supports but adds a second native round trip to every
     // write, so it's deferred here rather than half-implemented — tracked
     // in docs/IMPLEMENTATION_PLAN.md.
-    final int fd = await _host.openFileDescriptor(_treeUri, documentId, "w");
-    final File fdFile = File("/proc/self/fd/$fd");
+    final int handle;
+    try {
+      handle = await _host.openStream(_treeUri, documentId, mode: "w");
+    } catch (_) {
+      if (isFreshCreate) await _host.deleteDocument(_treeUri, documentId);
+      rethrow;
+    }
 
     return _SafWriteHandle(
-      sink: fdFile.openWrite(),
+      host: _host,
+      handle: handle,
       onAbort: isFreshCreate
           ? () => _host.deleteDocument(_treeUri, documentId)
           : () async {}, // can't un-truncate an in-place overwrite — see note above
@@ -286,76 +312,134 @@ final class SafStorageBackend implements StorageBackend {
 }
 
 final class _SafWriteHandle implements StorageWriteHandle {
-  _SafWriteHandle({required IOSink sink, required Future<void> Function() onAbort})
-    : _sink = sink,
-      _onAbort = onAbort;
+  _SafWriteHandle({
+    required AndroidStorageHost host,
+    required int handle,
+    required Future<void> Function() onAbort,
+  }) : _host = host,
+       _handle = handle,
+       _onAbort = onAbort,
+       _sink = _ChunkSink(host, handle);
 
-  final IOSink _sink;
+  final AndroidStorageHost _host;
+  final int _handle;
   final Future<void> Function() _onAbort;
+  final _ChunkSink _sink;
   bool _finished = false;
-  int _written = 0;
-  // ignore: close_sinks — closed via _sink in commit()/abort(); this only wraps it.
-  _CountingSink? _countingSink;
 
   @override
-  StreamSink<List<int>> get sink =>
-      _countingSink ??= _CountingSink(_sink, (int n) => _written += n);
+  StreamSink<List<int>> get sink => _sink;
 
   @override
   Future<int> commit() async {
-    if (_finished) return _written;
+    if (_finished) return _sink.written;
     _finished = true;
-    await _sink.flush();
-    await _sink.close();
-    return _written;
+    try {
+      await _sink.close();
+    } catch (_) {
+      await _closeQuietly();
+      rethrow;
+    }
+    await _host.closeStream(_handle);
+    return _sink.written;
   }
 
   @override
   Future<void> abort() async {
     if (_finished) return;
     _finished = true;
-    try {
-      await _sink.close();
-    } on FileSystemException {
-      // Best-effort — the fd may already be in a bad state, which is exactly
-      // why we're aborting.
-    }
+    _sink.discard();
+    await _closeQuietly();
     await _onAbort();
+  }
+
+  Future<void> _closeQuietly() async {
+    try {
+      await _host.closeStream(_handle);
+    } on Object {
+      // Best-effort: aborting because the stream is already in a bad state.
+    }
   }
 }
 
-/// Wraps an [IOSink] to track bytes written without needing
-/// [_SafWriteHandle] to double-buffer — `commit()` needs a byte count to
-/// verify against, and the underlying `File.openWrite()` sink doesn't expose
-/// one itself.
-final class _CountingSink implements StreamSink<List<int>> {
-  _CountingSink(this._inner, this._onBytes);
+/// Buffers writes into [SafStorageBackend.chunkSize] pieces and sends them to
+/// native one at a time. [addStream] waits for each piece before pulling more,
+/// so a fast network upload can't pile the whole file up in memory.
+final class _ChunkSink implements StreamSink<List<int>> {
+  _ChunkSink(this._host, this._handle);
 
-  final IOSink _inner;
-  final void Function(int) _onBytes;
+  final AndroidStorageHost _host;
+  final int _handle;
+  final BytesBuilder _buffer = BytesBuilder(copy: false);
+  final Completer<void> _done = Completer<void>();
+  Future<void> _pending = Future<void>.value();
+  Object? _error;
+  StackTrace? _errorTrace;
+  bool _closed = false;
+  bool _discarded = false;
+  int written = 0;
 
   @override
-  void add(List<int> event) {
-    _onBytes(event.length);
-    _inner.add(event);
+  void add(List<int> data) {
+    if (_closed) throw StateError("Cannot add to a closed sink");
+    _buffer.add(data);
+    written += data.length;
+    if (_buffer.length >= SafStorageBackend.chunkSize) _flush();
+  }
+
+  void _flush() {
+    if (_buffer.isEmpty) return;
+    final Uint8List bytes = _buffer.takeBytes();
+    _pending = _pending
+        .then<void>((_) async {
+          if (_error != null || _discarded) return;
+          await _host.writeChunk(_handle, bytes);
+        })
+        .catchError((Object error, StackTrace trace) {
+          _error ??= error;
+          _errorTrace ??= trace;
+        });
   }
 
   @override
-  void addError(Object error, [StackTrace? stackTrace]) => _inner.addError(error, stackTrace);
-
-  @override
-  Future<void> addStream(Stream<List<int>> stream) {
-    return _inner.addStream(
-      stream.map((List<int> chunk) {
-        _onBytes(chunk.length);
-        return chunk;
-      }),
-    );
+  Future<void> addStream(Stream<List<int>> stream) async {
+    await for (final List<int> chunk in stream) {
+      add(chunk);
+      await _pending;
+      _throwIfFailed();
+    }
   }
 
   @override
-  Future<void> close() => _inner.close();
+  void addError(Object error, [StackTrace? stackTrace]) {
+    _error ??= error;
+    _errorTrace ??= stackTrace ?? StackTrace.current;
+  }
 
   @override
-  Future<void> get done => _inner.done;
+  Future<void> close() async {
+    if (!_closed) {
+      _closed = true;
+      _flush();
+    }
+    await _pending;
+    if (!_done.isCompleted) _done.complete();
+    _throwIfFailed();
+  }
+
+  /// Drops anything not yet sent (used by abort).
+  void discard() {
+    _discarded = true;
+    _closed = true;
+    _buffer.clear();
+    if (!_done.isCompleted) _done.complete();
+  }
+
+  void _throwIfFailed() {
+    final Object? error = _error;
+    if (error != null) Error.throwWithStackTrace(error, _errorTrace ?? StackTrace.current);
+  }
+
+  @override
+  Future<void> get done => _done.future;
 }

@@ -1,3 +1,5 @@
+import "dart:typed_data";
+
 import "package:flutter/services.dart" show PlatformException;
 import "package:flutter_test/flutter_test.dart";
 import "package:vaultbox/core/errors/app_failure.dart";
@@ -37,10 +39,32 @@ final class FakeApi extends AndroidStorageApi {
     return picked;
   }
 
+  final List<String> calls = <String>[];
+
   @override
-  Future<int> openFileDescriptor(String treeUri, String documentId, String mode) async {
+  Future<int> openStream(String treeUri, String documentId, String mode, int start) async {
     _maybeFail();
+    calls.add("open $documentId $mode $start");
     return 42;
+  }
+
+  @override
+  Future<Uint8List> readChunk(int handle, int maxBytes) async {
+    _maybeFail();
+    calls.add("read $handle $maxBytes");
+    return Uint8List.fromList(<int>[1, 2, 3]);
+  }
+
+  @override
+  Future<void> writeChunk(int handle, Uint8List bytes) async {
+    _maybeFail();
+    calls.add("write $handle ${bytes.length}");
+  }
+
+  @override
+  Future<void> closeStream(int handle) async {
+    _maybeFail();
+    calls.add("close $handle");
   }
 }
 
@@ -115,7 +139,7 @@ void main() {
   test("any other native error becomes UnexpectedFailure and keeps the detail", () async {
     api.failWith = PlatformException(code: "io_error", message: "disk on fire");
     expect(
-      host.openFileDescriptor("tree", "doc", "r"),
+      host.openStream("tree", "doc", mode: "r"),
       throwsA(
         isA<UnexpectedFailure>().having(
           (UnexpectedFailure f) => f.debugDetail,
@@ -126,8 +150,12 @@ void main() {
     );
   });
 
-  test("passes the file descriptor straight through", () async {
-    expect(await host.openFileDescriptor("tree", "doc", "w"), 42);
+  test("passes stream calls straight through", () async {
+    final int handle = await host.openStream("tree", "doc", mode: "r", start: 7);
+    expect(await host.readChunk(handle, 1024), <int>[1, 2, 3]);
+    await host.writeChunk(handle, Uint8List(5));
+    await host.closeStream(handle);
+    expect(api.calls, <String>["open doc r 7", "read 42 1024", "write 42 5", "close 42"]);
   });
 
   test("maps picked files (cache path, real name, size, mime)", () async {

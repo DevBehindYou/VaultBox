@@ -1,3 +1,5 @@
+import "dart:typed_data";
+
 /// Hand-authored contract [SafStorageBackend] depends on, deliberately
 /// decoupled from Pigeon's generated types (see `pigeons/storage_api.dart`)
 /// so this interface — and everything built on it, including
@@ -35,11 +37,18 @@ abstract interface class AndroidStorageHost {
 
   Future<String> renameDocument(String treeUri, String documentId, String newName);
 
-  /// Returns a raw file descriptor already `detachFd()`'d on the native
-  /// side — ownership transfers to the Dart caller, which is responsible
-  /// for closing whatever it opens from
-  /// `File('/proc/self/fd/$fd')`. [mode] is `"r"`, `"w"`, or `"rw"`.
-  Future<int> openFileDescriptor(String treeUri, String documentId, String mode);
+  /// Opens a document for chunked streaming; returns a handle. [mode] is `"r"`
+  /// (reading from byte [start]) or `"w"` (truncate, then write). The caller
+  /// must [closeStream] the handle, also on error or cancellation.
+  Future<int> openStream(String treeUri, String documentId, {required String mode, int start = 0});
+
+  /// Up to [maxBytes] bytes; empty means end of file.
+  Future<Uint8List> readChunk(int handle, int maxBytes);
+
+  Future<void> writeChunk(int handle, Uint8List bytes);
+
+  /// Flushes and releases [handle]. Safe on an already-closed handle.
+  Future<void> closeStream(int handle);
 
   /// System file picker (multi-select). The native side copies each picked
   /// document into the app's cache and returns the copies; the caller OWNS them

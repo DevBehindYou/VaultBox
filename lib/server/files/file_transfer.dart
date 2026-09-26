@@ -1,5 +1,8 @@
 import "dart:async";
 
+import "package:logging/logging.dart";
+
+import "../../core/logging/app_logger.dart";
 import "../../core/utils/mime_types.dart";
 import "../../domain/entities/storage_root.dart";
 import "../../domain/models/file_ref.dart";
@@ -98,6 +101,8 @@ final class UploadResult {
 /// The byte-moving half of storage access, shared by every protocol: plan a
 /// (ranged) download, receive an upload safely. Callers do the authorising
 /// first ([StorageGate]); this only reports [StorageFault]s.
+final Logger _log = AppLogger.of("FileTransfer");
+
 final class FileTransfer {
   const FileTransfer(this._files);
 
@@ -183,6 +188,9 @@ final class FileTransfer {
         if (sourceError == null) rethrow;
       }
       if (sourceError != null) {
+        // Type and message only (a socket/TLS error names no file): what
+        // tells a client that simply went away from a TLS teardown quirk.
+        _log.warning("Upload stream ended with ${sourceError.runtimeType}: $sourceError");
         await handle.abort();
         throw const StorageFault(FaultKind.interrupted);
       }

@@ -147,6 +147,31 @@ jobs:
             dart run flutter_native_splash:create
           } 2>&1 | tee ci-report/logs/icons.log
 
+      # One stable signing key for every build, so an update installs over the
+      # previous APK instead of forcing an uninstall (which wipes app data).
+      # Kept in repository secrets; without them (e.g. a fork) the builds fall
+      # back to the per-runner debug key.
+      - name: Install signing key
+        if: steps.pub_get.outcome == 'success'
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "No signing secrets: builds use the debug key."
+            exit 0
+          fi
+          echo "$KEYSTORE_B64" | base64 -d > android/app/upload-keystore.jks
+          {
+            echo "storeFile=upload-keystore.jks"
+            echo "storePassword=$KEYSTORE_PASSWORD"
+            echo "keyAlias=$KEY_ALIAS"
+            echo "keyPassword=$KEY_PASSWORD"
+          } > android/key.properties
+          echo "Signing key installed."
+
       - name: flutter build apk (debug)
         id: apk
         if: steps.pub_get.outcome == 'success'
@@ -167,10 +192,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
-      # No real signing key or R8/ProGuard rules yet (docs/TASKS.md section F):
-      # android/app/build.gradle.kts signs `release` with the debug keystore for
-      # now, same as `flutter run --release`. Fine to install and try; not what a
-      # Play Store release would ship.
+      # Signed with the key from "Install signing key" (no R8/ProGuard rules yet).
       - name: flutter build apk (release)
         id: apk_release
         if: steps.pub_get.outcome == 'success'

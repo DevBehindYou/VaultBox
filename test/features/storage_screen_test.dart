@@ -78,8 +78,9 @@ void main() {
       routes: <RouteBase>[
         GoRoute(path: "/", builder: (BuildContext c, GoRouterState s) => const StorageScreen()),
         GoRoute(
-          path: "/onboarding/welcome",
-          builder: (BuildContext c, GoRouterState s) => const Scaffold(body: Text("route:/onboarding/welcome")),
+          path: "/onboarding/storage",
+          builder: (BuildContext c, GoRouterState s) =>
+              Scaffold(body: Text("route:/onboarding/storage add=${s.uri.queryParameters["add"]}")),
         ),
       ],
     );
@@ -242,7 +243,7 @@ void main() {
       await tester.tap(find.text("Add storage location"));
       await tester.pumpAndSettle();
 
-      expect(find.text("route:/onboarding/welcome"), findsOneWidget);
+      expect(find.text("route:/onboarding/storage add=1"), findsOneWidget, reason: "straight to the choice, not first-run setup");
     });
 
     testWidgets("with some added there is still a way to add another", (WidgetTester tester) async {
@@ -251,7 +252,7 @@ void main() {
       await tester.tap(find.text("Add storage location"));
       await tester.pumpAndSettle();
 
-      expect(find.text("route:/onboarding/welcome"), findsOneWidget);
+      expect(find.text("route:/onboarding/storage add=1"), findsOneWidget, reason: "straight to the choice, not first-run setup");
     });
   });
 }

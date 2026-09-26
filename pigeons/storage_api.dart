@@ -27,8 +27,6 @@
 // `openDocumentTree` in particular could not have worked as a synchronous
 // method — it has to wait for an Activity result.
 
-import "dart:typed_data";
-
 import "package:pigeon/pigeon.dart";
 
 @ConfigurePigeon(

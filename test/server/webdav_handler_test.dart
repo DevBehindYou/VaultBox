@@ -3,6 +3,7 @@ import "dart:convert";
 import "package:flutter_test/flutter_test.dart";
 import "package:vaultbox/domain/entities/account.dart";
 import "package:vaultbox/domain/entities/storage_root.dart";
+import "package:vaultbox/domain/repositories/storage_backend.dart";
 import "package:vaultbox/domain/security/authorizer.dart";
 import "package:vaultbox/domain/value_objects/storage_path.dart";
 import "package:vaultbox/server/api/api_types.dart";
@@ -253,6 +254,27 @@ void main() {
     test("an oversized body is 413", () async {
       final ApiResponse response = await h.send("PROPFIND", "/dav/Phone/", body: List<int>.filled(70 * 1024, 0x20));
       expect(response.status, 413);
+    });
+
+    test("the top folder leaves out locations the account can't read", () async {
+      h = DavHarness(authorizer: _DenyingAuthorizer((Permission p, StoragePath path) => path.rootId == "r2"));
+
+      final Map<String, Map<int, Map<String, String>>> ms = DavHarness.multistatus(
+        await h.send("PROPFIND", "/dav/", headers: <String, String>{"Depth": "1"}, body: _propfindAll),
+      );
+      expect(ms.keys, contains("/dav/Phone/"));
+      expect(ms.keys, isNot(contains("/dav/Card/")), reason: "not even the name of a location without access");
+    });
+
+    test("the .nomedia marker is bookkeeping: never listed, never served", () async {
+      final StorageWriteHandle marker = await h.phone.openWrite(sp("/.nomedia"));
+      await marker.commit();
+
+      final Map<String, Map<int, Map<String, String>>> ms = DavHarness.multistatus(
+        await h.send("PROPFIND", "/dav/Phone/", headers: <String, String>{"Depth": "1"}, body: _propfindAll),
+      );
+      expect(ms.keys.any((String k) => k.contains("nomedia")), isFalse);
+      expect((await h.send("GET", "/dav/Phone/.nomedia")).status, 404);
     });
 
     test("items the Authorizer hides are left out of a listing", () async {

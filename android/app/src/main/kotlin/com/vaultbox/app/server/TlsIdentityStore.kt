@@ -72,7 +72,7 @@ class TlsIdentityStore(private val context: Context) {
         generator.initialize(ECGenParameterSpec("secp256r1"))
         val pair = generator.generateKeyPair()
 
-        val subject = X500Principal("CN=VaultBox,O=VaultBox personal server")
+        val subject = X500Principal("CN=Atomic Carton,O=Atomic Carton personal server")
         val now = System.currentTimeMillis()
         val serial = BigInteger(64, SecureRandom()).add(BigInteger.ONE)
         val builder = JcaX509v3CertificateBuilder(

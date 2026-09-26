@@ -292,6 +292,9 @@ final class WebDavHandler {
       out.response(_href(null, null, collection: true), _propstats(query, _DavResource.collection(displayName: "Atomic Carton")));
       if (depth == "1") {
         for (final StorageRoot root in roots.bySlug.values) {
+          // Same rule as the web API's root list: a member doesn't learn the
+          // names of locations they have no access to.
+          if (!_gate.allows(account, Permission.read, root, StoragePath.root(root.id))) continue;
           out.response(
             _href(roots.slugById[root.id], null, collection: true),
             _propstats(query, _rootResource(root)),

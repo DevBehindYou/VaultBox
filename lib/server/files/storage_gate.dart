@@ -93,12 +93,16 @@ final class StorageGate {
   /// is case-insensitive.
   static const String reservedDirName = ".vaultbox";
 
-  /// Whether [path] is (inside) the hidden bookkeeping folder.
-  static bool isReserved(StoragePath path) =>
-      path.segments.isNotEmpty && path.segments.first.toLowerCase() == reservedDirName;
+  /// Top-level bookkeeping clients never see: the folder above (Recycle Bin)
+  /// and the `.nomedia` marker that keeps a root's media out of Gallery apps.
+  static const Set<String> reservedNames = <String>{reservedDirName, ".nomedia"};
 
-  /// Whether a single top-level [name] would collide with it.
-  static bool isReservedName(String name) => name.toLowerCase() == reservedDirName;
+  /// Whether [path] is (inside) a hidden bookkeeping entry.
+  static bool isReserved(StoragePath path) =>
+      path.segments.isNotEmpty && reservedNames.contains(path.segments.first.toLowerCase());
+
+  /// Whether a single top-level [name] would collide with one.
+  static bool isReservedName(String name) => reservedNames.contains(name.toLowerCase());
 
   /// Roots [protocol] may see (enabled, and — if that protocol's "Storage
   /// access" section restricts it — in its allowed set), whether or not they

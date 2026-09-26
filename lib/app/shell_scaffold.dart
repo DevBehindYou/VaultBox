@@ -7,36 +7,60 @@ import "../core/design/aurora_spacing.dart";
 import "../core/design/aurora_typography.dart";
 import "app_header.dart";
 
+// Settings is a fifth shell branch (see router.dart) reached from AppHeader's
+// tune icon, not from the dock. Share left the dock the same way; its slot
+// shows Server (Protocols & Network), where each protocol's switch and port live.
+const List<_Destination> _destinations = <_Destination>[
+  _Destination(icon: Icons.dns_outlined, label: "Home"),
+  _Destination(icon: Icons.folder_outlined, label: "Files"),
+  _Destination(icon: Icons.router_outlined, label: "Server"),
+  _Destination(icon: Icons.swap_vert, label: "Activity"),
+];
+
 /// The five-destination shell with the Aurora floating nav dock.
 ///
 /// The dock's moving "glass lens" is an intentional signature element, but
 /// kickoff §14/§55 require it to respect Reduce Motion — so the indicator
 /// animation duration collapses to zero when `MediaQuery.disableAnimations`
 /// is set rather than being unconditionally animated.
-class ShellScaffold extends StatelessWidget {
+class ShellScaffold extends StatefulWidget {
   const ShellScaffold({required this.shell, super.key});
 
   final StatefulNavigationShell shell;
 
-  // Settings is a sixth branch (see router.dart) reached from AppHeader's
-  // tune icon, not from the dock — kickoff's five permanent destinations
-  // stayed four-wide-plus-a-gear once Settings had a real header entry
-  // point, so the dock no longer needs to spend a slot on it too. Share took
-  // the same route out (reached from Home, Files and Settings instead); its
-  // dock slot now shows Server (Protocols & Network) directly, since that
-  // screen — not Home's status card — is where every protocol's own on/off
-  // switch and its port live.
-  static const List<_Destination> _destinations = <_Destination>[
-    _Destination(icon: Icons.dns_outlined, label: "Home"),
-    _Destination(icon: Icons.folder_outlined, label: "Files"),
-    _Destination(icon: Icons.router_outlined, label: "Server"),
-    _Destination(icon: Icons.swap_vert, label: "Activity"),
-  ];
+  @override
+  State<ShellScaffold> createState() => _ShellScaffoldState();
+}
+
+class _ShellScaffoldState extends State<ShellScaffold> {
+  // Settings (branch index 4) has no dock slot, so aligning the lens to its
+  // index pushed it past the dock's right edge. The lens instead stays over
+  // the last dock tab and fades out while Settings is open.
+  int _lensIndex = 0;
+
+  StatefulNavigationShell get shell => widget.shell;
+
+  @override
+  void initState() {
+    super.initState();
+    _syncLens();
+  }
+
+  @override
+  void didUpdateWidget(ShellScaffold oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncLens();
+  }
+
+  void _syncLens() {
+    if (shell.currentIndex < _destinations.length) _lensIndex = shell.currentIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
     final bool reduceMotion = MediaQuery.disableAnimationsOf(context);
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool onDockTab = shell.currentIndex < _destinations.length;
 
     return Scaffold(
       // The header takes the status-bar inset itself, so what sits under it
@@ -49,9 +73,7 @@ class ShellScaffold extends StatelessWidget {
             // index falls outside _destinations — fall back to a fixed label
             // rather than indexing out of range.
             AppHeader(
-              subtitle: shell.currentIndex < _destinations.length
-                  ? _destinations[shell.currentIndex].label
-                  : "Settings",
+              subtitle: onDockTab ? _destinations[shell.currentIndex].label : "Settings",
             ),
             Expanded(
               child: MediaQuery.removePadding(context: context, removeTop: true, child: shell),
@@ -89,17 +111,21 @@ class ShellScaffold extends StatelessWidget {
                 alignment: Alignment(
                   _destinations.length < 2
                       ? 0
-                      : -1 + 2 * shell.currentIndex / (_destinations.length - 1),
+                      : -1 + 2 * _lensIndex / (_destinations.length - 1),
                   0,
                 ),
                 child: FractionallySizedBox(
                   widthFactor: 1 / _destinations.length,
-                  child: Container(
-                    margin: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      gradient: AuroraStyle.of(context).gradients ? AuroraColors.primaryAurora : null,
-                      color: AuroraStyle.of(context).gradients ? null : AuroraColors.auroraSoftLavender,
-                      borderRadius: AuroraRadii.pillAll,
+                  child: AnimatedOpacity(
+                    opacity: onDockTab ? 1 : 0,
+                    duration: reduceMotion ? Duration.zero : const Duration(milliseconds: 180),
+                    child: Container(
+                      margin: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        gradient: AuroraStyle.of(context).gradients ? AuroraColors.primaryAurora : null,
+                        color: AuroraStyle.of(context).gradients ? null : AuroraColors.auroraSoftLavender,
+                        borderRadius: AuroraRadii.pillAll,
+                      ),
                     ),
                   ),
                 ),

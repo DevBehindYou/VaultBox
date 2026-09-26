@@ -1,0 +1,38 @@
+Analyzing VaultBox...                                           
+
+   info • Sort directive sections alphabetically. Try sorting the directives • lib/app/router.dart:20:1 • directives_ordering
+   info • Constructor declarations should be before non-constructor declarations. Try moving the constructor declaration before all other members • lib/domain/entities/app_preferences.dart:59:11 • sort_constructors_first
+   info • Constructor declarations should be before non-constructor declarations. Try moving the constructor declaration before all other members • lib/domain/entities/ftp_settings.dart:84:11 • sort_constructors_first
+   info • Constructor declarations should be before non-constructor declarations. Try moving the constructor declaration before all other members • lib/domain/entities/protocol_storage_access.dart:75:11 • sort_constructors_first
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/activity/presentation/activity_screen.dart:49:11 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/activity/presentation/activity_screen.dart:50:15 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/activity/presentation/activity_screen.dart:51:15 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/activity/presentation/activity_screen.dart:52:15 • use_build_context_synchronously
+   info • Angle brackets will be interpreted as HTML. Try using backticks around the content with angle brackets, or try replacing `<` with `&lt;` and `>` with `&gt;` • lib/features/files/viewmodel/files_view_model.dart:90:18 • unintended_html_in_doc_comment
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/onboarding/onboarding_actions.dart:76:3 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/onboarding/onboarding_actions.dart:77:9 • use_build_context_synchronously
+   info • Sort directive sections alphabetically. Try sorting the directives • lib/features/settings/presentation/diagnostics_screen.dart:9:1 • directives_ordering
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/settings/presentation/diagnostics_screen.dart:77:41 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/settings/presentation/diagnostics_screen.dart:79:12 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/settings/presentation/protocols_screen.dart:101:15 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/settings/presentation/protocols_screen.dart:575:17 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/settings/presentation/protocols_screen.dart:934:15 • use_build_context_synchronously
+   info • Sort directive sections alphabetically. Try sorting the directives • lib/features/settings/presentation/storage_screen.dart:17:1 • directives_ordering
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/settings/presentation/storage_screen.dart:236:13 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/settings/presentation/storage_screen.dart:237:7 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/settings/presentation/storage_screen.dart:238:17 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/share/presentation/add_person_screen.dart:74:17 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/share/presentation/create_share_dialog.dart:112:42 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/share/presentation/create_share_dialog.dart:123:17 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/share/presentation/person_screen.dart:47:15 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/share/presentation/share_screen.dart:112:11 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/features/share/presentation/share_screen.dart:113:15 • use_build_context_synchronously
+   info • Uncancelled instance of 'StreamSubscription'. Try invoking 'cancel' in the function in which the 'StreamSubscription' was created • lib/server/ftp/ftp_server.dart:42:31 • cancel_subscriptions
+   info • Sort directive sections alphabetically. Try sorting the directives • test/data/saf_storage_backend_test.dart:8:1 • directives_ordering
+   info • The import of 'package:vaultbox/domain/security/permission.dart' is unnecessary because all of the used elements are also provided by the import of 'package:vaultbox/domain/security/authorizer.dart'. Try removing the import directive • test/features/share_screen_test.dart:32:8 • unnecessary_import
+   info • Unclosed instance of 'Sink'. Try invoking 'close' in the function in which the 'Sink' was created • test/helpers/ftp_harness.dart:172:18 • close_sinks
+   info • Unclosed instance of 'Sink'. Try invoking 'close' in the function in which the 'Sink' was created • test/server/ftp/ftp_tls_test.dart:157:18 • close_sinks
+   info • Unclosed instance of 'Sink'. Try invoking 'close' in the function in which the 'Sink' was created • test/server/ftp/ftp_tls_test.dart:163:24 • close_sinks
+   info • Unclosed instance of 'Sink'. Try invoking 'close' in the function in which the 'Sink' was created • test/server/ftp/ftp_tls_test.dart:213:24 • close_sinks
+
+34 issues found. (ran in 19.2s)

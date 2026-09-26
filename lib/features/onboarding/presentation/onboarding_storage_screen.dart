@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:go_router/go_router.dart";
 
 import "../../../core/design/aurora_colors.dart";
@@ -9,15 +10,17 @@ import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
 import "../../../core/errors/app_failure.dart";
+import "../../../domain/repositories/account_repository.dart";
 import "../onboarding_actions.dart";
 
-/// Storage-choice step. See `onboarding_actions.dart` for why "this phone's
-/// app storage" is the only live option in this delivery, and why the SD
-/// card / custom-folder option below is shown but disabled rather than
-/// hidden — kickoff §77 prefers a labelled "coming later" over silently
-/// removing something the design calls for.
+/// Storage-choice step of first-run setup, and the "add another location"
+/// screen from Storage & Volumes ([addingAnother]).
 class OnboardingStorageScreen extends StatefulWidget {
-  const OnboardingStorageScreen({super.key});
+  const OnboardingStorageScreen({this.addingAnother = false, super.key});
+
+  /// Not first-run setup: no step counter, and once a location is added it
+  /// goes back where it came from instead of on to the admin step.
+  final bool addingAnother;
 
   @override
   State<OnboardingStorageScreen> createState() => _OnboardingStorageScreenState();
@@ -35,7 +38,7 @@ class _OnboardingStorageScreenState extends State<OnboardingStorageScreen> {
     try {
       await addAppStorageRoot(context);
       if (!mounted) return;
-      unawaited(context.push("/onboarding/admin"));
+      await _next();
     } on AppFailure catch (failure) {
       if (!mounted) return;
       setState(() => _failure = failure);
@@ -53,7 +56,7 @@ class _OnboardingStorageScreenState extends State<OnboardingStorageScreen> {
       final String? rootId = await addSafStorageRoot(context);
       if (!mounted) return;
       // null = the person cancelled the system picker: stay on this screen.
-      if (rootId != null) unawaited(context.push("/onboarding/admin"));
+      if (rootId != null) await _next();
     } on AppFailure catch (failure) {
       if (!mounted) return;
       setState(() => _failure = failure);
@@ -62,18 +65,36 @@ class _OnboardingStorageScreenState extends State<OnboardingStorageScreen> {
     }
   }
 
+  /// Where to go once a location is added. The admin step is skipped when an
+  /// admin already exists (it used to ask for one every time).
+  Future<void> _next() async {
+    if (widget.addingAnother) {
+      context.pop();
+      return;
+    }
+    final AccountRepository accounts = context.read<AccountRepository>();
+    final bool hasAdmin = await accounts.countEnabledAdmins() > 0;
+    if (!mounted) return;
+    unawaited(context.push(hasAdmin ? "/onboarding/ready" : "/onboarding/admin"));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(leading: const BackButton(), title: const Text("Choose storage")),
+      appBar: AppBar(
+        leading: const BackButton(),
+        title: Text(widget.addingAnother ? "Add a storage location" : "Choose storage"),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AuroraSpacing.marginCompact),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const AuroraStatusChip(label: "Step 2 of 3", status: AuroraStatus.idle),
-              const SizedBox(height: AuroraSpacing.md),
+              if (!widget.addingAnother) ...<Widget>[
+                const AuroraStatusChip(label: "Step 2 of 3", status: AuroraStatus.idle),
+                const SizedBox(height: AuroraSpacing.md),
+              ],
               Text("Where should Atomic Carton keep your files?", style: AuroraTypography.headlineMd),
               const SizedBox(height: AuroraSpacing.lg),
               if (_failure != null) ...<Widget>[

@@ -52,7 +52,11 @@ Future<void> serverMain() async {
 
     if (config.httpsEnabled ?? true) {
       final TlsIdentityMessage identity = await runtime.getTlsIdentity();
-      https = HttpsListener(router: RequestRouter(api: api, portal: const PortalAssets(), dav: services.dav));
+      // Private-network and loopback clients only, like plain HTTP: the
+      // listener binds 0.0.0.0, which includes a mobile-data address.
+      https = HttpsListener(
+        router: RequestRouter(privateClientsOnly: true, api: api, portal: const PortalAssets(), dav: services.dav),
+      );
       await https.start(
         certificatePem: identity.certificatePem!,
         privateKeyPem: identity.privateKeyPem!,

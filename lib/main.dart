@@ -18,14 +18,17 @@ import "server/server_main.dart";
 // ignore: unused_element
 const Future<void> Function() _serverEntrypoint = serverMain;
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AppLogger.init();
   final AppDependencies deps = AppDependencies.build();
+  // Nothing to browse or serve until a storage location exists, so a fresh
+  // install opens the setup flow instead of an empty Home.
+  final bool firstRun = (await deps.storageRootRepository.listRoots()).isEmpty;
   // Built once, outside the widget tree, like every other Riverpod-cached
   // singleton this rewrite touched — a GoRouter must never be rebuilt on a
   // theme change, or the whole navigation stack resets.
-  final GoRouter router = buildRouter();
+  final GoRouter router = buildRouter(initialLocation: firstRun ? "/onboarding/welcome" : "/home");
   runApp(
     MultiRepositoryProvider(
       providers: buildRepositoryProviders(deps),

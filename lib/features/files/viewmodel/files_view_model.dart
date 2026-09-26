@@ -257,14 +257,22 @@ final class FilesCubit extends Cubit<FilesState> {
     ];
     _sortInPlace(combined);
 
+    final bool hasMore = page.length == _pageSize;
     emit(
       state.copyWith(
         entries: combined,
         isLoadingFirstPage: false,
         isLoadingMore: false,
-        hasMore: page.length == _pageSize,
+        hasMore: hasMore,
       ),
     );
+
+    // Keep reading straight away rather than when the person scrolls to the
+    // bottom: pages arrive in directory order and the whole list is re-sorted,
+    // so a page fetched mid-scroll landed ABOVE the viewport and a single pass
+    // through a 250-item folder showed only half of it (real device,
+    // 2026-09-26). Loading the rest now settles the list within a moment.
+    if (hasMore) unawaited(loadMore());
   }
 
   void setSort(FileSortField field, {required bool ascending}) {

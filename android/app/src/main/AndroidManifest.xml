@@ -21,11 +21,16 @@
          app is sideloaded, not store-distributed. -->
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage"/>
+    <!-- allowBackup off + extraction rules: the app promises nothing is sent
+         to any cloud, and Auto Backup would upload its database. -->
     <application
         android:label="Atomic Carton"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:requestLegacyExternalStorage="true">
+        android:requestLegacyExternalStorage="true"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        tools:targetApi="s">
         <activity
             android:name=".MainActivity"
             android:exported="true"

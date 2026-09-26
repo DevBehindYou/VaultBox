@@ -64,7 +64,7 @@ class StorageScreen extends StatelessWidget {
                     label: "Add storage location",
                     icon: Icons.create_new_folder_outlined,
                     expand: false,
-                    onPressed: () => unawaited(context.push("/onboarding/welcome")),
+                    onPressed: () => unawaited(context.push("/onboarding/storage?add=1")),
                   ),
                 )
               else ...<Widget>[
@@ -93,7 +93,7 @@ class StorageScreen extends StatelessWidget {
                       AuroraPrimaryButton(
                         label: "Add storage location",
                         icon: Icons.create_new_folder_outlined,
-                        onPressed: () => unawaited(context.push("/onboarding/welcome")),
+                        onPressed: () => unawaited(context.push("/onboarding/storage?add=1")),
                       ),
                     ],
                   ),

@@ -79,7 +79,9 @@ final class FtpServer {
       return;
     }
 
-    if (!_settings.usesTls && _privateClientsOnly && !isPrivateOrLoopbackClient(socket.remoteAddress)) {
+    // Local network only, encrypted or not: the app promises it never serves
+    // the internet, and the listener binds 0.0.0.0 (mobile data included).
+    if (_privateClientsOnly && !isPrivateOrLoopbackClient(socket.remoteAddress)) {
       socket.destroy();
       return;
     }

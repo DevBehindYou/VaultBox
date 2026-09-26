@@ -101,6 +101,10 @@ class _FilesScreenBodyState extends State<_FilesScreenBody> {
     final FilesCubit viewModel = context.read<FilesCubit>();
 
     return Scaffold(
+      // The shell's Scaffold already shrinks for the keyboard; shrinking here
+      // too subtracted it twice ("BOTTOM OVERFLOWED BY 86 PIXELS", buttons
+      // jumping over the header) when the search field was focused.
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
           children: <Widget>[
@@ -274,6 +278,7 @@ class _FilesScreenBodyState extends State<_FilesScreenBody> {
     FilesCubit viewModel,
     StorageEntry entry,
   ) async {
+    FocusManager.instance.primaryFocus?.unfocus();
     final String? action = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
@@ -465,6 +470,8 @@ class _FilesScreenBodyState extends State<_FilesScreenBody> {
     FilesCubit viewModel,
     FilesState state,
   ) async {
+    // Otherwise the search field gets focus back (and the keyboard) when the sheet closes.
+    FocusManager.instance.primaryFocus?.unfocus();
     await showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -622,7 +629,7 @@ class _FilesToolbar extends StatelessWidget {
             onChanged: onQueryChanged,
             decoration: InputDecoration(
               isDense: true,
-              hintText: "Search files in ${directory.root.displayName}…",
+              hintText: "Search this folder…",
               prefixIcon: const Icon(Icons.search, size: 20),
               suffixIcon: searchController.text.isEmpty
                   ? null
@@ -632,6 +639,7 @@ class _FilesToolbar extends StatelessWidget {
                       onPressed: () {
                         searchController.clear();
                         onQueryChanged("");
+                        FocusManager.instance.primaryFocus?.unfocus();
                       },
                     ),
               filled: true,

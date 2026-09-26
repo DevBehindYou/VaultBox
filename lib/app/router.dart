@@ -39,9 +39,9 @@ import "shell_scaffold.dart";
 ///
 /// `StatefulShellRoute.indexedStack` gives each tab its own Navigator, so a
 /// deep Files stack survives a trip to Settings and back (KB vol2 §7.1).
-GoRouter buildRouter() {
+GoRouter buildRouter({String initialLocation = "/home"}) {
   return GoRouter(
-    initialLocation: "/home",
+    initialLocation: initialLocation,
     routes: <RouteBase>[
       // Top-level, outside the shell — onboarding has no bottom nav dock and
       // no tab to return to mid-flow (KB vol2 §7.1: shell branches keep their
@@ -51,10 +51,12 @@ GoRouter buildRouter() {
         builder: (BuildContext context, GoRouterState state) =>
             const OnboardingWelcomeScreen(),
       ),
+      // `?add=1`: adding another location later (from Storage & Volumes), not
+      // first-run setup — no step counter, and it returns where it came from.
       GoRoute(
         path: "/onboarding/storage",
         builder: (BuildContext context, GoRouterState state) =>
-            const OnboardingStorageScreen(),
+            OnboardingStorageScreen(addingAnother: state.uri.queryParameters["add"] == "1"),
       ),
       GoRoute(
         path: "/onboarding/admin",

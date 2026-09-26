@@ -6,11 +6,8 @@ import "../../../core/design/aurora_spacing.dart";
 import "../../../core/design/aurora_typography.dart";
 import "../../../core/design/aurora_widgets.dart";
 
-/// First of three onboarding screens (doc §7 "Onboarding": Welcome → Choose
-/// Storage → [Admin/Security/Server, Phase 3] → Ready). Steps are combined
-/// where the doc allows it (§7) — Phase 1 has no server or auth yet, so this
-/// build skips straight from storage choice to Ready rather than showing
-/// setup steps for features that don't exist.
+/// First of three onboarding screens: Welcome → Choose storage → Admin
+/// account → Ready.
 class OnboardingWelcomeScreen extends StatelessWidget {
   const OnboardingWelcomeScreen({super.key});
 
@@ -31,8 +28,8 @@ class OnboardingWelcomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: AuroraSpacing.md),
               Text(
-                "Store files here and browse them right from the app. "
-                "Network access from other devices arrives in a later update.",
+                "Keep your files here and browse them in the app. Start the server "
+                "whenever a laptop, tablet or another phone on your Wi-Fi should reach them.",
                 style: AuroraTypography.bodyLg.copyWith(color: context.inkSecondary),
               ),
               const Spacer(),
